@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "cleanUrls": true,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.ts" },
+    { "source": "/api", "destination": "/api/index.ts" },
+    { "source": "/espace", "destination": "/espace.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/dashboard", "destination": "/admin.html" },
+    { "source": "/chercheurs", "destination": "/admin.html" },
+    { "source": "/chercheurs/(.*)", "destination": "/admin.html" },
+    { "source": "/prestations", "destination": "/admin.html" },
+    { "source": "/prestations/(.*)", "destination": "/admin.html" },
+    { "source": "/creneaux", "destination": "/admin.html" },
+    { "source": "/rendez-vous", "destination": "/admin.html" },
+    { "source": "/ateliers", "destination": "/admin.html" },
+    { "source": "/evenements", "destination": "/admin.html" },
+    { "source": "/bannieres", "destination": "/admin.html" },
+    { "source": "/publications", "destination": "/admin.html" },
+    { "source": "/inscriptions", "destination": "/admin.html" }
+  ]
+}

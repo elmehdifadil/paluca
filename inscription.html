@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<meta name="theme-color" content="#3A0F45">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.json">
+<title>Inscription - Créer votre Espace Lauréat - PAL-UCA | Université Cadi Ayyad & ANAPEC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+ :root{
+   --purple-900:#3A0F45; --purple-800:#4F1359; --purple-700:#7E1F78; --purple-600:#9C2484;
+   --purple-200:#EFD9F0; --purple-100:#FAF3FB;
+   --gold-700:#B36C00; --gold-600:#D88400;
+   --green:#166534; --muted:#7C6B82; --border:#E8DEEC;
+ }
+ *{ box-sizing:border-box; }
+ body{
+   margin:0;
+   font-family:'Tajawal',sans-serif;
+   background:linear-gradient(135deg, #FAF3FB 0%, #F5ECF7 50%, #FAF3FB 100%);
+   min-height:100vh;
+   display:flex;
+   flex-direction:column;
+   color:#2A1733;
+ }
+ h1,h2,h3,h4{ font-family:'Cairo',sans-serif; }
+ .topbar{
+   background:var(--purple-900);
+   color:#fff;
+   padding:12px 20px;
+   display:flex;
+   align-items:center;
+   justify-content:space-between;
+   gap:12px;
+   box-shadow:0 4px 14px rgba(58,15,69,0.18);
+ }
+ .topbar .brand{
+   display:flex;
+   align-items:center;
+   gap:10px;
+   color:#fff;
+   text-decoration:none;
+   font-family:'Cairo',sans-serif;
+   font-weight:800;
+   font-size:1.15rem;
+ }
+ .topbar .brand small{
+   display:block;
+   font-size:0.68rem;
+   font-weight:500;
+   color:#E0CDE4;
+ }
+ .topbar .actions{
+   display:flex;
+   align-items:center;
+   gap:10px;
+ }
+ .btn-top{
+   background:rgba(255,255,255,0.14);
+   color:#fff;
+   border:none;
+   border-radius:8px;
+   padding:7px 14px;
+   font-size:0.82rem;
+   cursor:pointer;
+   text-decoration:none;
+   font-family:inherit;
+   font-weight:600;
+   display:inline-flex;
+   align-items:center;
+   gap:6px;
+   transition:background .15s;
+ }
+ .btn-top:hover{ background:rgba(255,255,255,0.22); }
+ .lang-btn{
+   background:transparent;
+   border:1px solid rgba(255,255,255,0.3);
+   color:#fff;
+   border-radius:6px;
+   padding:4px 8px;
+   font-size:0.75rem;
+   cursor:pointer;
+   font-weight:700;
+ }
+ .lang-btn.active{
+   background:#D88400;
+   border-color:#D88400;
+ }
+ .page-content{
+   flex:1;
+   display:flex;
+   align-items:center;
+   justify-content:center;
+   padding:28px 16px 50px;
+ }
+ .reg-card{
+   background:#ffffff;
+   border:1.5px solid var(--border);
+   border-radius:24px;
+   width:100%;
+   max-width:760px;
+   padding:36px 36px;
+   box-shadow:0 24px 60px rgba(58,15,69,0.14);
+   position:relative;
+ }
+ .reg-header{
+   text-align:center;
+   margin-bottom:24px;
+ }
+ .reg-badge{
+   display:inline-flex;
+   align-items:center;
+   justify-content:center;
+   width:56px;
+   height:56px;
+   border-radius:18px;
+   background:linear-gradient(135deg,#FAF3FB,#F4EAF5);
+   border:1.5px solid #DDB8E0;
+   color:var(--purple-700);
+   font-size:1.6rem;
+   margin-bottom:12px;
+   box-shadow:0 4px 14px rgba(126,31,120,0.12);
+ }
+ .reg-title{
+   font-size:1.45rem;
+   color:var(--purple-900);
+   margin:0 0 6px;
+   font-weight:800;
+ }
+ .reg-subtitle{
+   font-size:0.88rem;
+   color:var(--muted);
+   margin:0;
+   line-height:1.5;
+ }
+ .cv-upload-box{
+   background:#FAF3FB;
+   border:1.5px dashed var(--purple-700);
+   border-radius:14px;
+   padding:16px 18px;
+   margin-bottom:24px;
+ }
+ .cv-upload-label{
+   font-size:0.84rem;
+   color:var(--purple-800);
+   font-weight:700;
+   display:block;
+   margin-bottom:8px;
+ }
+ .grid-2col{
+   display:grid;
+   grid-template-columns:1fr 1fr;
+   gap:14px 18px;
+ }
+ .span-2{
+   grid-column:span 2;
+ }
+ .form-group{
+   margin-bottom:6px;
+ }
+ label{
+   font-size:0.82rem;
+   color:var(--purple-800);
+   font-weight:700;
+   display:block;
+   margin-bottom:5px;
+ }
+ input[type="text"], input[type="email"], input[type="password"], input[type="date"], select, textarea{
+   width:100%;
+   padding:11px 13px;
+   border:1.5px solid var(--border);
+   border-radius:11px;
+   font-size:0.9rem;
+   box-sizing:border-box;
+   outline:none;
+   background:#FAF9FB;
+   font-family:inherit;
+   transition:border-color .15s, box-shadow .15s;
+ }
+ input:focus, select:focus, textarea:focus{
+   border-color:var(--purple-700);
+   box-shadow:0 0 0 3px rgba(126,31,120,0.12);
+   background:#fff;
+ }
+ textarea{
+   resize:vertical;
+ }
+ .section-sep{
+   margin:20px 0 14px;
+   padding-bottom:6px;
+   border-bottom:1.5px solid #F0E6F2;
+   color:var(--purple-900);
+   font-weight:800;
+   font-size:0.98rem;
+ }
+ .checkbox-group{
+   background:#FAF9FB;
+   border:1px solid var(--border);
+   border-radius:12px;
+   padding:12px 14px;
+   margin:16px 0;
+   display:flex;
+   align-items:flex-start;
+   gap:10px;
+ }
+ .checkbox-group input[type="checkbox"]{
+   width:auto;
+   margin-top:3px;
+   accent-color:var(--purple-700);
+ }
+ .checkbox-group label{
+   font-weight:500;
+   font-size:0.82rem;
+   color:#44234C;
+   margin-bottom:0;
+   line-height:1.45;
+   cursor:pointer;
+ }
+ .btn-submit{
+   width:100%;
+   margin-top:16px;
+   padding:14px;
+   background:linear-gradient(135deg,var(--purple-700),var(--purple-800));
+   color:#fff;
+   border:none;
+   border-radius:12px;
+   font-family:'Cairo',sans-serif;
+   font-size:1.05rem;
+   font-weight:800;
+   cursor:pointer;
+   box-shadow:0 6px 18px rgba(126,31,120,0.28);
+   transition:transform .15s, box-shadow .15s;
+ }
+ .btn-submit:hover{
+   transform:translateY(-1px);
+   box-shadow:0 8px 22px rgba(126,31,120,0.34);
+ }
+ .reg-footer{
+   margin-top:24px;
+   padding-top:20px;
+   border-top:1px solid #F0E6F2;
+   text-align:center;
+ }
+ .reg-footer p{
+   font-size:0.85rem;
+   color:#6B5870;
+   margin:0 0 8px;
+ }
+ .link-btn{
+   color:var(--purple-700);
+   font-weight:800;
+   font-size:0.92rem;
+   text-decoration:underline;
+   text-underline-offset:3px;
+ }
+ @media (max-width: 650px){
+   .reg-card{
+     padding:22px 16px;
+     border-radius:18px;
+   }
+   .grid-2col{
+     grid-template-columns:1fr;
+     gap:12px;
+   }
+   .span-2{
+     grid-column:span 1;
+   }
+   .topbar{
+     padding:10px 14px;
+   }
+   .topbar .brand small{
+     display:none;
+   }
+ }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="/" class="brand">
+    <div style="width:36px;height:36px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--purple-900);font-weight:900;font-size:1.05rem;">UCA</div>
+    <div>
+      <div>PAL-UCA</div>
+      <small data-ar="منصة مواكبة خريجي جامعة القاضي عياض" data-fr="Plateforme d'Accompagnement des Lauréats">Plateforme d'Accompagnement des Lauréats</small>
+    </div>
+  </a>
+
+  <div class="actions">
+    <div style="display:flex;gap:4px;">
+      <button type="button" class="lang-btn" id="btnAr" onclick="setLang('ar')">عربي</button>
+      <button type="button" class="lang-btn active" id="btnFr" onclick="setLang('fr')">FR</button>
+    </div>
+    <a href="/" class="btn-top">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span data-ar="الرئيسية" data-fr="Accueil">Accueil</span>
+    </a>
+  </div>
+</header>
+
+<main class="page-content">
+  <div class="reg-card">
+    <div class="reg-header">
+      <div class="reg-badge">🎓</div>
+      <h1 class="reg-title" data-ar="إنشاء فضائكم الشخصي (خريج UCA)" data-fr="Créer votre Espace Lauréat UCA">Créer votre Espace Lauréat UCA</h1>
+      <p class="reg-subtitle" data-ar="أنشئ حسابك واستفد من خدمات المواكبة، التشخيص الذكي والمقابلات الفردية" data-fr="Renseignez vos informations ou importez votre CV pour un remplissage automatique de votre profil">Renseignez vos informations ou importez votre CV pour un remplissage automatique de votre profil</p>
+    </div>
+
+    <!-- Option claire : Import de CV OU Remplissage Manuel -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;">
+      <button type="button" id="tabModeCv" onclick="switchEntryMode('cv')" style="background:var(--purple-700);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-weight:700;font-size:0.86rem;cursor:pointer;">
+        📄 Importer mon CV
+      </button>
+      <button type="button" id="tabModeManuel" onclick="switchEntryMode('manuel')" style="background:#FAF3FB;color:var(--purple-900);border:1.5px solid var(--border);border-radius:10px;padding:9px 18px;font-weight:700;font-size:0.86rem;cursor:pointer;">
+        ✍️ Remplir manuellement
+      </button>
+    </div>
+
+    <!-- Import CV Intelligent (IA + Référentiels UCA) -->
+    <div id="cv-upload-container" class="cv-upload-box">
+      <label class="cv-upload-label" data-ar="استيراد السيرة الذاتية (PDF، DOC، DOCX أو صورة) — اختياري، يملأ الذكاء الاصطناعي ملفك بدقة" data-fr="Importer votre CV (PDF, DOC, DOCX ou image) — Facultatif, l'IA préremplit votre profil">Importer votre CV (PDF, DOC, DOCX ou image) — Facultatif, l'IA préremplit votre profil</label>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <input id="reg-cv" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*" onchange="analyserCV()" style="flex:1;min-width:180px;font-size:0.82rem;">
+        <button type="button" id="cvAnalyseBtn" onclick="analyserCV()" style="background:var(--purple-700);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;font-size:0.84rem;cursor:pointer;white-space:nowrap;" data-ar="تحليل واستيراد السيرة" data-fr="Analyser le CV">Analyser le CV</button>
+      </div>
+      <div id="cvStatus" style="font-size:0.82rem;margin-top:8px;min-height:18px;font-weight:600;"></div>
+      
+      <!-- Bannière de vérification obligatoire après extraction IA (Exigence Point 11) -->
+      <div id="cvReviewNotice" style="display:none;background:#FEF3C7;border:1px solid #F59E0B;border-radius:10px;padding:12px 14px;margin-top:10px;color:#92400E;font-size:0.86rem;line-height:1.45;">
+        <div style="display:flex;align-items:flex-start;gap:8px;">
+          <span style="font-size:1.1rem;">ℹ️</span>
+          <div>
+            <strong>Attention :</strong> Certaines informations ont été préremplies à partir de votre CV. Veuillez les vérifier, les compléter ou les corriger attentivement avant de valider votre inscription.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form onsubmit="handleRegistrationSubmit(event)">
+      <div class="section-sep" data-ar="1. المعلومات الشخصية والحالة المدنية" data-fr="1. État Civil & Coordonnées">1. État Civil & Coordonnées</div>
+
+      <div class="grid-2col">
+        <div class="form-group">
+          <label for="reg-nomfamille" data-ar="الاسم العائلي *" data-fr="Nom de famille *">Nom de famille *</label>
+          <input id="reg-nomfamille" type="text" required placeholder="Ex: Benali">
+        </div>
+
+        <div class="form-group">
+          <label for="reg-prenom" data-ar="الاسم الشخصي *" data-fr="Prénom *">Prénom *</label>
+          <input id="reg-prenom" type="text" required placeholder="Ex: Ahmed">
+        </div>
+
+        <div class="form-group">
+          <label for="reg-naissance" data-ar="تاريخ الازدياد *" data-fr="Date de naissance *">Date de naissance *</label>
+          <input id="reg-naissance" type="date" required min="1960-01-01" max="2010-12-31">
+        </div>
+
+        <div class="form-group">
+          <label for="reg-cin" data-ar="رقم البطاقة الوطنية (CIN) *" data-fr="N° CIN *">N° CIN *</label>
+          <input id="reg-cin" type="text" required placeholder="EE123456" dir="ltr" maxlength="10" style="text-transform:uppercase;">
+        </div>
+
+        <div class="form-group">
+          <label for="reg-ville" data-ar="الإقليم / العمالة *" data-fr="Province / Préfecture *">Province / Préfecture *</label>
+          <select id="reg-ville" required>
+            <option value="" data-ar="اختر..." data-fr="Choisir...">Choisir...</option>
+            <option>Marrakech</option><option>Al Haouz</option><option>Chichaoua</option><option>El Kelâa des Sraghna</option>
+            <option>Essaouira</option><option>Rehamna</option><option>Safi</option><option>Youssoufia</option>
+            <option>Agadir Ida-Outanane</option><option>Casablanca</option><option>Rabat</option><option>Fès</option>
+            <option>Tanger-Assilah</option><option>Oujda-Angad</option><option>Kénitra</option><option>Tétouan</option>
+            <option>Meknès</option><option>Béni Mellal</option><option>Autre province</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-adresse" data-ar="العنوان والمدينة *" data-fr="Adresse & Ville de résidence *">Adresse & Ville de résidence *</label>
+          <input id="reg-adresse" type="text" required placeholder="Ex: Marrakech Guéliz">
+        </div>
+
+        <div class="form-group">
+          <label for="reg-email" data-ar="البريد الإلكتروني *" data-fr="Adresse email *">Adresse email *</label>
+          <input id="reg-email" type="email" required placeholder="exemple@gmail.com" autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="reg-tel" data-ar="رقم الهاتف (واتساب) *" data-fr="Téléphone portable (WhatsApp) *">Téléphone portable (WhatsApp) *</label>
+          <input id="reg-tel" type="text" required placeholder="0612345678" dir="ltr">
+        </div>
+      </div>
+
+      <div class="section-sep" data-ar="2. المسار الدراسي والجامعي (UCA)" data-fr="2. Formation & Diplômes Universitaires (UCA)">2. Formation & Diplômes Universitaires (UCA)</div>
+
+      <div class="grid-2col">
+        <div class="form-group">
+          <label for="reg-etablissement" data-ar="مؤسسة التخرج (UCA) *" data-fr="Établissement UCA *">Établissement UCA *</label>
+          <select id="reg-etablissement" required>
+            <option value="" data-ar="اختر المؤسسة..." data-fr="Choisir l'établissement...">Choisir l'établissement...</option>
+            <option>Faculté des Sciences Semlalia (FSSM)</option>
+            <option>Faculté des Sciences et Techniques (FST Guéliz)</option>
+            <option>Faculté des Sciences Juridiques, Économiques et Sociales (FSJES)</option>
+            <option>Faculté des Lettres et des Sciences Humaines (FLSH)</option>
+            <option>École Nationale des Sciences Appliquées (ENSA Marrakech)</option>
+            <option>École Nationale de Commerce et de Gestion (ENCG Marrakech)</option>
+            <option>École Normale Supérieure (ENS Marrakech)</option>
+            <option>Faculté de Médecine et de Pharmacie (FMPM)</option>
+            <option>École Supérieure de Technologie (EST Essaouira)</option>
+            <option>École Supérieure de Technologie (EST Safi)</option>
+            <option>École Supérieure de Technologie (EST El Kelâa)</option>
+            <option>Faculté Polydisciplinaire de Safi (FPS)</option>
+            <option>ENSA Safi</option>
+            <option>Autre établissement</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-niveau" data-ar="المستوى الدراسي *" data-fr="Niveau d'études *">Niveau d'études *</label>
+          <select id="reg-niveau" required>
+            <option value="" data-ar="اختر المستوى..." data-fr="Choisir le niveau...">Choisir le niveau...</option>
+            <option>Bac+2 (DEUG, DUT, BTS)</option>
+            <option>Licence Fondamentale (Bac+3)</option>
+            <option>Licence Professionnelle (Bac+3)</option>
+            <option>Master Fondamental (Bac+5)</option>
+            <option>Master Spécialisé (Bac+5)</option>
+            <option>Diplôme d'Ingénieur d'État (Bac+5)</option>
+            <option>Diplôme ENCG (Bac+5)</option>
+            <option>Doctorat (Bac+8)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-filiere" data-ar="الشعبة / التخصص *" data-fr="Filière / Spécialité *">Filière / Spécialité *</label>
+          <input id="reg-filiere" type="text" required placeholder="Ex: Génie Informatique, Droit des Affaires, Économie...">
+        </div>
+
+        <div class="form-group">
+          <label for="reg-annee" data-ar="سنة التخرج *" data-fr="Année d'obtention *">Année d'obtention *</label>
+          <select id="reg-annee" required>
+            <option value="" selected disabled>Choisir une année</option>
+            <option value="2026">2026 (En cours)</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+            <option value="2020">2020</option>
+            <option value="2019">2019</option>
+            <option value="2018">2018</option>
+          </select>
+        </div>
+
+        <div class="form-group span-2">
+          <label for="reg-autresdiplomes" data-ar="شواهد أو تكوينات إضافية (اختياري)" data-fr="Autres diplômes ou certifications (facultatif)">Autres diplômes ou certifications (facultatif)</label>
+          <input id="reg-autresdiplomes" type="text" placeholder="Ex: Certificat Scrum, Google Analytics, DALF C1...">
+        </div>
+      </div>
+
+      <div class="section-sep" data-ar="3. الخبرة والمهارات واللغات" data-fr="3. Expérience, Compétences & Langues">3. Expérience, Compétences & Langues</div>
+
+      <div class="grid-2col">
+        <div class="form-group">
+          <label for="reg-experience" data-ar="الخبرة المهنية" data-fr="Niveau d'expérience globale">Niveau d'expérience globale</label>
+          <select id="reg-experience">
+            <option value="" selected>À renseigner</option>
+            <option value="Débutant / Premier emploi">Débutant / Premier emploi (0 à 6 mois)</option>
+            <option value="1 à 2 ans">1 à 2 ans</option>
+            <option value="3 à 5 ans">3 à 5 ans</option>
+            <option value="Plus de 5 ans">Plus de 5 ans</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-exp-poste" data-ar="آخر منصب أو تدريب (PFE)" data-fr="Dernier poste ou stage (ex: Stage PFE)">Dernier poste ou stage (ex: Stage PFE)</label>
+          <input id="reg-exp-poste" type="text" placeholder="Ex: Stagiaire Développeur, Assistant RH">
+        </div>
+
+        <div class="form-group span-2">
+          <label for="reg-competences" data-ar="المهارات التقنية والذاتية الرئيسية" data-fr="Compétences clés (techniques & soft skills)">Compétences clés (techniques & soft skills)</label>
+          <input id="reg-competences" type="text" placeholder="Ex: Analyse de données, Gestion de projet, Communication, Python, Excel">
+        </div>
+
+        <div class="form-group">
+          <label for="reg-lang-fr" data-ar="مستوى اللغة الفرنسية" data-fr="Niveau Français">Niveau Français</label>
+          <select id="reg-lang-fr">
+            <option value="" selected>À renseigner</option>
+            <option value="Courant">Courant / Professionnel</option>
+            <option value="Intermédiaire">Intermédiaire</option>
+            <option value="Notions">Notions de base</option>
+            <option value="Bilingue">Bilingue / Langue maternelle</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-lang-en" data-ar="مستوى اللغة الإنجليزية" data-fr="Niveau Anglais">Niveau Anglais</label>
+          <select id="reg-lang-en">
+            <option value="" selected>À renseigner</option>
+            <option value="Intermédiaire">Intermédiaire (B1/B2)</option>
+            <option value="Courant">Courant / Professionnel (C1/C2)</option>
+            <option value="Débutant">Débutant / Notions</option>
+          </select>
+        </div>
+
+        <input type="hidden" id="reg-lang-ar" value="">
+        <input type="hidden" id="reg-lang-autres" value="">
+        <input type="hidden" id="reg-exp-entreprise" value="">
+        <input type="hidden" id="reg-exp-debut" value="">
+        <input type="hidden" id="reg-exp-fin" value="">
+        <input type="hidden" id="reg-exp-encours" value="">
+        <input type="hidden" id="reg-expdetail" value="">
+
+        <div class="form-group span-2">
+          <label for="reg-objectif" data-ar="المشروع المهني المستهدف" data-fr="Projet professionnel / Emploi recherché">Projet professionnel / Emploi recherché</label>
+          <input id="reg-objectif" type="text" placeholder="Ex: Trouver un premier emploi en CDI dans le secteur des technologies à Marrakech">
+        </div>
+      </div>
+
+      <div class="section-sep" data-ar="4. كلمة المرور والأمان" data-fr="4. Sécurité & Mot de Passe">4. Sécurité & Mot de Passe</div>
+
+      <div class="grid-2col">
+        <div class="form-group span-2">
+          <label for="reg-password" data-ar="كلمة المرور (4 أحرف على الأقل) *" data-fr="Mot de passe (4 caractères minimum) *">Mot de passe (4 caractères minimum) *</label>
+          <input id="reg-password" type="password" required placeholder="••••••••" autocomplete="new-password">
+        </div>
+      </div>
+
+      <!-- CGU & Données Personnelles (Conforme CNDP, ANAPEC & UCA) -->
+      <div class="checkbox-group">
+        <input id="reg-consent-cgu" type="checkbox" required>
+        <label for="reg-consent-cgu" data-ar="أوافق على الشروط العامة للاستخدام وأمنح موافقتي الصريحة لـ ANAPEC وجامعة القاضي عياض لمعالجة معطياتي الشخصية في إطار مواكبة إدماجي المهني وفقاً للقانون 09-08 (*)" data-fr="J'accepte les Conditions Générales d'Utilisation et consens au traitement de mes données personnelles par l'ANAPEC et l'Université Cadi Ayyad pour mon accompagnement vers l'insertion professionnelle conformément à la loi 09-08 (*)">
+          J'accepte les Conditions Générales d'Utilisation et consens au traitement de mes données personnelles par l'ANAPEC et l'Université Cadi Ayyad pour mon accompagnement vers l'insertion professionnelle conformément à la loi 09-08 (*)
+        </label>
+      </div>
+
+      <div class="checkbox-group" style="margin-top:0;">
+        <input id="reg-consent-notif" type="checkbox" checked>
+        <label for="reg-consent-notif" data-ar="أرغب في استلام إشعارات المواعيد وعروض العمل والورشات عبر واتساب والبريد الإلكتروني" data-fr="Je souhaite recevoir les convocations aux entretiens, ateliers et opportunités d'emploi par WhatsApp et Email">
+          Je souhaite recevoir les convocations aux entretiens, ateliers et opportunités d'emploi par WhatsApp et Email
+        </label>
+      </div>
+
+      <div id="reg-err" style="color:#dc2626;font-size:0.85rem;min-height:20px;text-align:center;font-weight:600;margin-top:10px;"></div>
+
+      <button type="submit" id="regSubmitBtn" class="btn-submit" data-ar="إنشاء فضائي والانتقال إلى الحساب ←" data-fr="Créer mon espace lauréat ←">Créer mon espace lauréat ←</button>
+    </form>
+
+    <div class="reg-footer">
+      <p data-ar="لديكم حساب بالفعل على المنصة؟" data-fr="Vous avez déjà un compte ?">Vous avez déjà un compte ?</p>
+      <a href="/connexion" target="_blank" rel="noopener noreferrer" class="link-btn" data-ar="تسجيل الدخول من هنا ←" data-fr="Se connecter à mon espace →">Se connecter à mon espace →</a>
+    </div>
+  </div>
+</main>
+
+<script>
+var currentLang = 'fr';
+window._cvUrl = '';
+window._cvName = '';
+window._cvOcrText = '';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+  document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
+  document.getElementById('btnFr').classList.toggle('active', lang === 'fr');
+  document.querySelectorAll('[data-ar]').forEach(function(el) {
+    var txt = el.getAttribute('data-' + lang);
+    if (txt) el.textContent = txt;
+  });
+}
+
+function L(ar, fr) {
+  return currentLang === 'ar' ? ar : fr;
+}
+
+function ageFromBirthdate(iso) {
+  if (!iso) return '';
+  var b = new Date(iso), now = new Date();
+  var a = now.getFullYear() - b.getFullYear();
+  if (now.getMonth() < b.getMonth() || (now.getMonth() === b.getMonth() && now.getDate() < b.getDate())) a--;
+  return (a > 0 && a < 100) ? String(a) : '';
+}
+
+function simpleHash(s) {
+  var h = 5381;
+  for (var i = 0; i < s.length; i++) { h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; }
+  return 'h' + h.toString(36);
+}
+
+function dbGet(key) {
+  try { return JSON.parse(localStorage.getItem('dabanet_' + key) || '[]'); } catch(e){ return []; }
+}
+
+function dbSet(key, val) {
+  try { localStorage.setItem('dabanet_' + key, JSON.stringify(val)); } catch(e){}
+}
+
+function extractHeuristicFieldsClient(filename, text) {
+  var raw = (text || "").trim();
+  if (!raw) return {};
+  var fields = {};
+
+  var emailMatch = raw.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+  if (emailMatch) fields.email = emailMatch[1].toLowerCase();
+
+  var telMatch = raw.match(/(\+?212\s?[5-7]\d{8}|0[5-7]\d{8}|0[5-7](\s?\d{2}){4})/);
+  if (telMatch) fields.tel = telMatch[1].replace(/\s+/g, "");
+
+  var cinMatch = raw.match(/\b([A-Z]{1,2}\d{5,7})\b/i);
+  if (cinMatch) fields.cin = cinMatch[1].toUpperCase();
+
+  var anMatch = raw.match(/\b(20[12]\d)\b/);
+  if (anMatch) fields.anneeDiplome = anMatch[1];
+
+  var birthMatch = raw.match(/\b(19\d{2}|200\d)[-\/\.](0[1-9]|1[0-2])[-\/\.](0[1-9]|[12]\d|3[01])\b/) ||
+                   raw.match(/\b(0[1-9]|[12]\d|3[01])[-\/\.](0[1-9]|1[0-2])[-\/\.](19\d{2}|200\d)\b/);
+  if (birthMatch) fields.naissance = birthMatch[0].replace(/[\/\.]/g, "-");
+
+  var lower = raw.toLowerCase();
+  var villes = ["Marrakech", "Al Haouz", "Chichaoua", "El Kelâa des Sraghna", "Essaouira", "Rehamna", "Safi", "Youssoufia", "Casablanca", "Rabat", "Agadir", "Fès", "Tanger"];
+  for (var vi = 0; vi < villes.length; vi++) {
+    if (lower.indexOf(villes[vi].toLowerCase()) !== -1) { fields.ville = villes[vi]; break; }
+  }
+
+  return fields;
+}
+
+function switchEntryMode(mode) {
+  var cvBox = document.getElementById('cv-upload-container');
+  var btnCv = document.getElementById('tabModeCv');
+  var btnMan = document.getElementById('tabModeManuel');
+  if (mode === 'manuel') {
+    if (cvBox) cvBox.style.display = 'none';
+    if (btnMan) { btnMan.style.background = 'var(--purple-700)'; btnMan.style.color = '#fff'; }
+    if (btnCv) { btnCv.style.background = '#FAF3FB'; btnCv.style.color = 'var(--purple-900)'; }
+  } else {
+    if (cvBox) cvBox.style.display = 'block';
+    if (btnCv) { btnCv.style.background = 'var(--purple-700)'; btnCv.style.color = '#fff'; }
+    if (btnMan) { btnMan.style.background = '#FAF3FB'; btnMan.style.color = 'var(--purple-900)'; }
+  }
+}
+
+function applyParsedFields(parsed, fileName, base64Data, engine) {
+  var count = 0;
+
+  function setVal(id, v) {
+    if (!v) return;
+    var el = document.getElementById(id);
+    if (el) {
+      el.value = v;
+      count++;
+    }
+  }
+
+  function setSelectVal(id, v) {
+    if (!v) return; // RÈGLE ABSOLUE : ne pas remplir si vide ou non trouvé !
+    var el = document.getElementById(id);
+    if (!el || !el.options) return;
+    var valLower = String(v).toLowerCase().trim();
+
+    // 1. Correspondance exacte valeur ou texte
+    for (var i = 0; i < el.options.length; i++) {
+      var opt = el.options[i];
+      if (opt.value && (opt.value.toLowerCase() === valLower || opt.text.toLowerCase() === valLower)) {
+        el.selectedIndex = i;
+        count++;
+        return;
+      }
+    }
+    // 2. Correspondance partielle
+    for (var i = 0; i < el.options.length; i++) {
+      var opt = el.options[i];
+      var optVal = (opt.value || "").toLowerCase();
+      var optText = (opt.text || "").toLowerCase();
+      if ((optVal && optVal.indexOf(valLower) !== -1) || (optText && optText.indexOf(valLower) !== -1) ||
+          (valLower.indexOf(optVal) !== -1 && optVal.length > 3) || (optText && valLower.indexOf(optText) !== -1 && optText.length > 3)) {
+        el.selectedIndex = i;
+        count++;
+        return;
+      }
+    }
+    // 3. Mots clés (ex: Semlalia -> FSSM, FST -> FST Guéliz, etc.)
+    var words = valLower.split(/[\s,()\/&-]+/).filter(function(w){ return w.length > 2; });
+    for (var i = 0; i < el.options.length; i++) {
+      var optText = el.options[i].text.toLowerCase();
+      for (var k = 0; k < words.length; k++) {
+        if (optText.indexOf(words[k]) !== -1) {
+          el.selectedIndex = i;
+          count++;
+          return;
+        }
+      }
+    }
+    // RÈGLE ABSOLUE : Si aucune correspondance fiable n'existe, on laisse le champ vide pour sélection manuelle !
+  }
+
+  // 1. État Civil & Coordonnées
+  setVal('reg-nomfamille', parsed.nomfamille || '');
+  setVal('reg-prenom', parsed.prenom || '');
+  setVal('reg-naissance', parsed.naissance || '');
+  setVal('reg-cin', parsed.cin || '');
+  setSelectVal('reg-ville', parsed.ville || '');
+  setVal('reg-adresse', parsed.adresse || '');
+  setVal('reg-email', parsed.email || '');
+  setVal('reg-tel', parsed.tel || parsed.telephone || '');
+
+  // 2. Formation & Diplômes Universitaires (UCA)
+  setSelectVal('reg-etablissement', parsed.etablissement || '');
+  setSelectVal('reg-niveau', parsed.niveau || '');
+  setVal('reg-filiere', parsed.filiere || parsed.specialite || '');
+  if (parsed.anneeDiplome || parsed.annee) {
+    setSelectVal('reg-annee', String(parsed.anneeDiplome || parsed.annee));
+  }
+  setVal('reg-autresdiplomes', parsed.autresDiplomes || '');
+
+  // 3. Expérience, Compétences & Langues
+  if (parsed.experience) {
+    setSelectVal('reg-experience', parsed.experience);
+  }
+  setVal('reg-exp-poste', parsed.expPoste || '');
+  setVal('reg-competences', parsed.competences || '');
+  if (parsed.langFr) setSelectVal('reg-lang-fr', parsed.langFr);
+  if (parsed.langEn) setSelectVal('reg-lang-en', parsed.langEn);
+  setVal('reg-objectif', parsed.objectif || '');
+
+  // Champs cachés d'enrichissement
+  setVal('reg-lang-ar', parsed.langAr || '');
+  setVal('reg-lang-autres', parsed.langues || '');
+  setVal('reg-exp-entreprise', parsed.expEntreprise || '');
+  setVal('reg-exp-debut', parsed.expDebut || '');
+  setVal('reg-exp-fin', parsed.expFin || '');
+  setVal('reg-expdetail', parsed.experienceDetail || parsed.expPoste || '');
+
+  window._cvUrl = base64Data;
+  window._cvName = fileName;
+  window._cvOcrText = parsed.experienceDetail || parsed.competences || '';
+
+  // Affichage de la bannière obligatoire de vérification (Point 11)
+  var notice = document.getElementById('cvReviewNotice');
+  if (notice) notice.style.display = 'block';
+
+  return count;
+}
+
+async function analyserCV() {
+  var input = document.getElementById('reg-cv');
+  var status = document.getElementById('cvStatus');
+  var btn = document.getElementById('cvAnalyseBtn');
+  if (!input || !input.files || !input.files[0]) {
+    alert(L('يرجى اختيار ملف السيرة الذاتية أولاً', 'Veuillez sélectionner votre fichier CV.'));
+    return;
+  }
+  var file = input.files[0];
+  if (btn) btn.disabled = true;
+
+  // Étape 1 : Importation du CV...
+  status.style.color = '#7E1F78';
+  status.innerHTML = '📥 <strong>' + L('جاري استيراد السيرة الذاتية...', 'Importation du CV...') + '</strong>';
+
+  var reader = new FileReader();
+  reader.onerror = function() {
+    status.style.color = '#DC2626';
+    status.innerHTML = '⚠️ <strong>' + L('تعذر قراءة محتوى السيرة الذاتية. يرجى التحقق من الملف أو استيراد سيرة أخرى.', 'Impossible de lire le contenu du CV. Veuillez vérifier le fichier ou importer un autre CV.') + '</strong>';
+    if (btn) btn.disabled = false;
+  };
+
+  reader.onload = async function(e) {
+    var base64Data = e.target.result;
+
+    // Étape 2 : Lecture du CV...
+    status.style.color = '#7E1F78';
+    status.innerHTML = '📖 <strong>' + L('جاري قراءة السيرة الذاتية...', 'Lecture du CV...') + '</strong>';
+
+    try {
+      // Petite pause visuelle pour afficher l'étape de lecture
+      await new Promise(function(resolve) { setTimeout(resolve, 350); });
+
+      // Étape 3 : Analyse du CV...
+      status.innerHTML = '🤖 <strong>' + L('جاري تحليل السيرة الذاتية بالذكاء الاصطناعي...', 'Analyse du CV...') + '</strong>';
+
+      var res = await fetch('/api/cv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: file.name,
+          fileBase64: base64Data,
+          mimeType: file.type || ''
+        })
+      });
+
+      var data = await res.json().catch(function(){ return {}; });
+
+      if (res.ok && data && data.success && data.fields) {
+        var parsed = data.fields || data.parsed || {};
+        var filled = applyParsedFields(parsed, file.name, base64Data, data.engine || 'Mistral / Gemini');
+        // Étape 4 : Informations extraites. Veuillez vérifier votre profil.
+        status.style.color = '#166534';
+        status.innerHTML = '✅ <strong>' + L('تم استخراج المعلومات. يرجى مراجعة وتأكيد ملفكم الشخصي.', 'Informations extraites. Veuillez vérifier votre profil.') + '</strong> (' + filled + ' champs renseignés)';
+      } else {
+        // En cas d'erreur ou d'échec d'extraction de contenu réel
+        status.style.color = '#DC2626';
+        var errMsg = (data && data.error) ? data.error : L('تعذر قراءة محتوى السيرة الذاتية. يرجى التحقق من الملف أو استيراد سيرة أخرى.', 'Impossible de lire le contenu du CV. Veuillez vérifier le fichier ou importer un autre CV.');
+        status.innerHTML = '⚠️ <strong>' + errMsg + '</strong>';
+      }
+    } catch(err) {
+      console.warn('Erreur analyse CV:', err);
+      status.style.color = '#DC2626';
+      status.innerHTML = '⚠️ <strong>' + L('تعذر قراءة محتوى السيرة الذاتية. يرجى التحقق من الملف أو استيراد سيرة أخرى.', 'Impossible de lire le contenu du CV. Veuillez vérifier le fichier ou importer un autre CV.') + '</strong>';
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function handleRegistrationSubmit(e) {
+  if (e) e.preventDefault();
+  var prenom = document.getElementById('reg-prenom').value.trim();
+  var nomfamille = document.getElementById('reg-nomfamille').value.trim();
+  var naissance = document.getElementById('reg-naissance').value;
+  var password = document.getElementById('reg-password').value;
+  var err = document.getElementById('reg-err');
+  var btn = document.getElementById('regSubmitBtn');
+
+  var p = {
+    prenom: prenom,
+    nomfamille: nomfamille,
+    nom: (prenom + ' ' + nomfamille).trim(),
+    naissance: naissance,
+    age: ageFromBirthdate(naissance),
+    cin: document.getElementById('reg-cin').value.trim().toUpperCase(),
+    ville: document.getElementById('reg-ville').value,
+    adresse: document.getElementById('reg-adresse').value.trim(),
+    cvUrl: window._cvUrl || '',
+    cvName: window._cvName || '',
+    cvOcrText: window._cvOcrText || '',
+    email: document.getElementById('reg-email').value.trim().toLowerCase(),
+    tel: document.getElementById('reg-tel').value.trim(),
+    niveau: document.getElementById('reg-niveau').value,
+    etablissement: document.getElementById('reg-etablissement').value,
+    anneeDiplome: document.getElementById('reg-annee').value,
+    filiere: document.getElementById('reg-filiere').value.trim(),
+    autresDiplomes: document.getElementById('reg-autresdiplomes').value.trim(),
+    experience: document.getElementById('reg-experience').value,
+    expPoste: document.getElementById('reg-exp-poste').value.trim(),
+    langues: [
+      document.getElementById('reg-lang-fr').value ? 'Français : ' + document.getElementById('reg-lang-fr').value : '',
+      document.getElementById('reg-lang-en').value ? 'Anglais : ' + document.getElementById('reg-lang-en').value : '',
+      document.getElementById('reg-lang-ar').value ? 'Arabe : ' + document.getElementById('reg-lang-ar').value : '',
+      document.getElementById('reg-lang-autres').value
+    ].filter(Boolean).join(' · '),
+    competences: document.getElementById('reg-competences').value.trim(),
+    objectif: document.getElementById('reg-objectif').value.trim(),
+    statutParcours: 'diagnostic_en_attente',
+    fiabilise: false,
+    passhash: simpleHash(password),
+    consentementDonnees: true,
+    consentementUcaAnapec: true,
+    consentementDate: new Date().toISOString()
+  };
+
+  if (!prenom || !nomfamille || !naissance || !p.cin || !p.ville || !p.adresse || !p.email || !password || !p.niveau || !p.etablissement || !p.filiere) {
+    err.textContent = L('يرجى ملء الحقول الإجبارية (*)', 'Veuillez remplir tous les champs obligatoires (*)');
+    return;
+  }
+  if (password.length < 4) {
+    err.textContent = L('كلمة المرور يجب أن تتضمن 4 أحرف على الأقل', 'Le mot de passe doit contenir au moins 4 caractères.');
+    return;
+  }
+  var consent = document.getElementById('reg-consent-cgu');
+  if (!consent || !consent.checked) {
+    err.textContent = L('يرجى الموافقة على شروط الاستخدام ومعالجة البيانات (*)', 'Veuillez accepter les conditions d\'utilisation et le traitement des données (*)');
+    return;
+  }
+
+  err.style.color = '#7E1F78';
+  err.textContent = L('جاري إنشاء فضائكم الشخصي...', 'Création de votre espace en cours...');
+  if (btn) btn.disabled = true;
+
+  try {
+    // Save to local profils
+    var profils = dbGet('profils');
+    var existingIdx = profils.findIndex(function(x){ return (x.email || '').toLowerCase() === p.email; });
+    var record = Object.assign({}, p, { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    if (existingIdx >= 0) { profils[existingIdx] = record; } else { profils.push(record); }
+    dbSet('profils', profils);
+
+    // Sync to backend API
+    try {
+      await fetch('/api/profils', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(record)
+      });
+    } catch(apiErr){}
+
+    // WhatsApp welcome notification
+    if (p.tel) {
+      try {
+        fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: p.tel, type: 'welcome_registration', data: { nom: p.nom } })
+        }).catch(function(){});
+      } catch(notifErr){}
+    }
+
+    localStorage.setItem('dabanet_session', p.email);
+    err.style.color = '#166534';
+    err.textContent = L('تم إنشاء فضائكم بنجاح ! جاري توجيهكم...', 'Votre espace lauréat a été créé avec succès ! Redirection...');
+
+    setTimeout(function() {
+      location.href = '/espace';
+    }, 500);
+
+  } catch(error) {
+    err.style.color = '#dc2626';
+    err.textContent = L('حدث خطأ أثناء التسجيل، يرجى المحاولة ثانية', 'Une erreur est survenue lors de l\'inscription.');
+    if (btn) btn.disabled = false;
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,3311 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<meta name="theme-color" content="#3A0F45">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" href="/assets/logo_pal_uca.png">
+<title>PAL-UCA — Back Office Conseiller & Université</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/backoffice.css">
+<style>
+ :root{
+   --purple-900:#3A0F45; --purple-800:#4F1359; --purple-700:#7E1F78; --purple-600:#9C2484;
+   --purple-200:#EFD9F0; --purple-100:#FAF3FB;
+   --gold-700:#B36C00; --gold-600:#D88400;
+   --green:#166534; --green-light:#DCFCE7;
+   --red:#dc2626; --red-light:#FEE2E2;
+   --ink:#2A1733; --muted:#7C6B82; --border:#E8DEEC;
+ }
+ *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+ body{
+   font-family:'Tajawal',sans-serif;
+   background:linear-gradient(180deg,#FAF3FB,#fff 300px);
+   color:var(--ink);
+   min-height:100vh;
+   padding-bottom:env(safe-area-inset-bottom);
+ }
+ h1,h2,h3,h4,h5{ font-family:'Cairo',sans-serif; }
+
+ /* ─── Login ─── */
+ .login-wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; background:radial-gradient(circle at top, #4F1359 0%, #3A0F45 60%, #200527 100%); }
+ .login-card{ background:#fff; border-radius:20px; padding:36px 30px; max-width:420px; width:100%; box-shadow:0 12px 40px rgba(0,0,0,0.3); text-align:center; }
+ .login-card h1{ font-size:1.6rem; color:var(--purple-900); margin-bottom:6px; }
+ .login-card h1 span{ color:var(--gold-600); }
+ .login-card p.sub{ color:var(--muted); font-size:0.86rem; margin-bottom:24px; line-height:1.4; }
+ .login-card input{ width:100%; padding:13px 14px; border:1.5px solid var(--border); border-radius:12px; font-size:0.95rem; font-family:inherit; margin-bottom:12px; outline:none; transition:border .2s; min-height:48px; }
+ .login-card input:focus{ border-color:var(--purple-700); }
+ .btn-login{ width:100%; padding:13px; background:linear-gradient(135deg,var(--purple-700),var(--purple-800)); color:#fff; border:none; border-radius:12px; font-family:'Cairo',sans-serif; font-weight:800; font-size:1.02rem; cursor:pointer; min-height:48px; transition:transform .15s, opacity .15s; }
+ .btn-login:hover{ opacity:0.94; transform:translateY(-1px); }
+ .login-err{ color:var(--red); font-size:0.84rem; margin-top:10px; min-height:20px; font-weight:700; }
+ .demo-hint{ margin-top:20px; padding:12px; background:var(--purple-100); border-radius:10px; font-size:0.78rem; color:var(--purple-800); text-align:left; line-height:1.5; border:1px solid var(--purple-200); }
+ .demo-hint code{ background:#fff; padding:2px 6px; border-radius:4px; font-weight:700; color:var(--purple-900); border:1px solid var(--border); }
+
+ /* ─── Topbar ─── */
+ .topbar{ background:var(--purple-900); color:#fff; padding:12px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; border-bottom:2px solid rgba(216,132,0,0.5); }
+ .topbar .brand{ font-family:'Cairo',sans-serif; font-size:1.15rem; font-weight:800; display:flex; align-items:center; gap:8px; }
+ .topbar .brand span{ color:var(--gold-600); font-size:0.9rem; font-weight:600; }
+ .topbar-actions{ display:flex; align-items:center; gap:8px; }
+ .topbar button{ background:rgba(255,255,255,0.12); color:#fff; border:none; border-radius:8px; padding:8px 13px; font-size:0.82rem; cursor:pointer; font-family:inherit; font-weight:600; transition:background .15s; min-height:38px; }
+ .topbar button:hover{ background:rgba(255,255,255,0.22); }
+ .mobile-menu-btn{ display:none; background:rgba(255,255,255,0.15); color:#fff; border:none; border-radius:8px; width:40px; height:40px; font-size:1.2rem; cursor:pointer; align-items:center; justify-content:center; }
+
+ /* ─── Dashboard Container ─── */
+ .dash{ display:none; }
+ .container{ max-width:1200px; margin:0 auto; padding:20px 18px 80px; }
+
+ /* ─── Stats ─── */
+ .stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:20px; }
+ .stat{ background:#fff; border:1px solid var(--border); border-radius:14px; padding:14px 16px; box-shadow:0 3px 12px rgba(58,15,69,0.05); }
+ .stat .n{ font-family:'Cairo',sans-serif; font-size:1.7rem; font-weight:800; color:var(--purple-800); line-height:1.1; margin-bottom:2px; }
+ .stat .l{ font-size:0.78rem; color:var(--muted); font-weight:600; }
+
+ /* ─── Tabs ─── */
+ .tabs{ display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+ .tab{ background:#fff; border:1.5px solid var(--border); border-radius:10px; padding:9px 16px; font-weight:700; font-size:0.86rem; cursor:pointer; color:var(--muted); transition:all .15s; min-height:40px; }
+ .tab.active{ background:var(--purple-700); border-color:var(--purple-700); color:#fff; }
+ .tab:hover:not(.active){ background:var(--purple-100); color:var(--purple-800); }
+ .panel{ display:none; }
+ .panel.active{ display:block; }
+
+ /* ─── Card & Tables ─── */
+ .card{ background:#fff; border:1px solid var(--border); border-radius:16px; padding:20px 22px; box-shadow:0 4px 16px rgba(58,15,69,0.05); margin-bottom:20px; }
+ .card h3{ color:var(--purple-900); font-size:1.05rem; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+ 
+ .table-wrap{ width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+ table{ width:100%; border-collapse:collapse; font-size:0.86rem; }
+ th, td{ padding:11px 12px; text-align:left; border-bottom:1px solid var(--border); vertical-align:middle; }
+ th{ background:var(--purple-100); color:var(--purple-900); font-family:'Cairo',sans-serif; font-weight:700; font-size:0.82rem; }
+ tr:hover td{ background:#FCF8FD; }
+
+ /* ─── Badges & Buttons ─── */
+ .badge{ display:inline-block; padding:3px 9px; border-radius:999px; font-size:0.74rem; font-weight:700; white-space:nowrap; }
+ .badge.accepted{ background:var(--green-light); color:var(--green); }
+ .badge.refused{ background:var(--red-light); color:var(--red); }
+ .badge.pending{ background:#FEF3C7; color:#92400E; }
+ .badge.fiabilise{ background:#E0E7FF; color:#3730A3; }
+
+ .act{ border:none; border-radius:8px; padding:7px 12px; font-size:0.78rem; font-weight:700; cursor:pointer; margin-right:4px; margin-bottom:4px; font-family:inherit; transition:opacity .15s; min-height:36px; display:inline-flex; align-items:center; justify-content:center; gap:4px; }
+ .act:hover{ opacity:0.85; }
+ .act.ok{ background:var(--green); color:#fff; }
+ .act.no{ background:#fff; color:var(--red); border:1.5px solid var(--red); }
+ .act.del{ background:#fff; color:var(--purple-800); border:1.5px solid var(--border); }
+ .act.trash{ background:var(--red-light); color:var(--red); border:1.5px solid #FCA5A5; }
+ .act.trash:hover{ background:var(--red); color:#fff; border-color:var(--red); }
+ .act.presc{ background:linear-gradient(135deg,var(--gold-600),var(--gold-700)); color:#fff; }
+
+ /* ─── Forms ─── */
+ .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px 14px; }
+ .form-grid .full{ grid-column:span 2; }
+ .form-grid label{ font-size:0.8rem; font-weight:700; color:var(--purple-800); display:block; margin-bottom:4px; }
+ .form-grid input, .form-grid select, .form-grid textarea{ width:100%; padding:11px 12px; border:1.5px solid var(--border); border-radius:10px; font-size:0.9rem; font-family:inherit; outline:none; background:#fff; min-height:44px; }
+ .form-grid input:focus, .form-grid select:focus, .form-grid textarea:focus{ border-color:var(--purple-700); }
+ .btn-add{ margin-top:14px; padding:12px 22px; background:linear-gradient(135deg,var(--purple-700),var(--purple-800)); color:#fff; border:none; border-radius:10px; font-family:'Cairo',sans-serif; font-weight:800; font-size:0.9rem; cursor:pointer; min-height:44px; width:auto; }
+ .empty{ text-align:center; color:var(--muted); padding:30px 0; font-size:0.9rem; }
+ .score-pill{ font-weight:800; color:var(--purple-800); background:var(--purple-100); padding:3px 8px; border-radius:6px; font-size:0.8rem; }
+
+ /* ─── Modal ─── */
+ .modal-overlay{ display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(42,23,51,0.65); z-index:1000; align-items:center; justify-content:center; padding:16px; backdrop-filter:blur(3px); }
+ .modal-card{ background:#fff; border-radius:18px; max-width:680px; width:100%; max-height:90vh; overflow-y:auto; padding:24px; box-shadow:0 12px 40px rgba(0,0,0,0.3); position:relative; }
+ .modal-close{ position:absolute; top:16px; right:16px; background:var(--purple-100); border:none; border-radius:50%; width:36px; height:36px; font-weight:800; color:var(--purple-900); cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; }
+ .modal-head{ border-bottom:1.5px solid var(--border); padding-bottom:12px; margin-bottom:16px; padding-right:40px; }
+ .modal-head h2{ color:var(--purple-900); font-size:1.25rem; }
+ .modal-body{ font-size:0.9rem; line-height:1.6; }
+ .modal-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+ .modal-field{ background:var(--purple-100); padding:9px 12px; border-radius:10px; }
+ .modal-field small{ display:block; color:var(--muted); font-size:0.72rem; font-weight:700; }
+ .modal-field b{ color:var(--purple-900); font-size:0.86rem; word-break:break-word; }
+
+ /* ─── Mobile Bottom Navigation Bar ─── */
+ .mobile-bottom-nav{
+   display:none;
+   position:fixed;
+   bottom:0;
+   left:0;
+   right:0;
+   background:#fff;
+   border-top:1.5px solid var(--border);
+   box-shadow:0 -4px 18px rgba(58,15,69,0.09);
+   z-index:900;
+   height:64px;
+   padding-bottom:env(safe-area-inset-bottom);
+   justify-content:space-around;
+   align-items:center;
+ }
+ .m-nav-item{
+   flex:1;
+   background:none;
+   border:none;
+   outline:none;
+   display:flex;
+   flex-direction:column;
+   align-items:center;
+   justify-content:center;
+   padding:6px 0;
+   color:var(--muted);
+   cursor:pointer;
+   font-family:inherit;
+   position:relative;
+   height:100%;
+   transition:color .15s;
+ }
+ .m-nav-item.active{
+   color:var(--purple-700);
+   font-weight:700;
+ }
+ .m-nav-item .m-icon{
+   font-size:1.25rem;
+   line-height:1.2;
+   margin-bottom:2px;
+ }
+ .m-nav-item .m-label{
+   font-size:0.68rem;
+   white-space:nowrap;
+ }
+ .m-nav-badge{
+   position:absolute;
+   top:4px;
+   right:calc(50% - 16px);
+   background:var(--red);
+   color:#fff;
+   font-size:0.62rem;
+   font-weight:800;
+   padding:1px 5px;
+   border-radius:999px;
+   min-width:14px;
+   text-align:center;
+ }
+
+ /* ─── Mobile Drawer Sheet ─── */
+ .mobile-drawer{
+   display:none;
+   position:fixed;
+   bottom:0;
+   left:0;
+   right:0;
+   background:#fff;
+   border-radius:22px 22px 0 0;
+   box-shadow:0 -8px 30px rgba(0,0,0,0.25);
+   z-index:1100;
+   padding:20px 20px calc(24px + env(safe-area-inset-bottom));
+   transform:translateY(100%);
+   transition:transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+ }
+ .mobile-drawer.open{
+   transform:translateY(0);
+ }
+ .drawer-handle{
+   width:44px;
+   height:5px;
+   background:#D5CAD8;
+   border-radius:3px;
+   margin:0 auto 16px;
+ }
+ .drawer-item{
+   display:flex;
+   align-items:center;
+   gap:12px;
+   width:100%;
+   padding:13px 14px;
+   background:var(--purple-100);
+   border:none;
+   border-radius:12px;
+   margin-bottom:10px;
+   font-size:0.92rem;
+   font-weight:700;
+   color:var(--purple-900);
+   cursor:pointer;
+   font-family:inherit;
+   text-align:left;
+ }
+ .drawer-item:hover{
+   background:#EAD9ED;
+ }
+
+ /* ─── Responsive Media Queries (Mobile Phone) ─── */
+ @media(max-width:768px){
+   body{ padding-bottom:74px; }
+   .topbar{ padding:10px 14px; }
+   .topbar-actions{ display:none; }
+   .mobile-menu-btn{ display:flex; }
+   .mobile-bottom-nav{ display:flex; }
+   .container{ padding:14px 12px 70px; }
+
+   /* Tabs become horizontally scrollable pill track */
+   .tabs{
+     display:flex;
+     overflow-x:auto;
+     flex-wrap:nowrap;
+     white-space:nowrap;
+     -webkit-overflow-scrolling:touch;
+     padding-bottom:6px;
+     gap:6px;
+     margin-bottom:14px;
+   }
+   .tabs::-webkit-scrollbar{ display:none; }
+   .tab{ flex:0 0 auto; padding:8px 14px; font-size:0.82rem; }
+
+   /* Forms */
+   .form-grid{ grid-template-columns:1fr; }
+   .form-grid .full{ grid-column:span 1; }
+   .btn-add{ width:100%; }
+
+   /* Responsive Card Layout for Tables */
+   .resp-table thead{ display:none; }
+   .resp-table, .resp-table tbody, .resp-table tr, .resp-table td{ display:block; width:100%; }
+   .resp-table tr{
+     background:#fff;
+     border:1.5px solid var(--border);
+     border-radius:14px;
+     padding:14px 16px;
+     margin-bottom:12px;
+     box-shadow:0 3px 10px rgba(58,15,69,0.05);
+   }
+   .resp-table td{
+     padding:7px 0;
+     border-bottom:1px dashed #F0E6F2;
+     display:flex;
+     justify-content:space-between;
+     align-items:center;
+     font-size:0.86rem;
+   }
+   .resp-table td:last-child{
+     border-bottom:none;
+     padding-top:12px;
+     display:flex;
+     flex-wrap:wrap;
+     gap:8px;
+     justify-content:stretch;
+   }
+   .resp-table td::before{
+     content:attr(data-label);
+     font-weight:700;
+     color:var(--purple-900);
+     font-size:0.8rem;
+     margin-right:8px;
+     flex-shrink:0;
+   }
+   .resp-table td:last-child::before{ display:none; }
+   .resp-table td:last-child .act{
+     flex:1 1 calc(50% - 6px);
+     min-height:44px;
+     font-size:0.82rem;
+     text-align:center;
+   }
+
+   /* Modal as Bottom Sheet on Mobile */
+   .modal-overlay{ align-items:flex-end; padding:0; }
+   .modal-card{
+     max-height:86vh;
+     border-radius:22px 22px 0 0;
+     padding:20px 18px calc(24px + env(safe-area-inset-bottom));
+     width:100%;
+   }
+   .modal-grid{ grid-template-columns:1fr; }
+ }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN VIEW ═══════════ -->
+<div class="login-wrap" id="loginView">
+  <div class="login-card">
+    <img src="/assets/logo_pal_uca.png" alt="PAL-UCA" style="height:48px;width:auto;margin:0 auto 14px;display:block;">
+    <h1>PAL-UCA <span>Back Office</span></h1>
+    <p class="sub">Plateforme d'Accompagnement des Lauréats<br>Espace d'administration réservé aux conseillers et universités</p>
+
+    <input id="loginUser" type="text" placeholder="Nom d'utilisateur" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
+    <input id="loginPass" type="password" placeholder="Mot de passe" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-login" id="btnLogin" onclick="doLogin()">Se connecter</button>
+    <div class="login-err" id="loginErr"></div>
+
+    <div class="demo-hint">
+      <b>Comptes disponibles :</b><br>
+      • Conseiller ANAPEC : <code>conseiller</code> / <code>anapec2026</code><br>
+      • Université UCA : <code>universite</code> / <code>univ2026</code>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ DASHBOARD CONSEILLER ═══════════ -->
+<div class="dash" id="dashConseiller">
+  <!-- ═══ En-tête Institutionnel PAL-UCA & Navigation Horizontale ═══ -->
+  <header class="anapec-header">
+    <div class="anapec-header-top">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="color:var(--anapec-muted);font-weight:600;">Ministère de l'Enseignement Supérieur, de la Recherche Scientifique et de l'Innovation &amp; ANAPEC</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span style="font-weight:700;color:var(--anapec-purple-dark);">Conseiller ANAPEC · UCA Marrakech</span>
+        <button onclick="location.href='/'" style="background:none;border:none;color:var(--anapec-purple);font-weight:700;cursor:pointer;font-size:0.8rem;">Portail Public</button>
+        <button onclick="logout()" style="background:#FEE2E2;color:#DC2626;border:none;padding:3px 10px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.8rem;">Déconnexion</button>
+      </div>
+    </div>
+
+    <div class="anapec-nav-container">
+      <!-- Logo officiel et identité institutionnelle -->
+      <a href="#dashboard" class="anapec-logo-area" onclick="navToSection('cDashboard'); return false;" style="display:flex;align-items:center;gap:14px;text-decoration:none;">
+        <div style="background:#FFFFFF;border:1.5px solid #CBD5E1;border-radius:10px;padding:4px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(0,0,0,0.05);width:52px;height:52px;flex-shrink:0;">
+          <img src="/assets/logo_pal_uca.png" alt="PAL-UCA" style="max-height:44px;max-width:44px;object-fit:contain;display:block;">
+        </div>
+        <div class="anapec-logo-text" style="display:flex;flex-direction:column;justify-content:center;">
+          <h1 style="font-size:1.08rem;font-weight:800;color:#0F172A;letter-spacing:0.2px;margin:0;line-height:1.2;">PAL-UCA</h1>
+          <span style="font-size:0.75rem;color:#0369A1;font-weight:700;letter-spacing:0.2px;margin-top:1px;">Pôle d'Accompagnement des Lauréats</span>
+        </div>
+      </a>
+
+      <!-- 5 Menus Principaux Cliquables Directement (Design Institutionnel Épuré, Sans Icônes) -->
+      <nav class="anapec-nav">
+        <!-- MENU 1 — TABLEAU DE BORD -->
+        <button type="button" class="nav-link-btn active" id="navBtnDashboard" onclick="navToSection('cDashboard')">
+          TABLEAU DE BORD
+        </button>
+
+        <!-- MENU 2 — LAURÉATS -->
+        <div class="nav-item-dropdown">
+          <button type="button" class="nav-link-btn" id="navBtnChercheurs" onclick="navToSection('cLauréats')">
+            LAURÉATS
+          </button>
+          <div class="dropdown-menu">
+            <button type="button" class="dropdown-item" onclick="navToSection('cLauréats')">
+              <div><b>Liste des chercheurs</b><br><small style="color:var(--anapec-muted);font-weight:400;">Recherche CIN, nom, statut</small></div>
+            </button>
+            <button type="button" class="dropdown-item" onclick="navToSection('cModifProfil')">
+              <div><b>Modification du profil</b><br><small style="color:var(--anapec-muted);font-weight:400;">Recherche candidat par CIN, nom, prénom</small></div>
+            </button>
+            <button type="button" class="dropdown-item" onclick="navToSection('cHistoProfil')">
+              <div><b>Historique du profil</b><br><small style="color:var(--anapec-muted);font-weight:400;">Traçabilité chronologique des modifications</small></div>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item" onclick="navToSection('cInsc')">
+              <div><b>Inscriptions aux ateliers</b><br><small style="color:var(--anapec-muted);font-weight:400;">Présences &amp; suivi</small></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- MENU 3 — PRESTATIONS -->
+        <div class="nav-item-dropdown">
+          <button type="button" class="nav-link-btn" id="navBtnPrestations" onclick="navToSection('cPrestations')">
+            PRESTATIONS &amp; RDV
+          </button>
+          <div class="dropdown-menu">
+            <button type="button" class="dropdown-item" onclick="navToSection('cPrestations')">
+              <div><b>Catalogue des prestations</b><br><small style="color:var(--anapec-muted);font-weight:400;">Services d'accompagnement</small></div>
+            </button>
+            <button type="button" class="dropdown-item" onclick="navToSection('cCreneaux')">
+              <div><b>Gestion des créneaux</b><br><small style="color:var(--anapec-muted);font-weight:400;">Disponibilités conseillers</small></div>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item" onclick="navToSection('cRdvs', 'pending')">
+              <div><b>Rendez-vous en attente</b></div>
+            </button>
+            <button type="button" class="dropdown-item" onclick="navToSection('cRdvs', 'accepted')">
+              <div><b>Rendez-vous acceptés</b></div>
+            </button>
+            <button type="button" class="dropdown-item" onclick="navToSection('cRdvs')">
+              <div><b>Tous les rendez-vous</b></div>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item" onclick="navToSection('cAteliers')">
+              <div><b>Ateliers</b><br><small style="color:var(--anapec-muted);font-weight:400;">Sessions collectives</small></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- MENU 4 — ÉVÉNEMENTS & PUBLICATIONS -->
+        <div class="nav-item-dropdown">
+          <button type="button" class="nav-link-btn" id="navBtnEvenements" onclick="navToSection('cEvenements')">
+            ÉVÉNEMENTS &amp; PUBLICATIONS
+          </button>
+          <div class="dropdown-menu">
+            <button type="button" class="dropdown-item" onclick="navToSection('cEvenements')">
+              <div><b>Gestion des événements</b><br><small style="color:var(--anapec-muted);font-weight:400;">Salons &amp; rencontres</small></div>
+            </button>
+            <button type="button" class="dropdown-item" onclick="navToSection('cBanners')">
+              <div><b>Gestion des bannières</b><br><small style="color:var(--anapec-muted);font-weight:400;">Affiches portail d'accueil</small></div>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item" onclick="navToSection('cPublications')">
+              <div><b>Publications &amp; Annonces</b><br><small style="color:var(--anapec-muted);font-weight:400;">Actualités officielles</small></div>
+            </button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <div class="backoffice-main">
+    <div class="container" style="max-width:1300px;margin:0 auto;padding:0;">
+      <!-- Panel TABLEAU DE BORD (Simple, Clair, Non Surchargé) -->
+      <div class="panel active" id="cDashboard">
+        <!-- Filtres simples -->
+        <div class="bi-filter-bar" style="margin-bottom:20px;padding:12px 18px;">
+          <div class="bi-filter-title" style="font-size:0.9rem;">
+            FILTRES DU DASHBOARD
+          </div>
+          <div class="bi-filter-item">
+            <label>Période</label>
+            <select id="biPeriode" onchange="updateBiDashboard()">
+              <option value="month" selected>Ce mois-ci</option>
+              <option value="year">Cette année</option>
+              <option value="all">Toutes périodes</option>
+            </select>
+          </div>
+          <div class="bi-filter-item">
+            <label>Filière</label>
+            <select id="biFiliere" onchange="updateBiDashboard()">
+              <option value="all">Toutes filières</option>
+              <option value="Sciences">Sciences & Techniques</option>
+              <option value="Économie">Économie & Gestion</option>
+              <option value="Droit">Droit & Sciences Juridiques</option>
+              <option value="Lettres">Lettres & Sc. Humaines</option>
+              <option value="Ingénierie">Ingénierie & TIC</option>
+              <option value="Médecine">Médecine & Pharmacie</option>
+            </select>
+          </div>
+          <div class="bi-filter-item">
+            <label>Sexe</label>
+            <select id="biSexe" onchange="updateBiDashboard()">
+              <option value="all">Tous sexes</option>
+              <option value="Homme">Hommes</option>
+              <option value="Femme">Femmes</option>
+            </select>
+          </div>
+          <div class="bi-filter-item">
+            <label>Zone territoriale</label>
+            <select id="biZone" onchange="updateBiDashboard()">
+              <option value="all">Toutes zones</option>
+              <option value="Urbain">Zone Urbaine</option>
+              <option value="Rural">Zone Rurale</option>
+            </select>
+          </div>
+          <div style="margin-left:auto;">
+            <button class="act del" onclick="resetBiFilters()" style="margin:0;padding:6px 14px;font-size:0.82rem;">Réinitialiser</button>
+          </div>
+        </div>
+
+        <!-- 6 Indicateurs Essentiels & Clairs -->
+        <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px;">
+          <!-- 1. Total Inscrits -->
+          <div class="kpi-card" onclick="navToSection('cLauréats')" style="cursor:pointer;border-left-color:var(--anapec-purple);">
+            <div>
+              <div class="kpi-val" id="kpiTotalChercheurs">0</div>
+              <div class="kpi-label">TOTAL INSCRITS</div>
+              <div style="font-size:0.75rem;color:#16A34A;font-weight:700;margin-top:3px;">+18% ce mois</div>
+            </div>
+          </div>
+
+          <!-- 2. Nouveaux Inscrits -->
+          <div class="kpi-card blue" onclick="navToSection('cLauréats')" style="cursor:pointer;border-left-color:#2563EB;">
+            <div>
+              <div class="kpi-val" id="kpiNouveauxChercheurs">0</div>
+              <div class="kpi-label">NOUVEAUX INSCRITS</div>
+              <div style="font-size:0.75rem;color:#2563EB;font-weight:700;margin-top:3px;">Activité récente</div>
+            </div>
+          </div>
+
+          <!-- 3. Parité Hommes / Femmes -->
+          <div class="kpi-card" style="border-left-color:#8B5CF6;">
+            <div>
+              <div class="kpi-val"><span id="kpiHommes">0</span> / <span id="kpiFemmes">0</span></div>
+              <div class="kpi-label">HOMMES / FEMMES</div>
+              <div style="font-size:0.75rem;color:var(--muted);font-weight:700;margin-top:3px;"><span id="kpiHommesPct">50%</span> H · <span id="kpiFemmesPct">50%</span> F</div>
+            </div>
+          </div>
+
+          <!-- 4. Répartition Urbain / Rural -->
+          <div class="kpi-card" style="border-left-color:#10B981;">
+            <div>
+              <div class="kpi-val"><span id="kpiUrbain">0</span> / <span id="kpiRural">0</span></div>
+              <div class="kpi-label">URBAIN / RURAL</div>
+              <div style="font-size:0.75rem;color:var(--muted);font-weight:700;margin-top:3px;">Marrakech & Provinces</div>
+            </div>
+          </div>
+
+          <!-- 5. Rendez-vous -->
+          <div class="kpi-card green" onclick="navToSection('cRdvs')" style="cursor:pointer;border-left-color:#16A34A;">
+            <div>
+              <div class="kpi-val"><span id="kpiRdvAcceptes">0</span> <small style="font-size:0.95rem;color:var(--anapec-gold);">+<span id="kpiRdvAttente">0</span></small></div>
+              <div class="kpi-label">RENDEZ-VOUS (CONFIRMÉS / ATTENTE)</div>
+              <div style="font-size:0.75rem;color:var(--muted);font-weight:700;margin-top:3px;">Total : <span id="kpiTotalRdv">0</span> demandes</div>
+            </div>
+          </div>
+
+          <!-- 6. Prestations & Ateliers -->
+          <div class="kpi-card" onclick="navToSection('cPrestations')" style="cursor:pointer;border-left-color:var(--anapec-gold);">
+            <div>
+              <div class="kpi-val"><span id="kpiPrestations">5</span> / <span id="kpiAteliers">0</span></div>
+              <div class="kpi-label">PRESTATIONS / ATELIERS</div>
+              <div style="font-size:0.75rem;color:var(--muted);font-weight:700;margin-top:3px;">Catalogue actif</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 Graphiques Clairs et Épurés -->
+        <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-bottom:20px;">
+          <!-- Graphique 1 : Évolution des Inscriptions -->
+          <div class="bi-chart-card">
+            <div class="bi-chart-head">
+              <h4 style="font-size:0.92rem;">Évolution des inscriptions dans le temps</h4>
+              <span class="bi-badge-pill bi-badge-purple">Progression 2026</span>
+            </div>
+            <div id="chartEvolutionContainer" style="width:100%;height:220px;position:relative;"></div>
+          </div>
+
+          <!-- Graphique 2 : Répartition Sexe & Territoire -->
+          <div class="bi-chart-card">
+            <div class="bi-chart-head">
+              <h4 style="font-size:0.92rem;">Répartition par Sexe & Territoire</h4>
+              <span class="bi-badge-pill bi-badge-blue">Indicateurs</span>
+            </div>
+            <div id="chartSexeContainer" style="display:flex;align-items:center;justify-content:center;gap:16px;min-height:140px;"></div>
+            <div id="chartTerritoireContainer" style="margin-top:12px;border-top:1px solid var(--anapec-border);padding-top:10px;"></div>
+          </div>
+        </div>
+
+        <!-- Section Activités Récentes (Derniers RDVs & Prochains Événements) -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px;">
+          <!-- Dernières demandes de rendez-vous -->
+          <div class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.96rem;">
+              <span>Dernières demandes de rendez-vous</span>
+              <button class="act ok" onclick="navToSection('cRdvs')" style="font-size:0.78rem;">Consulter les rendez-vous</button>
+            </h3>
+            <div id="cDashboardRecentRdvs"></div>
+          </div>
+          <!-- Prochains événements & Salons -->
+          <div class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.96rem;">
+              <span>Prochains événements &amp; Salons</span>
+              <button class="act ok" onclick="navToSection('cEvenements')" style="font-size:0.78rem;">Consulter les événements</button>
+            </h3>
+            <div id="cDashboardRecentEvs"></div>
+          </div>
+        </div>
+      </div>
+
+    <!-- Panel Lauréats -->
+    <div class="panel" id="cLauréats">
+      <div class="card">
+        <h3>
+          <span>Lauréats Inscrits &amp; Chercheurs d'Emploi</span>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <input type="text" id="cSearch" placeholder="Recherche nom, prénom, CIN, email..." oninput="renderLauréats()" style="padding:8px 12px;font-size:0.86rem;max-width:240px;width:100%;border-radius:8px;border:1.5px solid var(--border);outline:none;">
+            <select id="cFilterStatus" onchange="renderLauréats()" style="padding:8px 12px;font-size:0.86rem;border-radius:8px;border:1.5px solid var(--border);background:#fff;outline:none;">
+              <option value="all">Tous les statuts</option>
+              <option value="actif">Comptes actifs</option>
+              <option value="inactif">Comptes suspendus</option>
+            </select>
+            <button type="button" class="act ok" onclick="navToSection('cModifProfil')" style="padding:8px 14px;font-size:0.84rem;min-height:36px;">Modifier un profil</button>
+            <button type="button" class="act del" onclick="navToSection('cHistoProfil')" style="padding:8px 14px;font-size:0.84rem;min-height:36px;">Historique des profils</button>
+          </div>
+        </h3>
+        <div id="cLauréatsTable"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Panel MODIFICATION DU PROFIL (Recherche puis Fiche Modifiable) ═══ -->
+    <div class="panel" id="cModifProfil">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+          <div>
+            <h3 style="margin:0;font-size:1.05rem;">Modification du profil chercheur</h3>
+            <p style="margin:4px 0 0;color:var(--muted);font-size:0.84rem;">Recherchez un chercheur d'emploi par CIN, Nom ou Prénom pour charger et modifier ses informations</p>
+          </div>
+          <button type="button" class="act del" onclick="navToSection('cLauréats')" style="font-size:0.84rem;">← Retour à la liste</button>
+        </div>
+
+        <!-- Zone de recherche candidat -->
+        <div style="background:#F8FAFC;border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
+          <label style="font-weight:700;font-size:0.86rem;color:var(--anapec-purple-dark);display:block;margin-bottom:8px;">
+            Recherche du chercheur d'emploi (CIN, Nom ou Prénom) :
+          </label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <input type="text" id="modSearchInput" placeholder="Saisir CIN (ex: TT09090, EE789123), Nom ou Prénom..." style="flex:1;min-width:260px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;outline:none;" oninput="chercherCandidatPourModif()" onkeydown="if(event.key==='Enter')chercherCandidatPourModif()">
+            <button type="button" class="act ok" onclick="chercherCandidatPourModif()" style="padding:10px 18px;font-size:0.86rem;">Rechercher</button>
+            <button type="button" class="act del" onclick="reinitialiserRechercheModif()" style="padding:10px 14px;font-size:0.86rem;">Effacer</button>
+          </div>
+          <!-- Résultats de recherche -->
+          <div id="modSearchResults" style="margin-top:12px;"></div>
+        </div>
+
+        <!-- État initial : message d'attente avant sélection (pas de formulaire vide) -->
+        <div id="modNoSelectionState" style="text-align:center;padding:40px 20px;background:#FAFAFA;border-radius:12px;border:1.5px dashed var(--border);color:var(--muted);">
+          <div style="font-weight:700;font-size:1rem;color:var(--anapec-purple-dark);margin-bottom:6px;">Aucun candidat sélectionné</div>
+          <div style="font-size:0.88rem;max-width:560px;margin:0 auto;line-height:1.5;">Veuillez utiliser la barre de recherche ci-dessus pour trouver un chercheur d'emploi par son <b>CIN</b>, son <b>Nom</b> ou son <b>Prénom</b>. Cliquez ensuite sur <b>Sélectionner</b> pour afficher et modifier ses données réelles.</div>
+        </div>
+
+        <!-- Fiche complète du profil modifiable (affichée uniquement APRÈS sélection) -->
+        <div id="modProfileCard" style="display:none;">
+          <!-- Bandeau récapitulatif -->
+          <div style="background:linear-gradient(135deg,#F1F5F9,#EDE9FE);border:1.5px solid #CBD5E1;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+            <div>
+              <span style="font-size:0.75rem;font-weight:800;text-transform:uppercase;color:#475569;letter-spacing:0.5px;">Candidat sélectionné pour modification</span>
+              <div style="font-weight:800;font-size:1.05rem;color:var(--anapec-purple-dark);" id="modSelectedName">—</div>
+              <div style="font-size:0.84rem;color:#64748B;margin-top:2px;" id="modSelectedMeta">—</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="act del" onclick="navToHistoForCandidate(document.getElementById('modOrigEmail').value)" style="font-size:0.82rem;">Consulter son historique</button>
+              <button type="button" class="act ok" onclick="reinitialiserRechercheModif()" style="font-size:0.82rem;">Changer de candidat</button>
+            </div>
+          </div>
+
+          <input type="hidden" id="modOrigEmail">
+
+          <!-- 1. Identité -->
+          <div style="margin-bottom:20px;border:1.5px solid var(--border);border-radius:10px;padding:16px;background:#fff;">
+            <h4 style="margin:0 0 14px;font-size:0.95rem;color:var(--anapec-purple-dark);border-bottom:1.5px solid var(--anapec-border);padding-bottom:6px;">1. Identité</h4>
+            <div class="form-grid">
+              <div><label>CIN *</label><input type="text" id="f_cin" required></div>
+              <div><label>Nom *</label><input type="text" id="f_nomfamille" required></div>
+              <div><label>Prénom *</label><input type="text" id="f_prenom" required></div>
+              <div><label>Date de naissance</label><input type="date" id="f_naissance"></div>
+              <div>
+                <label>Sexe</label>
+                <select id="f_sexe">
+                  <option value="Homme">Homme</option>
+                  <option value="Femme">Femme</option>
+                </select>
+              </div>
+              <div><label>Âge</label><input type="number" id="f_age" min="16" max="75"></div>
+            </div>
+          </div>
+
+          <!-- 2. Coordonnées -->
+          <div style="margin-bottom:20px;border:1.5px solid var(--border);border-radius:10px;padding:16px;background:#fff;">
+            <h4 style="margin:0 0 14px;font-size:0.95rem;color:var(--anapec-purple-dark);border-bottom:1.5px solid var(--anapec-border);padding-bottom:6px;">2. Coordonnées</h4>
+            <div class="form-grid">
+              <div><label>Téléphone</label><input type="tel" id="f_tel"></div>
+              <div><label>E-mail (Identifiant) *</label><input type="email" id="f_email" required></div>
+              <div class="full"><label>Adresse</label><input type="text" id="f_adresse"></div>
+              <div><label>Ville / Province</label><input type="text" id="f_ville"></div>
+              <div>
+                <label>Milieu : Urbain / Rural</label>
+                <select id="f_milieu">
+                  <option value="Urbain">Urbain</option>
+                  <option value="Rural">Rural</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Formation -->
+          <div style="margin-bottom:20px;border:1.5px solid var(--border);border-radius:10px;padding:16px;background:#fff;">
+            <h4 style="margin:0 0 14px;font-size:0.95rem;color:var(--anapec-purple-dark);border-bottom:1.5px solid var(--anapec-border);padding-bottom:6px;">3. Formation</h4>
+            <div class="form-grid">
+              <div>
+                <label>Niveau d’études</label>
+                <select id="f_niveau">
+                  <option value="Bac">Baccalauréat</option>
+                  <option value="Bac+2 (DUT/BTS)">Bac+2 (DUT / BTS / DEUG)</option>
+                  <option value="Licence (Bac+3)">Licence (Bac+3)</option>
+                  <option value="Master (Bac+5)">Master (Bac+5)</option>
+                  <option value="Ingénieur (Bac+5)">Ingénieur d'État (Bac+5)</option>
+                  <option value="Doctorat (Bac+8)">Doctorat (Bac+8)</option>
+                </select>
+              </div>
+              <div><label>Diplôme</label><input type="text" id="f_diplome" placeholder="Intitulé du diplôme"></div>
+              <div><label>Filière / Spécialité</label><input type="text" id="f_filiere"></div>
+              <div><label>Établissement</label><input type="text" id="f_etablissement"></div>
+              <div><label>Année d'obtention</label><input type="text" id="f_anneeDiplome"></div>
+            </div>
+          </div>
+
+          <!-- 4. Situation professionnelle -->
+          <div style="margin-bottom:20px;border:1.5px solid var(--border);border-radius:10px;padding:16px;background:#fff;">
+            <h4 style="margin:0 0 14px;font-size:0.95rem;color:var(--anapec-purple-dark);border-bottom:1.5px solid var(--anapec-border);padding-bottom:6px;">4. Situation professionnelle &amp; Accès</h4>
+            <div class="form-grid">
+              <div>
+                <label>Situation actuelle</label>
+                <select id="f_situation">
+                  <option value="En recherche active">En recherche active</option>
+                  <option value="En poste / Inséré">En poste / Inséré</option>
+                  <option value="En stage ou alternance">En stage ou alternance</option>
+                  <option value="Poursuite d'études">Poursuite d'études</option>
+                  <option value="Porteur de projet">Porteur de projet</option>
+                </select>
+              </div>
+              <div><label>Expérience professionnelle</label><input type="text" id="f_experience" placeholder="Ex: Moins d'un an, 2 ans..."></div>
+              <div><label>Domaine recherché</label><input type="text" id="f_domaine" placeholder="Ex: Informatique, Commerce, Économie..."></div>
+              <div>
+                <label>Type d’emploi recherché</label>
+                <select id="f_typeEmploi">
+                  <option value="CDI">CDI (Contrat à Durée Indéterminée)</option>
+                  <option value="CDD">CDD (Contrat à Durée Déterminée)</option>
+                  <option value="Stage PFE / Pré-embauche">Stage PFE / Pré-embauche</option>
+                  <option value="Anapec Idmaj / Tehil">Contrat d'Insertion ANAPEC (Idmaj)</option>
+                  <option value="Temps partiel / Freelance">Temps partiel / Freelance</option>
+                  <option value="Indifférent">Indifférent</option>
+                </select>
+              </div>
+              <div class="full"><label>Compétences clés</label><input type="text" id="f_competences"></div>
+              <div>
+                <label>Statut du compte</label>
+                <select id="f_actif">
+                  <option value="true">Actif (Accès autorisé)</option>
+                  <option value="false">Désactivé (Accès suspendu)</option>
+                </select>
+              </div>
+              <div>
+                <label>Mot de passe du compte <small style="color:var(--muted);font-weight:400;">(laisser vide si inchangé)</small></label>
+                <input type="text" id="f_password" placeholder="Nouveau mot de passe">
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:16px;">
+            <button type="button" class="act del" onclick="reinitialiserRechercheModif()" style="padding:10px 18px;">Annuler</button>
+            <button type="button" class="act ok" onclick="sauvegarderProfilDepuisPanel()" style="padding:11px 26px;font-size:0.92rem;font-weight:700;">Enregistrer les modifications</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Panel HISTORIQUE DU PROFIL (Recherche puis Tableau Chronologique) ═══ -->
+    <div class="panel" id="cHistoProfil">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+          <div>
+            <h3 style="margin:0;font-size:1.05rem;">Historique des modifications du profil</h3>
+            <p style="margin:4px 0 0;color:var(--muted);font-size:0.84rem;">Recherchez un candidat par CIN, Nom ou Prénom pour consulter la traçabilité chronologique de ses modifications</p>
+          </div>
+          <button type="button" class="act del" onclick="navToSection('cLauréats')" style="font-size:0.84rem;">← Retour à la liste</button>
+        </div>
+
+        <!-- Zone de recherche candidat -->
+        <div style="background:#F8FAFC;border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
+          <label style="font-weight:700;font-size:0.86rem;color:var(--anapec-purple-dark);display:block;margin-bottom:8px;">
+            Recherche du candidat (CIN, Nom ou Prénom) :
+          </label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <input type="text" id="histoSearchInput" placeholder="Saisir CIN (ex: TT09090, EE789123), Nom ou Prénom..." style="flex:1;min-width:260px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;outline:none;" oninput="chercherCandidatPourHisto()" onkeydown="if(event.key==='Enter')chercherCandidatPourHisto()">
+            <button type="button" class="act ok" onclick="chercherCandidatPourHisto()" style="padding:10px 18px;font-size:0.86rem;">Rechercher</button>
+            <button type="button" class="act del" onclick="reinitialiserRechercheHisto()" style="padding:10px 14px;font-size:0.86rem;">Effacer</button>
+          </div>
+          <!-- Résultats de recherche -->
+          <div id="histoSearchResults" style="margin-top:12px;"></div>
+        </div>
+
+        <!-- État initial : message d'attente avant sélection (pas de tableau vide) -->
+        <div id="histoNoSelectionState" style="text-align:center;padding:40px 20px;background:#FAFAFA;border-radius:12px;border:1.5px dashed var(--border);color:var(--muted);">
+          <div style="font-weight:700;font-size:1rem;color:var(--anapec-purple-dark);margin-bottom:6px;">Aucun candidat sélectionné</div>
+          <div style="font-size:0.88rem;max-width:560px;margin:0 auto;line-height:1.5;">Veuillez utiliser la barre de recherche ci-dessus pour trouver un candidat par son <b>CIN</b>, son <b>Nom</b> ou son <b>Prénom</b>. Cliquez ensuite sur <b>Sélectionner</b> pour afficher l'historique complet de ses modifications.</div>
+        </div>
+
+        <!-- Zone du tableau chronologique (affichée uniquement APRÈS sélection) -->
+        <div id="histoContentArea" style="display:none;">
+          <!-- Bandeau récapitulatif -->
+          <div style="background:linear-gradient(135deg,#F1F5F9,#EDE9FE);border:1.5px solid #CBD5E1;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+            <div>
+              <span style="font-size:0.75rem;font-weight:800;text-transform:uppercase;color:#475569;letter-spacing:0.5px;">Candidat sélectionné pour l'historique</span>
+              <div style="font-weight:800;font-size:1.05rem;color:var(--anapec-purple-dark);" id="histoSelectedName">—</div>
+              <div style="font-size:0.84rem;color:#64748B;margin-top:2px;" id="histoSelectedMeta">—</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="act ok" onclick="navToModifForCandidate(document.getElementById('histoSelectedEmail').value)" style="font-size:0.82rem;">Modifier son profil</button>
+              <button type="button" class="act del" onclick="reinitialiserRechercheHisto()" style="font-size:0.82rem;">Changer de candidat</button>
+            </div>
+          </div>
+
+          <input type="hidden" id="histoSelectedEmail">
+
+          <!-- Tableau Chronologique -->
+          <div style="overflow-x:auto;">
+            <table class="resp-table" id="histoTable">
+              <thead>
+                <tr>
+                  <th style="min-width:110px;">Date</th>
+                  <th style="min-width:150px;">Champ modifié</th>
+                  <th style="min-width:180px;">Ancienne valeur</th>
+                  <th style="min-width:180px;">Nouvelle valeur</th>
+                  <th style="min-width:110px;">Modifié par</th>
+                </tr>
+              </thead>
+              <tbody id="histoTableBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel RDVs -->
+    <div class="panel" id="cRdvs">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+          <div>
+            <h3 style="margin:0 0 4px;font-size:1.15rem;color:var(--anapec-purple);">Demandes de Rendez-vous &amp; Entretiens</h3>
+            <p style="margin:0;font-size:0.82rem;color:var(--muted);">Gérez les réservations des lauréats, confirmez les créneaux et validez la tenue des entretiens.</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <button type="button" class="act ok" id="btnRefreshRdvs" onclick="rafraichirRdvs()" style="padding:8px 14px;font-size:0.84rem;min-height:36px;background:#7E1F78;color:#fff;border-color:#7E1F78;font-weight:700;">Actualiser les données</button>
+            <button type="button" class="act del" onclick="navToSection('cCreneaux')" style="padding:8px 14px;font-size:0.84rem;min-height:36px;">+ Ouvrir un créneau</button>
+          </div>
+        </div>
+
+        <!-- 4 Badges Statistiques RDV -->
+        <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px;">
+          <div class="kpi-card" style="border-left-color:var(--anapec-purple);padding:10px 14px;cursor:pointer;" onclick="renderRdvs('all')">
+            <div class="kpi-val" id="rdvStatTotal" style="font-size:1.35rem;">0</div>
+            <div class="kpi-label" style="font-size:0.74rem;">TOTAL DEMANDES</div>
+          </div>
+          <div class="kpi-card" style="border-left-color:#D97706;padding:10px 14px;cursor:pointer;" onclick="renderRdvs('pending')">
+            <div class="kpi-val" id="rdvStatAttente" style="font-size:1.35rem;color:#D97706;">0</div>
+            <div class="kpi-label" style="font-size:0.74rem;">EN ATTENTE</div>
+          </div>
+          <div class="kpi-card green" style="border-left-color:#16A34A;padding:10px 14px;cursor:pointer;" onclick="renderRdvs('accepted')">
+            <div class="kpi-val" id="rdvStatConfirme" style="font-size:1.35rem;color:#16A34A;">0</div>
+            <div class="kpi-label" style="font-size:0.74rem;">CONFIRMÉS / ACCEPTÉS</div>
+          </div>
+          <div class="kpi-card blue" style="border-left-color:#2563EB;padding:10px 14px;cursor:pointer;" onclick="renderRdvs('realise')">
+            <div class="kpi-val" id="rdvStatRealise" style="font-size:1.35rem;color:#2563EB;">0</div>
+            <div class="kpi-label" style="font-size:0.74rem;">ENTRETIENS RÉALISÉS</div>
+          </div>
+        </div>
+
+        <!-- Barre de recherche et filtre -->
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#F8FAFC;padding:12px;border-radius:10px;border:1px solid var(--border);margin-bottom:16px;">
+          <input type="text" id="cRdvSearch" placeholder="Rechercher par nom, email, CIN, téléphone, sujet..." oninput="renderRdvs()" style="padding:8px 12px;font-size:0.86rem;border-radius:8px;border:1.5px solid var(--border);flex:1;min-width:220px;outline:none;">
+          <select id="cRdvFilterStatus" onchange="renderRdvs()" style="padding:8px 12px;font-size:0.86rem;border-radius:8px;border:1.5px solid var(--border);background:#fff;outline:none;">
+            <option value="all">Tous les statuts</option>
+            <option value="pending">En attente</option>
+            <option value="accepted">Confirmés / Acceptés</option>
+            <option value="realise">Réalisés</option>
+            <option value="refused">Refusés</option>
+          </select>
+          <button type="button" class="act del" onclick="resetRdvFilters()" style="margin:0;padding:8px 12px;font-size:0.82rem;">Réinitialiser</button>
+        </div>
+
+        <div id="cRdvTable"></div>
+      </div>
+    </div>
+
+    <!-- Panel Créneaux -->
+    <div class="panel" id="cCreneaux">
+      <div class="card">
+        <h3>Ouvrir un créneau disponible</h3>
+        <div class="form-grid">
+          <div>
+            <label>Date</label>
+            <input type="date" id="crDate">
+          </div>
+          <div>
+            <label>Modalité</label>
+            <select id="crType">
+              <option value="En agence (ANAPEC)">En agence (ANAPEC Marrakech)</option>
+              <option value="À distance (Visioconférence)">À distance (Visioconférence)</option>
+            </select>
+          </div>
+          <div>
+            <label>Heure de début</label>
+            <input type="time" id="crDebut" value="10:00">
+          </div>
+          <div>
+            <label>Heure de fin</label>
+            <input type="time" id="crFin" value="10:45">
+          </div>
+        </div>
+        <button class="btn-add" onclick="ajouterCreneau()">+ Ajouter ce créneau</button>
+      </div>
+
+      <div class="card">
+        <h3>Créneaux ouverts</h3>
+        <div id="cCreneauxTable"></div>
+      </div>
+    </div>
+
+    <!-- Panel Ateliers -->
+    <div class="panel" id="cAteliers">
+      <div class="card">
+        <h3>Créer un atelier d'accompagnement</h3>
+        <div class="form-grid">
+          <div>
+            <label>Titre de l'atelier</label>
+            <input type="text" id="atTitre" placeholder="Ex: Réussir son CV et LinkedIn">
+          </div>
+          <div>
+            <label>Date et Heure</label>
+            <input type="datetime-local" id="atDate">
+          </div>
+          <div>
+            <label>Animateur</label>
+            <input type="text" id="atAnimateur" placeholder="Ex: Conseiller ANAPEC Marrakech">
+          </div>
+          <div>
+            <label>Places disponibles</label>
+            <input type="number" id="atPlaces" value="20" min="1">
+          </div>
+          <div class="full">
+            <label>Description</label>
+            <textarea id="atDesc" rows="2" placeholder="Objectifs et compétences ciblées..."></textarea>
+          </div>
+        </div>
+        <button class="btn-add" onclick="ajouterAtelier()">+ Publier cet atelier</button>
+      </div>
+
+      <div class="card">
+        <h3>Ateliers programmés</h3>
+        <div id="cAteliersTable"></div>
+      </div>
+    </div>
+
+    <!-- Panel Bannières -->
+    <div class="panel" id="cBanners">
+      <div class="card">
+        <h3>Ajouter une bannière au carousel d'accueil</h3>
+        <div class="form-grid">
+          <div class="full"><label>Image <small style="color:var(--muted);font-weight:500;">Format standard : 1920 × 700 px (toute image est automatiquement adaptée et optimisée en 1920 × 700 px)</small></label><input id="bnImage" type="file" accept="image/png,image/jpeg,image/webp"></div>
+          <div><label>Titre (facultatif)</label><input id="bnTitle" type="text"></div>
+          <div><label>Lien au clic (facultatif)</label><input id="bnLink" type="url" placeholder="https://..."></div>
+          <div class="full"><label>Texte d'accompagnement (facultatif)</label><textarea id="bnDescription" rows="2" placeholder="Ex : Découvrez les ateliers et opportunités adaptés à votre profil."></textarea></div>
+          <div><label>Ordre d'affichage</label><input id="bnOrder" type="number" value="0" min="0"></div>
+          <div><label>Statut</label><select id="bnActive"><option value="true">Active</option><option value="false">Inactive</option></select></div>
+          <div><label>Date de début (facultative)</label><input id="bnStart" type="datetime-local"></div>
+          <div><label>Date de fin (facultative)</label><input id="bnEnd" type="datetime-local"></div>
+        </div>
+        <button class="btn-add" onclick="ajouterBanner()">+ Enregistrer la bannière</button>
+      </div>
+      <div class="card"><h3>Bannières enregistrées</h3><div id="cBannersTable"></div></div>
+    </div>
+
+    <!-- Panel Inscriptions -->
+    <div class="panel" id="cInsc">
+      <div class="card">
+        <h3>Inscriptions aux ateliers</h3>
+        <div id="cInscTable"></div>
+      </div>
+    </div>
+
+    <!-- Panel Actualités -->
+    <div class="panel" id="cNews">
+      <div class="card">
+        <h3>Publier une annonce / actualité</h3>
+        <div class="form-grid">
+          <div>
+            <label>Titre</label>
+            <input type="text" id="nwTitre" placeholder="Ex: Forum Recrutement Tech 2026">
+          </div>
+          <div>
+            <label>Tag / Catégorie</label>
+            <input type="text" id="nwTag" placeholder="Ex: Recrutement, Événement">
+          </div>
+          <div class="full">
+            <label>Contenu</label>
+            <textarea id="nwContenu" rows="3" placeholder="Texte de l'actualité..."></textarea>
+          </div>
+        </div>
+        <button class="btn-add" onclick="ajouterNews()">+ Publier l'actualité</button>
+      </div>
+
+      <div class="card">
+        <h3>Actualités publiées</h3>
+        <div id="cNewsTable"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Panel PRESTATIONS (MENU 3) ═══ -->
+    <div class="panel" id="cPrestations">
+      <div class="card">
+        <h3>Ajouter une nouvelle prestation d'accompagnement</h3>
+        <div class="form-grid">
+          <div><label>Nom de la prestation</label><input type="text" id="prNom" placeholder="Ex: Orientation professionnelle"></div>
+          <div><label>Conseiller responsable</label><input type="text" id="prConseiller" placeholder="Ex: M. EL MEHDI FADIL" value="M. EL MEHDI FADIL"></div>
+          <div><label>Durée</label><input type="text" id="prDuree" placeholder="Ex: 45 min" value="45 min"></div>
+          <div><label>Modalité</label><select id="prModalite"><option value="Présentiel ou Visioconférence">Présentiel ou Visioconférence</option><option value="Présentiel uniquement">Présentiel uniquement</option><option value="À distance (Visioconférence)">À distance (Visioconférence)</option></select></div>
+          <div class="full"><label>Description de la prestation</label><textarea id="prDesc" rows="2" placeholder="Objectifs d'insertion, déroulement et public cible..."></textarea></div>
+        </div>
+        <button class="btn-add" onclick="ajouterPrestation()">+ Enregistrer la prestation</button>
+      </div>
+      <div class="card">
+        <h3>Catalogue des Prestations ANAPEC / UCA</h3>
+        <div id="cPrestationsTable"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Panel ÉVÉNEMENTS (MENU 4) ═══ -->
+    <div class="panel" id="cEvenements">
+      <div class="card">
+        <h3>Programmer et publier un événement</h3>
+        <div class="form-grid">
+          <div><label>Titre de l'événement</label><input type="text" id="evTitre" placeholder="Ex: Forum Recrutement & Insertion UCA 2026"></div>
+          <div><label>Date</label><input type="date" id="evDate"></div>
+          <div><label>Heure</label><input type="text" id="evHeure" placeholder="Ex: 09:00 - 17:00" value="09:00 - 17:00"></div>
+          <div><label>Lieu</label><input type="text" id="evLieu" placeholder="Ex: Campus Daoudiate / Faculté des Sciences"></div>
+          <div><label>Intervenants / Invités</label><input type="text" id="evInterv" placeholder="Ex: Directeurs RH, Conseillers ANAPEC"></div>
+          <div><label>Partenaires</label><input type="text" id="evPart" placeholder="Ex: ANAPEC, UCA, CGEM" value="ANAPEC, Université Cadi Ayyad"></div>
+          <div><label>Capacité max. de participants</label><input type="number" id="evPlaces" value="200" min="10"></div>
+          <div class="full"><label>Description détaillée</label><textarea id="evDesc" rows="3" placeholder="Présentation de l'événement, programme, opportunités..."></textarea></div>
+        </div>
+        <button class="btn-add" onclick="ajouterEvenement()">+ Publier cet événement</button>
+      </div>
+      <div class="card">
+        <h3>Événements et Rencontres programmés</h3>
+        <div id="cEvenementsTable"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Panel PUBLICATIONS (MENU 3) ═══ -->
+    <div class="panel" id="cPublications">
+      <div class="card">
+        <h3>Créer et diffuser une publication / actualité officielle</h3>
+        <div class="form-grid">
+          <div><label>Titre de la publication</label><input type="text" id="pubTitre" placeholder="Ex: Calendrier des ateliers du mois"></div>
+          <div><label>Catégorie</label><select id="pubCat"><option value="Actualité">Actualité</option><option value="Communiqué">Communiqué</option><option value="Recrutement">Offres & Recrutement</option><option value="Conseil">Conseil en emploi</option></select></div>
+          <div><label>Date de programmation</label><input type="date" id="pubDate"></div>
+          <div class="full"><label>Texte et contenu de la publication</label><textarea id="pubTexte" rows="3" placeholder="Rédigez le contenu complet de l'annonce..."></textarea></div>
+        </div>
+        <button class="btn-add" onclick="ajouterPublication()">+ Enregistrer la publication</button>
+      </div>
+      <div class="card">
+        <h3>Publications actives et programmées</h3>
+        <div id="cPubsTable"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Mobile Bottom Navigation Bar (Sans Icônes) -->
+  <nav class="mobile-bottom-nav" id="mNavConseiller">
+    <button class="m-nav-item active" onclick="mobileSelectPanel('cLauréats', this)">
+      <span class="m-label" style="font-weight:700;font-size:0.82rem;">Lauréats</span>
+    </button>
+    <button class="m-nav-item" onclick="mobileSelectPanel('cRdvs', this)">
+      <span class="m-label" style="font-weight:700;font-size:0.82rem;">RDVs</span>
+      <span class="m-nav-badge" id="mRdvBadge" style="display:none;">0</span>
+    </button>
+    <button class="m-nav-item" onclick="mobileSelectPanel('cCreneaux', this)">
+      <span class="m-label" style="font-weight:700;font-size:0.82rem;">Créneaux</span>
+    </button>
+    <button class="m-nav-item" onclick="mobileSelectPanel('cAteliers', this)">
+      <span class="m-label" style="font-weight:700;font-size:0.82rem;">Ateliers</span>
+    </button>
+    <button class="m-nav-item" onclick="toggleMobileDrawer()">
+      <span class="m-label" style="font-weight:700;font-size:0.82rem;">Menu</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ═══════════ DASHBOARD UNIVERSITÉ ═══════════ -->
+<div class="dash" id="dashUniv">
+  <div class="topbar">
+    <div class="brand">
+      PAL-UCA · Espace Université UCA
+    </div>
+    <div class="topbar-actions">
+      <button onclick="location.href='/'">Portail Public</button>
+      <button onclick="logout()" style="background:rgba(220,38,38,0.3);">Déconnexion</button>
+    </div>
+    <button class="mobile-menu-btn" onclick="toggleMobileDrawer()" title="Menu">Menu</button>
+  </div>
+
+  <div class="container">
+    <div class="stats" id="uStats"></div>
+
+    <div class="card">
+      <h3>Répartition par Établissement UCA</h3>
+      <div id="uEtabTable"></div>
+    </div>
+
+    <div class="card">
+      <h3>Liste des Lauréats Inscrits</h3>
+      <div id="uProfilTable"></div>
+    </div>
+
+    <div class="card">
+      <h3>Statistiques des Rendez-vous</h3>
+      <div id="uRdvTable"></div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Nav for Univ (Sans Icônes) -->
+  <nav class="mobile-bottom-nav" id="mNavUniv">
+    <button class="m-nav-item active" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <span class="m-label" style="font-weight:700;font-size:0.82rem;">Statistiques</span>
+    </button>
+    <button class="m-nav-item" onclick="document.getElementById('uEtabTable').scrollIntoView({behavior:'smooth'})">
+      <span class="m-label" style="font-weight:700;font-size:0.82rem;">Établissements</span>
+    </button>
+    <button class="m-nav-item" onclick="document.getElementById('uProfilTable').scrollIntoView({behavior:'smooth'})">
+      <span class="m-label" style="font-weight:700;font-size:0.82rem;">Lauréats</span>
+    </button>
+    <button class="m-nav-item" onclick="toggleMobileDrawer()">
+      <span class="m-label" style="font-weight:700;font-size:0.82rem;">Menu</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ═══════════ MOBILE DRAWER ═══════════ -->
+<div class="modal-overlay" id="drawerOverlay" onclick="toggleMobileDrawer()"></div>
+<div class="mobile-drawer" id="mobileDrawer">
+  <div class="drawer-handle"></div>
+  <h4 style="color:var(--purple-900);margin-bottom:14px;font-size:1.05rem;">Menu d'administration institutionnel</h4>
+  <button class="drawer-item" onclick="mobileSelectPanel('cModifProfil'); toggleMobileDrawer();">
+    Modification du profil chercheur
+  </button>
+  <button class="drawer-item" onclick="mobileSelectPanel('cHistoProfil'); toggleMobileDrawer();">
+    Historique des modifications profil
+  </button>
+  <button class="drawer-item" onclick="mobileSelectPanel('cInsc'); toggleMobileDrawer();">
+    Inscriptions aux ateliers
+  </button>
+  <button class="drawer-item" onclick="mobileSelectPanel('cNews'); toggleMobileDrawer();">
+    Actualités &amp; Annonces
+  </button>
+  <button class="drawer-item" onclick="location.href='/'">
+    Portail Public
+  </button>
+  <button class="drawer-item" onclick="location.href='/espace'">
+    Accéder à l'Espace Lauréat
+  </button>
+  <button class="drawer-item" onclick="logout()" style="background:#FEE2E2;color:var(--red);">
+    Déconnexion
+  </button>
+</div>
+
+<!-- ═══════════ MODAL APERÇU CANDIDAT ═══════════ -->
+<div class="modal-overlay" id="modalApercu" onclick="if(event.target===this)fermerModal('modalApercu')">
+  <div class="modal-card">
+    <button class="modal-close" onclick="fermerModal('modalApercu')">×</button>
+    <div class="modal-head">
+      <h2 id="mNom">—</h2>
+      <p id="mSub" style="color:var(--muted);font-size:0.86rem;margin-top:2px;">—</p>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL PRESCRIPTION ═══════════ -->
+<div class="modal-overlay" id="modalPrescription" onclick="if(event.target===this)fermerModal('modalPrescription')">
+  <div class="modal-card" style="max-width:520px;">
+    <button class="modal-close" onclick="fermerModal('modalPrescription')">×</button>
+    <div class="modal-head">
+      <h2>Prescription / Plan d'Action</h2>
+      <p id="pLauréatInfo" style="color:var(--muted);font-size:0.84rem;margin-top:2px;">—</p>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pEmail">
+      <div style="margin-bottom:14px;">
+        <label style="font-weight:700;font-size:0.84rem;color:var(--purple-800);display:block;margin-bottom:6px;">Prestation ANAPEC recommandée</label>
+        <select id="pAtelierChoix" style="width:100%;padding:11px;border-radius:10px;border:1.5px solid var(--border);font-size:0.9rem;min-height:44px;">
+          <option value="Atelier CV & Lettre de Motivation">Atelier CV & Lettre de Motivation</option>
+          <option value="Simulation d'Entretien & Pitch">Simulation d'Entretien & Pitch</option>
+          <option value="Moi et le Marché du Travail">Moi et le Marché du Travail</option>
+          <option value="Bilan de Compétences & Soft Skills">Bilan de Compétences & Soft Skills</option>
+          <option value="Prospection & Réseau LinkedIn">Prospection & Réseau LinkedIn</option>
+          <option value="Accompagnement Entrepreneuriat">Accompagnement Entrepreneuriat</option>
+        </select>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-weight:700;font-size:0.84rem;color:var(--purple-800);display:block;margin-bottom:6px;">Recommandations et notes du conseiller</label>
+        <textarea id="pNotes" rows="4" placeholder="Indiquez vos conseils personnalisés pour ce candidat..." style="width:100%;padding:11px;border-radius:10px;border:1.5px solid var(--border);font-family:inherit;font-size:0.9rem;"></textarea>
+      </div>
+      <button class="btn-login" onclick="sauvegarderPrescription()">Enregistrer la prescription</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL MODIFIER PROFIL CANDIDAT ═══════════ -->
+<div class="modal-overlay" id="modalModifierProfil" onclick="if(event.target===this)fermerModal('modalModifierProfil')">
+  <div class="modal-card" style="max-width:680px;">
+    <button class="modal-close" onclick="fermerModal('modalModifierProfil')">×</button>
+    <div class="modal-head">
+      <h2 id="modTitre">Modifier le Profil Chercheur</h2>
+      <p id="modSub" style="color:var(--muted);font-size:0.84rem;margin-top:2px;">Modification des données personnelles, académiques et accès compte</p>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="modOriginalEmail">
+      <div class="form-grid">
+        <div>
+          <label>Nom complet</label>
+          <input type="text" id="modNom">
+        </div>
+        <div>
+          <label>Identifiant National (CIN)</label>
+          <input type="text" id="modCin">
+        </div>
+        <div>
+          <label>Adresse Email (Identifiant)</label>
+          <input type="email" id="modEmail">
+        </div>
+        <div>
+          <label>Numéro de Téléphone</label>
+          <input type="tel" id="modTel">
+        </div>
+        <div>
+          <label>Mot de passe du compte</label>
+          <input type="text" id="modPass" placeholder="Nouveau mot de passe">
+        </div>
+        <div>
+          <label>Statut du compte</label>
+          <select id="modActif">
+            <option value="true">Actif (Accès autorisé)</option>
+            <option value="false">Désactivé (Accès suspendu)</option>
+          </select>
+        </div>
+        <div>
+          <label>Sexe</label>
+          <select id="modSexe">
+            <option value="Homme">Homme</option>
+            <option value="Femme">Femme</option>
+          </select>
+        </div>
+        <div>
+          <label>Âge</label>
+          <input type="number" id="modAge" min="17" max="65">
+        </div>
+        <div>
+          <label>Ville de résidence</label>
+          <input type="text" id="modVille">
+        </div>
+        <div>
+          <label>Milieu territorial</label>
+          <select id="modZone">
+            <option value="Urbain">Zone Urbaine (Grand Marrakech)</option>
+            <option value="Rural">Zone Rurale (Provinces Al Haouz...)</option>
+          </select>
+        </div>
+        <div>
+          <label>Établissement UCA</label>
+          <input type="text" id="modEtablissement">
+        </div>
+        <div>
+          <label>Filière / Spécialité</label>
+          <input type="text" id="modFiliere">
+        </div>
+        <div>
+          <label>Niveau d'études</label>
+          <select id="modNiveau">
+            <option value="Bac+2 (DUT/BTS)">Bac+2 (DUT / BTS / DEUG)</option>
+            <option value="Licence (Bac+3)">Licence (Bac+3)</option>
+            <option value="Master (Bac+5)">Master / Ingénieur (Bac+5)</option>
+            <option value="Doctorat (Bac+8)">Doctorat (Bac+8)</option>
+          </select>
+        </div>
+        <div>
+          <label>Année d'obtention</label>
+          <input type="text" id="modAnnee">
+        </div>
+        <div class="full">
+          <label>Situation professionnelle</label>
+          <select id="modSituation">
+            <option value="En recherche d'emploi">En recherche d'emploi</option>
+            <option value="Inséré dans l'emploi">Inséré dans l'emploi / En poste</option>
+            <option value="En stage ou alternance">En stage ou formation qualifiante</option>
+            <option value="Inactif / Poursuite d'études">Inactif / Poursuite d'études</option>
+          </select>
+        </div>
+        <div class="full">
+          <label>Compétences clés</label>
+          <input type="text" id="modCompetences">
+        </div>
+        <div class="full">
+          <label>Projet professionnel & Objectifs</label>
+          <textarea id="modObjectif" rows="2"></textarea>
+        </div>
+      </div>
+      <div style="margin-top:18px;display:flex;gap:10px;justify-content:flex-end;">
+        <button type="button" class="act del" onclick="fermerModal('modalModifierProfil')">Annuler</button>
+        <button type="button" class="act ok" onclick="sauvegarderProfilModifie()" style="padding:10px 22px;font-size:0.88rem;">Enregistrer les modifications</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL REPROGRAMMER RENDEZ-VOUS ═══════════ -->
+<div class="modal-overlay" id="modalReprogrammer" onclick="if(event.target===this)fermerModal('modalReprogrammer')">
+  <div class="modal-card" style="max-width:520px;">
+    <button class="modal-close" onclick="fermerModal('modalReprogrammer')">×</button>
+    <div class="modal-head">
+      <h2>Reprogrammer le rendez-vous</h2>
+      <p id="reprogLauréatInfo" style="color:var(--muted);font-size:0.84rem;margin-top:2px;">—</p>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="reprogRdvId">
+      <div style="margin-bottom:14px;">
+        <label style="font-weight:700;font-size:0.84rem;color:var(--purple-800);display:block;margin-bottom:6px;">Sélectionner un nouveau créneau disponible</label>
+        <select id="reprogCreneauSelect" style="width:100%;padding:11px;border-radius:10px;border:1.5px solid var(--border);font-size:0.9rem;min-height:44px;" onchange="handleReprogSelectChange()">
+        </select>
+      </div>
+      <div id="reprogCustomWrap" style="display:none;background:#FAF3FB;border:1px solid #DDB8E0;border-radius:10px;padding:12px;margin-bottom:14px;">
+        <div style="margin-bottom:10px;">
+          <label style="font-size:0.8rem;font-weight:700;">Nouvelle date</label>
+          <input type="date" id="reprogNewDate" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);">
+        </div>
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;">Nouvelle heure</label>
+          <input type="time" id="reprogNewHeure" value="10:00" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);">
+        </div>
+      </div>
+      <div style="margin-top:18px;display:flex;gap:10px;justify-content:flex-end;">
+        <button type="button" class="act del" onclick="fermerModal('modalReprogrammer')">Annuler</button>
+        <button type="button" class="act ok" onclick="confirmerReprogrammation()" style="padding:10px 20px;font-size:0.88rem;">Confirmer la reprogrammation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════ Data & Persistence Layer ══════════ */
+window.DB = {
+  profils: [],
+  rdvs: [],
+  creneaux: [],
+  ateliers: [],
+  inscriptions: [],
+  news: [],
+  banners: [],
+  prestations: [],
+  evenements: [],
+  publications: []
+};
+
+function simpleHash(s) {
+  var h = 5381;
+  for (var i = 0; i < (s || '').length; i++) {
+    h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+  }
+  return 'h' + h.toString(36);
+}
+
+function store(key){
+  var k = key.replace('dabanet_', '');
+  var localList = [];
+  try {
+    var raw = localStorage.getItem('dabanet_' + k);
+    if (raw) localList = JSON.parse(raw);
+  } catch(e){}
+
+  var memList = (window.DB && Array.isArray(window.DB[k])) ? window.DB[k] : [];
+
+  if (memList.length === 0 && Array.isArray(localList) && localList.length > 0) {
+    window.DB[k] = localList;
+    return localList;
+  }
+
+  if (memList.length > 0 && Array.isArray(localList) && localList.length > 0) {
+    var map = {};
+    memList.forEach(function(item){ if (item && item.id) map[String(item.id)] = item; });
+    localList.forEach(function(item){
+      if (item && item.id && !map[String(item.id)]) {
+        memList.push(item);
+        map[String(item.id)] = item;
+      }
+    });
+    return memList;
+  }
+
+  return memList.length > 0 ? memList : (Array.isArray(localList) ? localList : []);
+}
+
+function save(key, val){
+  var k = key.replace('dabanet_', '');
+  window.DB[k] = val;
+  try {
+    localStorage.setItem('dabanet_' + k, JSON.stringify(val));
+  } catch(e){}
+  fetch('/api/data', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key: k, value: val })
+  }).catch(function(err){ console.warn('Sync warning:', err); });
+}
+
+function dbSync(cb){
+  Promise.all([
+    fetch('/api/data').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }),
+    fetch('/api/rdvs').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; })
+  ]).then(function(results){
+    var d = results[0];
+    var serverRdvs = results[1];
+
+    if (d && typeof d === 'object') {
+      ['profils','rdvs','creneaux','ateliers','inscriptions','news','banners','prestations','evenements','publications'].forEach(function(k){
+        var list = Array.isArray(d[k]) ? d[k] : [];
+        if (k === 'rdvs' && Array.isArray(serverRdvs) && serverRdvs.length > 0) {
+          var rmap = {};
+          list.forEach(function(r){ if (r && r.id) rmap[String(r.id)] = r; });
+          serverRdvs.forEach(function(r){ if (r && r.id && !rmap[String(r.id)]) { list.push(r); rmap[String(r.id)] = r; } });
+        }
+
+        // Also merge any bookings stored locally so they never disappear
+        var local = [];
+        try {
+          var raw = localStorage.getItem('dabanet_' + k);
+          if (raw) local = JSON.parse(raw);
+        } catch(e){}
+        if (Array.isArray(local) && local.length > 0) {
+          var lmap = {};
+          list.forEach(function(it){ if (it && it.id) lmap[String(it.id)] = it; });
+          local.forEach(function(it){
+            if (it && it.id && !lmap[String(it.id)]) {
+              list.push(it);
+              lmap[String(it.id)] = it;
+            }
+          });
+        }
+
+        window.DB[k] = list;
+        try { localStorage.setItem('dabanet_' + k, JSON.stringify(list)); } catch(e){}
+      });
+    } else if (Array.isArray(serverRdvs) && serverRdvs.length > 0) {
+      var cur = store('dabanet_rdvs') || [];
+      var curMap = {};
+      cur.forEach(function(r){ if (r && r.id) curMap[String(r.id)] = r; });
+      serverRdvs.forEach(function(r){ if (r && r.id && !curMap[String(r.id)]) { cur.push(r); curMap[String(r.id)] = r; } });
+      window.DB['rdvs'] = cur;
+      try { localStorage.setItem('dabanet_rdvs', JSON.stringify(cur)); } catch(e){}
+    }
+
+    if (cb) cb();
+  }).catch(function(){
+    if (cb) cb();
+  });
+}
+
+function esc(str){
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* ══════════ Auth ══════════ */
+var ACCOUNTS = {
+  'conseiller': { pass: 'anapec2026', role: 'conseiller' },
+  'universite': { pass: 'univ2026',   role: 'universite' },
+  'admin':      { pass: 'admin2026',  role: 'conseiller' }
+};
+
+function doLogin(){
+  var userEl = document.getElementById('loginUser');
+  var passEl = document.getElementById('loginPass');
+  var errEl = document.getElementById('loginErr');
+  
+  if (!userEl || !passEl) return;
+  var u = userEl.value.trim().toLowerCase();
+  var p = passEl.value;
+
+  if (!u || !p) {
+    if (errEl) errEl.textContent = 'Veuillez saisir votre nom d\'utilisateur et mot de passe.';
+    return;
+  }
+  var acc = ACCOUNTS[u];
+  if (!acc || acc.pass !== p) {
+    if (errEl) errEl.textContent = 'Identifiants incorrects. Vérifiez le mot de passe.';
+    return;
+  }
+  if (errEl) errEl.textContent = '';
+  sessionStorage.setItem('dabanet_admin_role', acc.role);
+  showDash();
+}
+
+function logout(){
+  sessionStorage.removeItem('dabanet_admin_role');
+  location.reload();
+}
+
+function showDash(){
+  var r = sessionStorage.getItem('dabanet_admin_role');
+  var lv = document.getElementById('loginView');
+  var dc = document.getElementById('dashConseiller');
+  var du = document.getElementById('dashUniv');
+
+  if (!r) {
+    if (lv) lv.style.display = 'flex';
+    if (dc) dc.style.display = 'none';
+    if (du) du.style.display = 'none';
+    return;
+  }
+
+  if (lv) lv.style.display = 'none';
+  if (r === 'conseiller') {
+    if (dc) dc.style.display = 'block';
+    if (du) du.style.display = 'none';
+    renderConseiller();
+  } else {
+    if (du) du.style.display = 'block';
+    if (dc) dc.style.display = 'none';
+    renderUniv();
+  }
+}
+
+/* ══════════ Navigation & Mobile Switching ══════════ */
+window.navToSection = function(sectionId, filter) {
+  // Masquer tous les panels
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+
+  // Afficher le panel cible
+  var target = document.getElementById(sectionId);
+  if (target) {
+    target.classList.add('active');
+  }
+
+  // Mettre à jour l'état actif des boutons de navigation
+  document.querySelectorAll('.nav-link-btn').forEach(function(btn){ btn.classList.remove('active'); });
+  document.querySelectorAll('.dropdown-item').forEach(function(btn){ btn.classList.remove('active'); });
+  document.querySelectorAll('.m-nav-item').forEach(function(btn){ btn.classList.remove('active'); });
+
+  if (sectionId === 'cDashboard') {
+    var b = document.getElementById('navBtnDashboard');
+    if (b) b.classList.add('active');
+  } else if (sectionId === 'cLauréats' || sectionId === 'cModifProfil' || sectionId === 'cHistoProfil' || sectionId === 'cInsc') {
+    var b = document.getElementById('navBtnChercheurs');
+    if (b) b.classList.add('active');
+  } else if (sectionId === 'cPrestations' || sectionId === 'cCreneaux' || sectionId === 'cRdvs' || sectionId === 'cAteliers') {
+    var b = document.getElementById('navBtnPrestations');
+    if (b) b.classList.add('active');
+  } else if (sectionId === 'cEvenements' || sectionId === 'cBanners' || sectionId === 'cPublications') {
+    var b = document.getElementById('navBtnEvenements');
+    if (b) b.classList.add('active');
+  }
+
+  // Synchronisation nav mobile
+  var mItem = document.querySelector('.m-nav-item[onclick*="' + sectionId + '"]');
+  if (mItem) mItem.classList.add('active');
+
+  // Déclencher le rendu correspondant
+  if (sectionId === 'cDashboard') {
+    renderConseiller();
+  } else if (sectionId === 'cRdvs') {
+    if (filter) {
+      var sel = document.getElementById('cRdvFilterStatus');
+      if (sel) sel.value = filter;
+    }
+    renderRdvs(filter);
+  } else if (sectionId === 'cLauréats') {
+    renderLauréats();
+  } else if (sectionId === 'cCreneaux') {
+    renderCreneaux();
+  } else if (sectionId === 'cPrestations' && typeof renderPrestations === 'function') {
+    renderPrestations();
+  } else if (sectionId === 'cAteliers') {
+    renderAteliers();
+  } else if (sectionId === 'cEvenements' && typeof renderEvenements === 'function') {
+    renderEvenements();
+  } else if (sectionId === 'cBanners') {
+    renderBanners();
+  } else if (sectionId === 'cPublications' && typeof renderPublications === 'function') {
+    renderPublications();
+  }
+
+  window.scrollTo({ top: 120, behavior: 'smooth' });
+
+  // Synchronisation d'arrière-plan avec le serveur
+  dbSync(function(){
+    if (sectionId === 'cDashboard') renderConseiller();
+    if (sectionId === 'cRdvs') renderRdvs(filter);
+    if (sectionId === 'cLauréats') renderLauréats();
+  });
+};
+
+function switchTab(btn){
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  var panelId = btn.getAttribute('data-panel');
+  var target = document.getElementById(panelId);
+  if (target) target.classList.add('active');
+
+  // Sync mobile nav active state
+  document.querySelectorAll('.m-nav-item').forEach(function(item){
+    item.classList.remove('active');
+  });
+  try {
+    var matchBtn = panelId ? document.querySelector('.m-nav-item[onclick*="' + panelId + '"]') : null;
+    if (matchBtn) matchBtn.classList.add('active');
+  } catch(e){}
+
+  // Rafraîchir les données en temps réel depuis le serveur
+  dbSync(function(){
+    renderConseiller();
+    if (panelId === 'cRdv' || panelId === 'cRdvs') renderRdvs();
+    if (panelId === 'cLauréats' || panelId === 'cChercheurs') renderLauréats();
+    if (panelId === 'cCreneaux') renderCreneaux();
+  });
+}
+
+function mobileSelectPanel(panelId, mBtn){
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.m-nav-item').forEach(function(item){ item.classList.remove('active'); });
+
+  try {
+    var tabBtn = panelId ? document.querySelector('.tab[data-panel="' + panelId + '"]') : null;
+    if (tabBtn) tabBtn.classList.add('active');
+  } catch(e){}
+
+  var target = document.getElementById(panelId);
+  if (target) target.classList.add('active');
+
+  if (mBtn) mBtn.classList.add('active');
+
+  // Scroll smoothly to the content
+  window.scrollTo({ top: 120, behavior: 'smooth' });
+
+  // Rafraîchir les données
+  dbSync(function(){
+    renderConseiller();
+    if (panelId === 'cRdv' || panelId === 'cRdvs') renderRdvs();
+    if (panelId === 'cLauréats' || panelId === 'cChercheurs') renderLauréats();
+    if (panelId === 'cCreneaux') renderCreneaux();
+  });
+}
+
+function toggleMobileDrawer(){
+  var drawer = document.getElementById('mobileDrawer');
+  var overlay = document.getElementById('drawerOverlay');
+  if (!drawer || !overlay) return;
+
+  var isOpen = drawer.classList.contains('open');
+  if (isOpen) {
+    drawer.classList.remove('open');
+    setTimeout(function(){ drawer.style.display = 'none'; overlay.style.display = 'none'; }, 250);
+  } else {
+    drawer.style.display = 'block';
+    overlay.style.display = 'block';
+    setTimeout(function(){ drawer.classList.add('open'); }, 10);
+  }
+}
+
+/* ══════════ Render Conseiller ══════════ */
+function renderConseiller(){
+  var profils = store('dabanet_profils');
+  var rdvs = store('dabanet_rdvs');
+  var ateliers = store('dabanet_ateliers');
+  var creneaux = store('dabanet_creneaux');
+  var insc = store('dabanet_inscriptions');
+  var prests = store('dabanet_prestations');
+  var evs = store('dabanet_evenements');
+  var banns = store('dabanet_banners');
+
+  var attente = rdvs.filter(function(r){ return r.status === 'pending' || !r.status; }).length;
+  var acceptes = rdvs.filter(function(r){ return r.status === 'accepted'; }).length;
+  
+
+  // Mise à jour des cartes KPI du Tableau de bord
+  if (document.getElementById('kpiTotalChercheurs')) document.getElementById('kpiTotalChercheurs').textContent = profils.length;
+  if (document.getElementById('kpiNouveauxChercheurs')) document.getElementById('kpiNouveauxChercheurs').textContent = profils.length;
+  if (document.getElementById('kpiRdvAttente')) document.getElementById('kpiRdvAttente').textContent = attente;
+  if (document.getElementById('kpiRdvAcceptes')) document.getElementById('kpiRdvAcceptes').textContent = acceptes;
+  if (document.getElementById('kpiPrestations')) document.getElementById('kpiPrestations').textContent = prests.length || 5;
+  if (document.getElementById('kpiCreneaux')) document.getElementById('kpiCreneaux').textContent = creneaux.length;
+  if (document.getElementById('kpiAteliers')) document.getElementById('kpiAteliers').textContent = ateliers.length;
+  if (document.getElementById('kpiEvenements')) document.getElementById('kpiEvenements').textContent = evs.length || 2;
+  if (document.getElementById('kpiBannieres')) document.getElementById('kpiBannieres').textContent = banns.length || 2;
+
+  // Rendu des mini-tableaux du Dashboard
+  var recRdvEl = document.getElementById('cDashboardRecentRdvs');
+  if (recRdvEl) {
+    if (!rdvs.length) {
+      recRdvEl.innerHTML = '<div style="padding:14px;color:var(--muted);font-size:0.85rem;">Aucune demande de rendez-vous enregistrée.</div>';
+    } else {
+      recRdvEl.innerHTML = rdvs.slice(-5).reverse().map(function(r){
+        var isRealise = (r.status === 'realise' || r.statut === 'Réalisé' || r.status === 'completed');
+        var isAccepted = (r.status === 'accepted' || r.statut === 'Confirmé');
+        var isRefused = (r.status === 'refused' || r.statut === 'Refusé');
+        var badge = isRealise ? '<span class="badge accepted" style="background:#DCFCE7;color:#166534;font-weight:700;">Réalisé</span>'
+                  : isAccepted ? '<span class="badge accepted">Confirmé</span>'
+                  : isRefused ? '<span class="badge refused">Refusé</span>'
+                  : '<span class="badge pending">En attente</span>';
+        var displayName = r.nom || r.candidat_nom || 'Lauréat';
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:0.84rem;">' +
+          '<div><b>' + esc(displayName) + '</b> · <span style="color:var(--muted);">' + esc(r.date) + (r.heure ? ' à ' + esc(r.heure) : '') + '</span><br><small style="color:var(--purple-700);">' + esc(r.type || r.modalite || 'Présentiel') + ' (' + esc(r.sujet || r.motif || 'Entretien') + ')</small></div>' +
+          badge +
+        '</div>';
+      }).join('');
+    }
+  }
+
+  var recEvEl = document.getElementById('cDashboardRecentEvs');
+  if (recEvEl) {
+    var evsList = store('dabanet_evenements') || [];
+    if (!evsList.length) {
+      recEvEl.innerHTML = '<div style="padding:14px;color:var(--muted);font-size:0.85rem;">Aucun événement programmé actuellement.</div>';
+    } else {
+      recEvEl.innerHTML = evsList.slice(-4).reverse().map(function(e){
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:0.84rem;">' +
+          '<div><b>' + esc(e.titre) + '</b> · <span style="color:var(--muted);">' + esc(e.date || '') + '</span><br><small style="color:var(--purple-700);">' + esc(e.lieu || 'Université Cadi Ayyad') + '</small></div>' +
+          '<span class="badge accepted">Planifié</span>' +
+        '</div>';
+      }).join('');
+    }
+  }
+
+  var cL = document.getElementById('cCountL');
+  if (cL) cL.textContent = profils.length;
+  var cR = document.getElementById('cCountR');
+  if (cR) cR.textContent = rdvs.length;
+
+  // Mobile badge
+  var mBadge = document.getElementById('mRdvBadge');
+  if (mBadge) {
+    if (attente > 0) {
+      mBadge.textContent = attente;
+      mBadge.style.display = 'inline-block';
+    } else {
+      mBadge.style.display = 'none';
+    }
+  }
+
+  renderLauréats();
+  renderRdvs();
+  renderCreneaux();
+  renderAteliers();
+  renderInscriptions();
+  renderNews();
+  renderBanners();
+  if (typeof window.renderPrestations === 'function') window.renderPrestations();
+  if (typeof window.renderEvenements === 'function') window.renderEvenements();
+  if (typeof window.renderPublications === 'function') window.renderPublications();
+  if (typeof window.updateBiDashboard === 'function') window.updateBiDashboard();
+}
+
+function renderLauréats(){
+  var profils = store('dabanet_profils');
+  var q = (document.getElementById('cSearch')?.value || '').toLowerCase().trim();
+  var fStatus = document.getElementById('cFilterStatus')?.value || 'all';
+
+  var filtered = profils.filter(function(p){
+    if (fStatus === 'actif' && p.actif === false) return false;
+    if (fStatus === 'inactif' && p.actif !== false) return false;
+    if (!q) return true;
+    var hay = ((p.nom||'') + ' ' + (p.cin||'') + ' ' + (p.email||'') + ' ' + (p.filiere||'') + ' ' + (p.ville||'') + ' ' + (p.etablissement||'') + ' ' + (p.tel||'')).toLowerCase();
+    return hay.indexOf(q) !== -1;
+  });
+
+  var el = document.getElementById('cLauréatsTable');
+  if (!el) return;
+
+  if (!filtered.length) {
+    el.innerHTML = '<div class="empty">Aucun chercheur trouvé pour cette recherche.</div>';
+    return;
+  }
+
+  var html = '<table class="resp-table"><thead><tr>' +
+    '<th>Chercheur</th><th>CIN</th><th>Contact</th><th>Établissement & Filière</th><th>Statut Parcours</th><th>Statut Compte</th><th>Actions</th>' +
+    '</tr></thead><tbody>';
+
+  var allRdvs = store('dabanet_rdvs') || [];
+
+  filtered.slice().reverse().forEach(function(p){
+    var nomSafe = esc(p.nom || 'Sans nom');
+    var emailSafe = esc(p.email || '');
+    var cinSafe = esc(p.cin || '—');
+    var isActif = p.actif !== false;
+    var badgeCompte = isActif
+      ? '<span class="badge accepted">Actif</span>'
+      : '<span class="badge refused">Désactivé</span>';
+
+    var candRdvs = allRdvs.filter(function(r){ return (r.email || r.candidat_email || '').toLowerCase() === emailSafe.toLowerCase(); });
+    var hasRealise = p.rdvRealise || p.statut === 'rendez_vous_realise' || candRdvs.some(function(r){ return r.status === 'realise' || r.statut === 'Réalisé'; });
+    var hasReserve = p.statut === 'rendez_vous_reserve' || candRdvs.some(function(r){ return r.status !== 'refused' && r.status !== 'cancelled'; });
+    var hasDiag = !!(p.positionnement && (p.positionnement.scores || p.positionnement.answers));
+
+    var badgeParcours = hasRealise
+      ? '<span class="badge accepted" style="background:#DCFCE7;color:#166534;font-weight:700;">RDV Réalisé</span>'
+      : hasReserve
+      ? '<span class="badge pending" style="background:#EFF6FF;color:#1D4ED8;font-weight:700;">RDV Réservé</span>'
+      : hasDiag
+      ? '<span class="badge pending" style="background:#FEF3C7;color:#92400E;font-weight:700;">RDV à réserver</span>'
+      : '<span class="badge refused" style="background:#F1F5F9;color:#64748B;">Profil incomplet</span>';
+
+    html += '<tr>' +
+      '<td data-label="Chercheur"><b>' + nomSafe + '</b><br><small style="color:var(--muted);">' + (p.ville ? esc(p.ville) : '—') + '</small></td>' +
+      '<td data-label="CIN"><b>' + cinSafe + '</b></td>' +
+      '<td data-label="Contact">' + (emailSafe ? '<a href="mailto:' + emailSafe + '" style="color:var(--purple-700);text-decoration:none;">' + emailSafe + '</a><br>' : '') +
+          (p.tel ? '<small style="color:var(--muted);">' + esc(p.tel) + '</small>' : '') + '</td>' +
+      '<td data-label="Filière"><b>' + esc(p.filiere || '—') + '</b><br><small style="color:var(--muted);">' + esc(p.etablissement || 'UCA') + ' · ' + esc(p.niveau || '—') + '</small></td>' +
+      '<td data-label="Statut Parcours">' + badgeParcours + '</td>' +
+      '<td data-label="Statut Compte">' + badgeCompte + '</td>' +
+      '<td data-label="Actions">' +
+        (!hasRealise ? '<button class="act ok" style="background:#166534;color:#fff;border-color:#166534;font-weight:700;" onclick="validerRdvCandidatParEmail(\'' + emailSafe + '\')">Valider RDV</button>' : '') +
+        '<button class="act del" onclick="voirApercu(\'' + emailSafe + '\')">Fiche candidat</button>' +
+        '<button class="act ok" onclick="navToModifForCandidate(\'' + emailSafe + '\')">Modifier</button>' +
+        '<button class="act del" onclick="navToHistoForCandidate(\'' + emailSafe + '\')">Historique</button>' +
+        '<button class="act ' + (isActif ? 'no' : 'ok') + '" onclick="toggleCompteActif(\'' + emailSafe + '\')">' + (isActif ? 'Désactiver' : 'Activer') + '</button>' +
+        '<button class="act presc" onclick="ouvrirPrescription(\'' + emailSafe + '\')">Prescrire</button>' +
+        '<button class="act trash" onclick="supprimerLaureat(\'' + emailSafe + '\', \'' + nomSafe + '\')">Supprimer</button>' +
+      '</td>' +
+    '</tr>';
+  });
+
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+/* ══════════ RECHERCHE & MODIFICATION DU PROFIL (Panel cModifProfil) ══════════ */
+function filtrerCandidatsParCritere(rawQuery) {
+  var profils = store('dabanet_profils') || [];
+  if (!rawQuery) return [];
+  var q = rawQuery.trim().toLowerCase();
+  if (!q) return [];
+  return profils.filter(function(p){
+    var cin = (p.cin || '').trim().toLowerCase();
+    var prenom = (p.prenom || '').trim().toLowerCase();
+    var nomfamille = (p.nomfamille || '').trim().toLowerCase();
+    var nom = (p.nom || '').trim().toLowerCase();
+    var email = (p.email || '').trim().toLowerCase();
+
+    // 1. Recherche par CIN précise (exacte ou préfixe)
+    if (cin && (cin === q || cin.startsWith(q) || cin.indexOf(q) !== -1)) return true;
+    // 2. Recherche par Nom / Prénom partielle
+    if (prenom && prenom.indexOf(q) !== -1) return true;
+    if (nomfamille && nomfamille.indexOf(q) !== -1) return true;
+    if (nom && nom.indexOf(q) !== -1) return true;
+    if (email && email.indexOf(q) !== -1) return true;
+    return false;
+  });
+}
+
+window.chercherCandidatPourModif = function(){
+  var raw = (document.getElementById('modSearchInput')?.value || '').trim();
+  var container = document.getElementById('modSearchResults');
+  if (!container) return;
+
+  if (!raw) {
+    container.innerHTML = '';
+    return;
+  }
+
+  var matches = filtrerCandidatsParCritere(raw);
+  if (!matches.length) {
+    container.innerHTML = '<div style="padding:14px 16px;background:#FEF2F2;border:1.5px solid #FCA5A5;border-radius:10px;color:#991B1B;font-size:0.88rem;font-weight:700;">' +
+      'Aucun candidat trouvé pour le critère « ' + esc(raw) + ' ». Veuillez vérifier le CIN (ex: TT09090, EE789123), le Nom ou le Prénom.' +
+    '</div>';
+    return;
+  }
+
+  container.innerHTML = '<div style="margin-bottom:8px;font-size:0.82rem;font-weight:700;color:var(--muted);">' + matches.length + ' candidat(s) trouvé(s) :</div>' +
+    matches.map(function(p){
+      var nomAff = esc(p.nom || ((p.prenom || '') + ' ' + (p.nomfamille || ''))).trim();
+      var cinAff = p.cin ? '<span style="font-weight:800;color:var(--anapec-purple);background:#EDE9FE;padding:2px 8px;border-radius:6px;font-size:0.8rem;margin-left:6px;">' + esc(p.cin) + '</span>' : '';
+      return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">' +
+        '<div>' +
+          '<b>' + nomAff + '</b>' + cinAff + '<br>' +
+          '<small style="color:var(--muted);">' + esc(p.email || '') + (p.tel ? ' · ' + esc(p.tel) : '') + ' · ' + esc(p.etablissement || 'UCA') + ' (' + esc(p.filiere || '—') + ')</small>' +
+        '</div>' +
+        '<button type="button" class="act ok" onclick="selectionnerCandidatPourModif(\'' + esc(p.email) + '\')" style="padding:8px 16px;font-size:0.84rem;">Sélectionner ce profil</button>' +
+      '</div>';
+    }).join('');
+};
+
+window.selectionnerCandidatPourModif = function(email){
+  var profils = store('dabanet_profils') || [];
+  var p = profils.find(function(item){ return (item.email||'').toLowerCase() === (email||'').toLowerCase(); });
+  if (!p) {
+    alert('Candidat introuvable dans la base de données.');
+    return;
+  }
+
+  // Masquer l'état d'attente et afficher la fiche modifiable
+  var noSel = document.getElementById('modNoSelectionState');
+  if (noSel) noSel.style.display = 'none';
+  var resArea = document.getElementById('modSearchResults');
+  if (resArea) resArea.innerHTML = '';
+  var card = document.getElementById('modProfileCard');
+  if (card) card.style.display = 'block';
+
+  // Identité
+  var prenom = p.prenom || (p.nom ? p.nom.split(' ')[0] : '');
+  var nomfamille = p.nomfamille || (p.nom ? p.nom.split(' ').slice(1).join(' ') : '');
+  if (!nomfamille && p.nom) nomfamille = p.nom;
+
+  if (document.getElementById('f_cin')) document.getElementById('f_cin').value = p.cin || '';
+  if (document.getElementById('f_nomfamille')) document.getElementById('f_nomfamille').value = nomfamille || '';
+  if (document.getElementById('f_prenom')) document.getElementById('f_prenom').value = prenom || '';
+  if (document.getElementById('f_naissance')) document.getElementById('f_naissance').value = p.naissance || '';
+  if (document.getElementById('f_sexe')) document.getElementById('f_sexe').value = (p.sexe && p.sexe.toLowerCase().indexOf('f') !== -1) ? 'Femme' : 'Homme';
+  if (document.getElementById('f_age')) document.getElementById('f_age').value = p.age || '';
+
+  // Coordonnées
+  if (document.getElementById('f_tel')) document.getElementById('f_tel').value = p.tel || '';
+  if (document.getElementById('f_email')) document.getElementById('f_email').value = p.email || '';
+  if (document.getElementById('f_adresse')) document.getElementById('f_adresse').value = p.adresse || '';
+  if (document.getElementById('f_ville')) document.getElementById('f_ville').value = p.ville || 'Marrakech';
+  if (document.getElementById('f_milieu')) document.getElementById('f_milieu').value = ((p.milieu || p.zone || '').toLowerCase().indexOf('rur') !== -1) ? 'Rural' : 'Urbain';
+
+  // Formation
+  if (document.getElementById('f_niveau')) document.getElementById('f_niveau').value = p.niveau || 'Licence (Bac+3)';
+  if (document.getElementById('f_diplome')) document.getElementById('f_diplome').value = p.diplome || p.anneeDiplome || '';
+  if (document.getElementById('f_filiere')) document.getElementById('f_filiere').value = p.filiere || '';
+  if (document.getElementById('f_etablissement')) document.getElementById('f_etablissement').value = p.etablissement || 'Université Cadi Ayyad';
+  if (document.getElementById('f_anneeDiplome')) document.getElementById('f_anneeDiplome').value = p.anneeDiplome || '';
+
+  // Situation professionnelle
+  if (document.getElementById('f_situation')) document.getElementById('f_situation').value = p.situation || p.statutInsertion || 'En recherche active';
+  if (document.getElementById('f_experience')) document.getElementById('f_experience').value = p.experience || (p.expPoste ? p.expPoste + ' - ' + (p.expEntreprise || '') : '');
+  if (document.getElementById('f_domaine')) document.getElementById('f_domaine').value = p.domaine || p.domaineRecherche || '';
+  if (document.getElementById('f_typeEmploi')) document.getElementById('f_typeEmploi').value = p.typeEmploi || p.typeEmploiRecherche || 'CDI';
+  if (document.getElementById('f_competences')) document.getElementById('f_competences').value = p.competences || '';
+  if (document.getElementById('f_actif')) document.getElementById('f_actif').value = p.actif !== false ? 'true' : 'false';
+  if (document.getElementById('f_password')) document.getElementById('f_password').value = '';
+
+  if (document.getElementById('modOrigEmail')) document.getElementById('modOrigEmail').value = p.email || '';
+  var nomComplet = (p.nom || (prenom + ' ' + nomfamille)).trim();
+  if (document.getElementById('modSelectedName')) document.getElementById('modSelectedName').textContent = nomComplet;
+  if (document.getElementById('modSelectedMeta')) document.getElementById('modSelectedMeta').textContent = 'CIN : ' + (p.cin || 'Non renseigné') + ' · E-mail : ' + (p.email || '—') + ' · Tél : ' + (p.tel || '—');
+
+  if (document.getElementById('modSearchInput')) document.getElementById('modSearchInput').value = (p.cin ? p.cin + ' - ' : '') + nomComplet;
+};
+
+window.reinitialiserRechercheModif = function(){
+  var s = document.getElementById('modSearchInput');
+  if (s) s.value = '';
+  var r = document.getElementById('modSearchResults');
+  if (r) r.innerHTML = '';
+  var c = document.getElementById('modProfileCard');
+  if (c) c.style.display = 'none';
+  var n = document.getElementById('modNoSelectionState');
+  if (n) n.style.display = 'block';
+  var o = document.getElementById('modOrigEmail');
+  if (o) o.value = '';
+};
+
+window.navToModifForCandidate = function(email){
+  navToSection('cModifProfil');
+  if (email) selectionnerCandidatPourModif(email);
+};
+
+window.sauvegarderProfilDepuisPanel = function(){
+  var origEmail = (document.getElementById('modOrigEmail')?.value || '').toLowerCase().trim();
+  var profils = store('dabanet_profils') || [];
+  var p = profils.find(function(item){ return (item.email||'').toLowerCase() === origEmail; });
+  if (!p) {
+    alert('Erreur : profil sélectionné introuvable dans la base de données.');
+    return;
+  }
+
+  var newEmail = (document.getElementById('f_email')?.value || '').trim();
+  var newNom = (document.getElementById('f_nomfamille')?.value || '').trim();
+  var newPrenom = (document.getElementById('f_prenom')?.value || '').trim();
+  var newCin = (document.getElementById('f_cin')?.value || '').trim().toUpperCase();
+
+  if (!newEmail) { alert('L\'adresse e-mail est obligatoire.'); return; }
+  if (!newNom || !newPrenom) { alert('Le nom et le prénom sont obligatoires.'); return; }
+
+  // Traçabilité chronologique des modifications
+  var champsATracer = [
+    { label: "CIN", oldVal: p.cin || '', newVal: newCin },
+    { label: "Nom", oldVal: p.nomfamille || (p.nom ? p.nom.split(' ').slice(1).join(' ') : ''), newVal: newNom },
+    { label: "Prénom", oldVal: p.prenom || (p.nom ? p.nom.split(' ')[0] : ''), newVal: newPrenom },
+    { label: "Date de naissance", oldVal: p.naissance || '', newVal: (document.getElementById('f_naissance')?.value || '').trim() },
+    { label: "Sexe", oldVal: p.sexe || 'Homme', newVal: document.getElementById('f_sexe')?.value || 'Homme' },
+    { label: "Âge", oldVal: String(p.age || ''), newVal: (document.getElementById('f_age')?.value || '').trim() },
+    { label: "Téléphone", oldVal: p.tel || '', newVal: (document.getElementById('f_tel')?.value || '').trim() },
+    { label: "E-mail", oldVal: p.email || '', newVal: newEmail },
+    { label: "Adresse", oldVal: p.adresse || '', newVal: (document.getElementById('f_adresse')?.value || '').trim() },
+    { label: "Ville / Province", oldVal: p.ville || '', newVal: (document.getElementById('f_ville')?.value || '').trim() },
+    { label: "Milieu", oldVal: p.milieu || p.zone || 'Urbain', newVal: document.getElementById('f_milieu')?.value || 'Urbain' },
+    { label: "Niveau d’études", oldVal: p.niveau || '', newVal: document.getElementById('f_niveau')?.value || '' },
+    { label: "Diplôme", oldVal: p.diplome || '', newVal: (document.getElementById('f_diplome')?.value || '').trim() },
+    { label: "Filière / Spécialité", oldVal: p.filiere || '', newVal: (document.getElementById('f_filiere')?.value || '').trim() },
+    { label: "Établissement", oldVal: p.etablissement || '', newVal: (document.getElementById('f_etablissement')?.value || '').trim() },
+    { label: "Année d'obtention", oldVal: p.anneeDiplome || '', newVal: (document.getElementById('f_anneeDiplome')?.value || '').trim() },
+    { label: "Situation actuelle", oldVal: p.situation || p.statutInsertion || 'En recherche active', newVal: document.getElementById('f_situation')?.value || 'En recherche active' },
+    { label: "Expérience professionnelle", oldVal: p.experience || '', newVal: (document.getElementById('f_experience')?.value || '').trim() },
+    { label: "Domaine recherché", oldVal: p.domaine || p.domaineRecherche || '', newVal: (document.getElementById('f_domaine')?.value || '').trim() },
+    { label: "Type d’emploi recherché", oldVal: p.typeEmploi || p.typeEmploiRecherche || '', newVal: document.getElementById('f_typeEmploi')?.value || '' },
+    { label: "Compétences clés", oldVal: p.competences || '', newVal: (document.getElementById('f_competences')?.value || '').trim() },
+    { label: "Statut du compte", oldVal: p.actif !== false ? 'Actif' : 'Désactivé', newVal: document.getElementById('f_actif')?.value === 'true' ? 'Actif' : 'Désactivé' }
+  ];
+
+  var newPass = (document.getElementById('f_password')?.value || '').trim();
+  if (newPass) {
+    champsATracer.push({ label: "Mot de passe", oldVal: "••••••••", newVal: "Mis à jour" });
+    p.password = newPass;
+    p.motDePasse = newPass;
+    p.passhash = simpleHash(newPass);
+  }
+
+  if (!Array.isArray(p.historique)) p.historique = [];
+  var d = new Date();
+  var dateStr = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+  var nbModifs = 0;
+
+  champsATracer.forEach(function(item){
+    if (String(item.oldVal || '').trim() !== String(item.newVal || '').trim()) {
+      p.historique.push({
+        id: Date.now() + Math.random(),
+        date: dateStr,
+        timestamp: d.toISOString(),
+        champ: item.label,
+        ancien: item.oldVal ? String(item.oldVal) : 'Non renseigné',
+        nouveau: item.newVal ? String(item.newVal) : 'Non renseigné',
+        modifiePar: 'Conseiller'
+      });
+      nbModifs++;
+    }
+  });
+
+  p.cin = newCin;
+  p.nomfamille = newNom;
+  p.prenom = newPrenom;
+  p.nom = (newPrenom + ' ' + newNom).trim();
+  p.email = newEmail;
+  p.naissance = (document.getElementById('f_naissance')?.value || '').trim();
+  p.sexe = document.getElementById('f_sexe')?.value || 'Homme';
+  p.age = (document.getElementById('f_age')?.value || '').trim();
+  p.tel = (document.getElementById('f_tel')?.value || '').trim();
+  p.adresse = (document.getElementById('f_adresse')?.value || '').trim();
+  p.ville = (document.getElementById('f_ville')?.value || '').trim();
+  p.milieu = document.getElementById('f_milieu')?.value || 'Urbain';
+  p.zone = p.milieu;
+  p.niveau = document.getElementById('f_niveau')?.value || '';
+  p.diplome = (document.getElementById('f_diplome')?.value || '').trim();
+  p.filiere = (document.getElementById('f_filiere')?.value || '').trim();
+  p.etablissement = (document.getElementById('f_etablissement')?.value || '').trim();
+  p.anneeDiplome = (document.getElementById('f_anneeDiplome')?.value || '').trim();
+  p.situation = document.getElementById('f_situation')?.value || 'En recherche active';
+  p.statutInsertion = p.situation;
+  p.experience = (document.getElementById('f_experience')?.value || '').trim();
+  p.domaine = (document.getElementById('f_domaine')?.value || '').trim();
+  p.domaineRecherche = p.domaine;
+  p.typeEmploi = document.getElementById('f_typeEmploi')?.value || '';
+  p.typeEmploiRecherche = p.typeEmploi;
+  p.competences = (document.getElementById('f_competences')?.value || '').trim();
+  p.actif = document.getElementById('f_actif')?.value === 'true';
+  p.updatedAt = d.toISOString();
+
+  if (origEmail && origEmail !== newEmail.toLowerCase()) {
+    var rdvsAll = store('dabanet_rdvs') || [];
+    rdvsAll.forEach(function(r){ if ((r.email||'').toLowerCase() === origEmail) r.email = newEmail; });
+    save('dabanet_rdvs', rdvsAll);
+
+    var inscAll = store('dabanet_inscriptions') || [];
+    inscAll.forEach(function(i){ if ((i.email||'').toLowerCase() === origEmail) i.email = newEmail; });
+    save('dabanet_inscriptions', inscAll);
+  }
+
+  save('dabanet_profils', profils);
+  renderLauréats();
+  if (typeof window.updateBiDashboard === 'function') window.updateBiDashboard();
+
+  document.getElementById('modOrigEmail').value = newEmail;
+  document.getElementById('modSelectedName').textContent = p.nom;
+  document.getElementById('modSelectedMeta').textContent = 'CIN : ' + (p.cin || 'Non renseigné') + ' · E-mail : ' + p.email + ' · Tél : ' + (p.tel || '—');
+
+  alert('Les modifications du profil de ' + p.nom + ' ont été enregistrées avec succès (' + nbModifs + ' modification(s) consignée(s) dans son historique).');
+};
+
+/* ══════════ HISTORIQUE DU PROFIL (Panel cHistoProfil) ══════════ */
+window.chercherCandidatPourHisto = function(){
+  var raw = (document.getElementById('histoSearchInput')?.value || '').trim();
+  var container = document.getElementById('histoSearchResults');
+  if (!container) return;
+
+  if (!raw) {
+    container.innerHTML = '';
+    return;
+  }
+
+  var matches = filtrerCandidatsParCritere(raw);
+  if (!matches.length) {
+    container.innerHTML = '<div style="padding:14px 16px;background:#FEF2F2;border:1.5px solid #FCA5A5;border-radius:10px;color:#991B1B;font-size:0.88rem;font-weight:700;">' +
+      'Aucun candidat trouvé pour le critère « ' + esc(raw) + ' ». Veuillez vérifier le CIN (ex: TT09090, EE789123), le Nom ou le Prénom.' +
+    '</div>';
+    return;
+  }
+
+  container.innerHTML = '<div style="margin-bottom:8px;font-size:0.82rem;font-weight:700;color:var(--muted);">' + matches.length + ' candidat(s) trouvé(s) :</div>' +
+    matches.map(function(p){
+      var nomAff = esc(p.nom || ((p.prenom || '') + ' ' + (p.nomfamille || ''))).trim();
+      var cinAff = p.cin ? '<span style="font-weight:800;color:var(--anapec-purple);background:#EDE9FE;padding:2px 8px;border-radius:6px;font-size:0.8rem;margin-left:6px;">' + esc(p.cin) + '</span>' : '';
+      return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">' +
+        '<div>' +
+          '<b>' + nomAff + '</b>' + cinAff + '<br>' +
+          '<small style="color:var(--muted);">' + esc(p.email || '') + (p.tel ? ' · ' + esc(p.tel) : '') + ' · ' + esc(p.etablissement || 'UCA') + ' (' + esc(p.filiere || '—') + ')</small>' +
+        '</div>' +
+        '<button type="button" class="act ok" onclick="selectionnerCandidatPourHisto(\'' + esc(p.email) + '\')" style="padding:8px 16px;font-size:0.84rem;">Consulter l\'historique</button>' +
+      '</div>';
+    }).join('');
+};
+
+window.selectionnerCandidatPourHisto = function(email){
+  var profils = store('dabanet_profils') || [];
+  var p = profils.find(function(item){ return (item.email||'').toLowerCase() === (email||'').toLowerCase(); });
+  if (!p) {
+    alert('Candidat introuvable dans la base de données.');
+    return;
+  }
+
+  var noSel = document.getElementById('histoNoSelectionState');
+  if (noSel) noSel.style.display = 'none';
+  var resArea = document.getElementById('histoSearchResults');
+  if (resArea) resArea.innerHTML = '';
+  var area = document.getElementById('histoContentArea');
+  if (area) area.style.display = 'block';
+
+  if (document.getElementById('histoSelectedEmail')) document.getElementById('histoSelectedEmail').value = p.email || '';
+  var nomComplet = (p.nom || (p.prenom + ' ' + (p.nomfamille || ''))).trim();
+  if (document.getElementById('histoSelectedName')) document.getElementById('histoSelectedName').textContent = nomComplet;
+  if (document.getElementById('histoSelectedMeta')) document.getElementById('histoSelectedMeta').textContent = 'CIN : ' + (p.cin || 'Non renseigné') + ' · E-mail : ' + (p.email || '—') + ' · Établissement : ' + (p.etablissement || 'UCA') + ' (' + (p.filiere || '—') + ')';
+
+  if (document.getElementById('histoSearchInput')) document.getElementById('histoSearchInput').value = (p.cin ? p.cin + ' - ' : '') + nomComplet;
+
+  var histoList = Array.isArray(p.historique) ? p.historique : [];
+  var tbody = document.getElementById('histoTableBody');
+  if (!tbody) return;
+
+  if (!histoList.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:26px;color:var(--muted);font-style:italic;">Aucune modification consignée dans le profil de ce candidat pour le moment.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = histoList.slice().reverse().map(function(h){
+    var dateVal = esc(h.date || (h.timestamp ? h.timestamp.split('T')[0] : '—'));
+    var champVal = esc(h.champ || h.action || 'Modification du profil');
+    var oldVal = esc(h.ancien || '—');
+    var newVal = esc(h.nouveau || h.details || '—');
+    var parVal = esc(h.modifiePar || 'Conseiller');
+
+    return '<tr>' +
+      '<td data-label="Date"><b>' + dateVal + '</b>' + (h.timestamp ? '<br><small style="color:var(--muted);">' + esc(h.timestamp.split('T')[1]?.substring(0,5) || '') + '</small>' : '') + '</td>' +
+      '<td data-label="Champ modifié"><span style="font-weight:700;color:var(--anapec-purple-dark);">' + champVal + '</span></td>' +
+      '<td data-label="Ancienne valeur" style="color:#B91C1C;word-break:break-word;">' + oldVal + '</td>' +
+      '<td data-label="Nouvelle valeur" style="color:#15803D;font-weight:700;word-break:break-word;">' + newVal + '</td>' +
+      '<td data-label="Modifié par"><span class="badge accepted">' + parVal + '</span></td>' +
+    '</tr>';
+  }).join('');
+};
+
+window.reinitialiserRechercheHisto = function(){
+  var s = document.getElementById('histoSearchInput');
+  if (s) s.value = '';
+  var r = document.getElementById('histoSearchResults');
+  if (r) r.innerHTML = '';
+  var c = document.getElementById('histoContentArea');
+  if (c) c.style.display = 'none';
+  var n = document.getElementById('histoNoSelectionState');
+  if (n) n.style.display = 'block';
+  var e = document.getElementById('histoSelectedEmail');
+  if (e) e.value = '';
+};
+
+window.navToHistoForCandidate = function(email){
+  navToSection('cHistoProfil');
+  if (email) selectionnerCandidatPourHisto(email);
+};
+
+window.ouvrirModifierProfil = function(email){
+  if (email) {
+    navToModifForCandidate(email);
+  } else {
+    navToSection('cModifProfil');
+    reinitialiserRechercheModif();
+  }
+};
+
+window.sauvegarderProfilModifie = function(){
+  sauvegarderProfilDepuisPanel();
+};
+
+window.toggleCompteActif = function(email){
+  var profils = store('dabanet_profils');
+  var p = profils.find(function(item){ return (item.email||'').toLowerCase() === (email||'').toLowerCase(); });
+  if (!p) return;
+  p.actif = (p.actif === false) ? true : false;
+  save('dabanet_profils', profils);
+  renderLauréats();
+  alert(p.actif ? 'Compte activé avec succès.' : 'Compte suspendu.');
+};
+
+function renderRdvs(customFilter){
+  var rdvs = store('dabanet_rdvs');
+  var el = document.getElementById('cRdvTable');
+  if (!el) return;
+
+  var filterStatus = customFilter || (document.getElementById('cRdvFilterStatus') ? document.getElementById('cRdvFilterStatus').value : 'all');
+  var searchQuery = (document.getElementById('cRdvSearch') ? document.getElementById('cRdvSearch').value : '').toLowerCase().trim();
+
+  // Mise à jour des compteurs statistiques
+  var totalCount = rdvs.length;
+  var attenteCount = rdvs.filter(function(r){
+    var s = (r.status || '').toLowerCase();
+    var st = (r.statut || '').toLowerCase();
+    return s === 'pending' || st === 'en attente' || (!s && !st);
+  }).length;
+  var confirmCount = rdvs.filter(function(r){
+    var s = (r.status || '').toLowerCase();
+    var st = (r.statut || '').toLowerCase();
+    return s === 'accepted' || st === 'confirmé';
+  }).length;
+  var realiseCount = rdvs.filter(function(r){
+    var s = (r.status || '').toLowerCase();
+    var st = (r.statut || '').toLowerCase();
+    return s === 'realise' || s === 'completed' || st === 'réalisé';
+  }).length;
+
+  if (document.getElementById('rdvStatTotal')) document.getElementById('rdvStatTotal').textContent = totalCount;
+  if (document.getElementById('rdvStatAttente')) document.getElementById('rdvStatAttente').textContent = attenteCount;
+  if (document.getElementById('rdvStatConfirme')) document.getElementById('rdvStatConfirme').textContent = confirmCount;
+  if (document.getElementById('rdvStatRealise')) document.getElementById('rdvStatRealise').textContent = realiseCount;
+
+  // Filtrage des rendez-vous
+  var filtered = rdvs.filter(function(r){
+    var s = (r.status || '').toLowerCase();
+    var st = (r.statut || '').toLowerCase();
+
+    if (filterStatus === 'pending') {
+      if (s !== 'pending' && st !== 'en attente' && s !== '') return false;
+    } else if (filterStatus === 'accepted') {
+      if (s !== 'accepted' && st !== 'confirmé') return false;
+    } else if (filterStatus === 'realise') {
+      if (s !== 'realise' && s !== 'completed' && st !== 'réalisé') return false;
+    } else if (filterStatus === 'refused') {
+      if (s !== 'refused' && st !== 'refusé') return false;
+    }
+
+    if (searchQuery) {
+      var nom = (r.nom || r.candidat_nom || '').toLowerCase();
+      var email = (r.email || r.candidat_email || '').toLowerCase();
+      var tel = (r.tel || r.candidat_tel || '').toLowerCase();
+      var cin = (r.cin || r.candidat_cin || '').toLowerCase();
+      var date = (r.date || '').toLowerCase();
+      var sujet = (r.sujet || r.motif || '').toLowerCase();
+      if (!nom.includes(searchQuery) && !email.includes(searchQuery) && !tel.includes(searchQuery) && !cin.includes(searchQuery) && !date.includes(searchQuery) && !sujet.includes(searchQuery)) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  if (!filtered.length) {
+    el.innerHTML = '<div class="empty" style="padding:32px 14px;text-align:center;color:var(--muted);">' +
+      '<div style="font-size:0.95rem;font-weight:600;margin-bottom:8px;">' + (rdvs.length === 0 ? 'Aucune demande de rendez-vous enregistrée pour le moment.' : 'Aucun rendez-vous ne correspond aux critères sélectionnés.') + '</div>' +
+      (rdvs.length > 0 ? '<button type="button" class="act del" onclick="resetRdvFilters()" style="margin-top:12px;padding:8px 16px;">Réinitialiser les filtres</button>' : '') +
+      '</div>';
+    return;
+  }
+
+  var html = '<table class="resp-table"><thead><tr>' +
+    '<th>Lauréat</th><th>Date &amp; Heure</th><th>Sujet &amp; Conseiller</th><th>Modalité</th><th>Statut</th><th>Actions</th>' +
+    '</tr></thead><tbody>';
+
+  filtered.slice().reverse().forEach(function(r){
+    var isRealise = (r.status === 'realise' || r.statut === 'Réalisé' || r.status === 'completed');
+    var isAccepted = (r.status === 'accepted' || r.statut === 'Confirmé');
+    var isRefused = (r.status === 'refused' || r.statut === 'Refusé');
+
+    var badge = isRealise ? '<span class="badge accepted" style="background:#DCFCE7;color:#166534;font-weight:700;border:1px solid #BBF7D0;">Réalisé</span>'
+              : isAccepted ? '<span class="badge accepted" style="background:#F0FDF4;color:#166534;font-weight:700;border:1px solid #BBF7D0;">Confirmé</span>'
+              : isRefused ? '<span class="badge refused" style="background:#FEF2F2;color:#dc2626;font-weight:700;border:1px solid #FECACA;">Refusé</span>'
+              : '<span class="badge pending" style="background:#FFFBEB;color:#B36C00;font-weight:700;border:1px solid #FDE68A;">En attente</span>';
+
+    var nom = r.nom || r.candidat_nom || 'Lauréat';
+    var email = r.email || r.candidat_email || '';
+    var tel = r.tel || r.candidat_tel || '';
+    var cin = r.cin || r.candidat_cin || '';
+    var date = r.date || '';
+    var heure = r.heure ? ' à ' + r.heure : '';
+    var sujet = r.sujet || r.motif || 'Entretien individuel de positionnement';
+    var conseiller = r.conseiller_nom || 'M. EL MEHDI FADIL';
+    var modalite = r.type || r.modalite || 'Présentiel';
+
+    var waBtn = tel ? '<a href="https://wa.me/212' + tel.replace(/^0/,'') + '" target="_blank" class="act ok" style="text-decoration:none;min-height:34px;background:#25D366;border-color:#25D366;color:#fff;font-weight:700;">WhatsApp</a>' : '';
+
+    html += '<tr>' +
+      '<td data-label="Lauréat"><b>' + esc(nom) + '</b>' + (cin ? ' <span style="font-size:0.75rem;background:#F1F5F9;padding:2px 6px;border-radius:4px;color:#475569;">CIN: ' + esc(cin) + '</span>' : '') + '<br><small style="color:var(--muted);">' + esc(email) + (tel ? ' · ' + esc(tel) : '') + '</small></td>' +
+      '<td data-label="Date &amp; Heure"><b>' + esc(date) + '</b><br><span style="color:var(--purple-700);font-weight:600;font-size:0.82rem;">' + esc(heure || '10:00') + '</span></td>' +
+      '<td data-label="Sujet &amp; Conseiller"><div style="font-weight:600;font-size:0.86rem;color:#1E293B;">' + esc(sujet) + '</div><small style="color:var(--muted);">' + esc(conseiller) + '</small></td>' +
+      '<td data-label="Modalité"><span style="background:#FAF3FB;border:1px solid #E8DEEC;color:var(--purple-900);padding:3px 8px;border-radius:6px;font-size:0.8rem;font-weight:600;">' + esc(modalite) + '</span></td>' +
+      '<td data-label="Statut">' + badge + '</td>' +
+      '<td data-label="Actions">' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">' +
+          '<button type="button" class="act ok" style="background:var(--purple-700);color:#fff;border-color:var(--purple-700);font-weight:700;" onclick="voirApercu(\'' + esc(email) + '\')">Voir le candidat</button>' +
+          (!isAccepted && !isRealise ? '<button type="button" class="act ok" onclick="setRdvStatus(\'' + r.id + '\', \'accepted\')">Accepter</button>' : '') +
+          (!isRealise ? '<button type="button" class="act ok" style="background:#0284C7;border-color:#0284C7;color:#fff;" onclick="ouvrirReprogrammer(\'' + r.id + '\')">Reprogrammer</button>' : '') +
+          (!isRealise && !isRefused ? '<button type="button" class="act no" onclick="annulerRdv(\'' + r.id + '\')">Annuler</button>' : '') +
+          (!isRealise ? '<button type="button" class="act ok" style="background:#166534;color:#fff;border-color:#166534;font-weight:700;" onclick="setRdvStatus(\'' + r.id + '\', \'realise\')" title="Valider que l\'entretien a eu lieu et débloquer les prestations">Rendez-vous réalisé</button>' : '') +
+          waBtn +
+          '<button type="button" class="act trash" onclick="supprimerRdv(\'' + r.id + '\')">Supprimer</button>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  });
+
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+window.rafraichirRdvs = function(){
+  var btn = document.getElementById('btnRefreshRdvs');
+  if (btn) {
+    btn.textContent = 'Actualisation...';
+    btn.disabled = true;
+  }
+  dbSync(function(){
+    renderRdvs();
+    renderConseiller();
+    if (btn) {
+      btn.textContent = 'Actualiser les données';
+      btn.disabled = false;
+    }
+  });
+};
+
+window.resetRdvFilters = function(){
+  var s = document.getElementById('cRdvSearch');
+  if (s) s.value = '';
+  var f = document.getElementById('cRdvFilterStatus');
+  if (f) f.value = 'all';
+  renderRdvs();
+};
+
+function renderCreneaux(){
+  var creneaux = store('dabanet_creneaux');
+  var el = document.getElementById('cCreneauxTable');
+  if (!el) return;
+
+  if (!creneaux.length) {
+    el.innerHTML = '<div class="empty">Aucun créneau ouvert actuellement.</div>';
+    return;
+  }
+
+  var html = '<table class="resp-table"><thead><tr><th>Date</th><th>Horaire</th><th>Modalité</th><th>Statut</th><th>Action</th></tr></thead><tbody>';
+  creneaux.slice().reverse().forEach(function(c){
+    var dispo = c.reserve !== true;
+    html += '<tr>' +
+      '<td data-label="Date"><b>' + esc(c.date) + '</b></td>' +
+      '<td data-label="Horaire">' + esc(c.debut) + ' - ' + esc(c.fin) + '</td>' +
+      '<td data-label="Modalité">' + esc(c.type) + '</td>' +
+      '<td data-label="Statut">' + (dispo ? '<span class="badge accepted">Disponible</span>' : '<span class="badge refused">Réservé</span>') + '</td>' +
+      '<td data-label="Action"><button class="act trash" onclick="supprimerCreneau(' + c.id + ')">Supprimer</button></td>' +
+    '</tr>';
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+function renderAteliers(){
+  var ateliers = store('dabanet_ateliers');
+  var insc = store('dabanet_inscriptions');
+  var el = document.getElementById('cAteliersTable');
+  if (!el) return;
+
+  if (!ateliers.length) {
+    el.innerHTML = '<div class="empty">Aucun atelier programmé.</div>';
+    return;
+  }
+
+  var html = '<table class="resp-table"><thead><tr><th>Atelier</th><th>Date &amp; Heure</th><th>Animateur</th><th>Inscrits</th><th>Action</th></tr></thead><tbody>';
+  ateliers.slice().reverse().forEach(function(a){
+    var count = insc.filter(function(i){ return i.atelierId === a.id || i.atelier === a.titre; }).length;
+    html += '<tr>' +
+      '<td data-label="Atelier"><b>' + esc(a.titre) + '</b><br><small style="color:var(--muted);">' + esc(a.desc||'') + '</small></td>' +
+      '<td data-label="Date">' + (a.date ? new Date(a.date).toLocaleString('fr-MA') : '—') + '</td>' +
+      '<td data-label="Animateur">' + esc(a.animateur||'Conseiller ANAPEC') + '</td>' +
+      '<td data-label="Places"><b>' + count + '</b> / ' + (a.places || 20) + '</td>' +
+      '<td data-label="Action"><button class="act trash" onclick="supprimerAtelier(' + a.id + ')">Supprimer</button></td>' +
+    '</tr>';
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+function renderInscriptions(){
+  var insc = store('dabanet_inscriptions');
+  var el = document.getElementById('cInscTable');
+  if (!el) return;
+
+  if (!insc.length) {
+    el.innerHTML = '<div class="empty">Aucune inscription aux ateliers pour le moment.</div>';
+    return;
+  }
+
+  var html = '<table class="resp-table"><thead><tr><th>Lauréat</th><th>Email</th><th>Atelier</th><th>Date</th><th>Action</th></tr></thead><tbody>';
+  insc.slice().reverse().forEach(function(i){
+    html += '<tr>' +
+      '<td data-label="Lauréat"><b>' + esc(i.nom) + '</b></td>' +
+      '<td data-label="Email">' + esc(i.email || '—') + '</td>' +
+      '<td data-label="Atelier">' + esc(i.atelier) + '</td>' +
+      '<td data-label="Date">' + (i.date ? new Date(i.date).toLocaleDateString('fr-MA') : '—') + '</td>' +
+      '<td data-label="Action"><button class="act trash" onclick="delInsc(' + i.id + ', \'' + esc(i.nom) + '\')">Supprimer</button></td>' +
+    '</tr>';
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+function renderNews(){
+  var news = store('dabanet_news');
+  var el = document.getElementById('cNewsTable');
+  if (!el) return;
+
+  if (!news.length) {
+    el.innerHTML = '<div class="empty">Aucune actualité publiée.</div>';
+    return;
+  }
+
+  var html = '<table class="resp-table"><thead><tr><th>Titre</th><th>Catégorie</th><th>Date</th><th>Action</th></tr></thead><tbody>';
+  news.slice().reverse().forEach(function(n){
+    html += '<tr>' +
+      '<td data-label="Titre"><b>' + esc(n.title) + '</b><br><small style="color:var(--muted);">' + esc((n.desc||'').slice(0,80)) + '...</small></td>' +
+      '<td data-label="Catégorie"><span class="badge accepted">' + esc(n.tag || 'Actualité') + '</span></td>' +
+      '<td data-label="Date">' + esc(n.date || '—') + '</td>' +
+      '<td data-label="Action"><button class="act trash" onclick="supprimerNews(' + n.id + ')">Supprimer</button></td>' +
+    '</tr>';
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+/* ══════════ Université Dashboard ══════════ */
+function renderBanners(){
+  var el = document.getElementById('cBannersTable');
+  if (!el) return;
+  var banners = store('dabanet_banners').slice().sort(function(a,b){
+    var ordA = parseInt(a.order !== undefined ? a.order : (a.ordre !== undefined ? a.ordre : 999), 10) || 999;
+    var ordB = parseInt(b.order !== undefined ? b.order : (b.ordre !== undefined ? b.ordre : 999), 10) || 999;
+    return ordA - ordB;
+  });
+  if (!banners.length) { el.innerHTML = '<div class="empty">Aucune bannière enregistrée.</div>'; return; }
+  el.innerHTML = '<div class="table-wrap"><table class="resp-table"><thead><tr><th>Aperçu</th><th>Titre</th><th>Ordre</th><th>Statut</th><th>Actions</th></tr></thead><tbody>' + banners.map(function(b){
+    var img = b.imageUrl || b.image || b.img || b.url || '';
+    var isActive = b.active !== false && b.statut !== 'inactive' && b.statut !== 'disabled';
+    var tit = b.title || b.titre || '—';
+    var ord = b.order !== undefined ? b.order : (b.ordre !== undefined ? b.ordre : 0);
+    return '<tr><td><img src="' + esc(img) + '" alt="" style="width:120px;height:54px;object-fit:cover;border-radius:6px;background:#f1f5f9;"></td><td><b>' + esc(tit) + '</b></td><td>' + ord + '</td><td><span class="badge ' + (isActive ? 'accepted' : 'refused') + '">' + (isActive ? 'Active' : 'Inactive') + '</span></td><td><button class="act del" onclick="toggleBanner(' + b.id + ')">' + (isActive ? 'Désactiver' : 'Activer') + '</button><button class="act trash" onclick="supprimerBanner(' + b.id + ')">Supprimer</button></td></tr>';
+  }).join('') + '</tbody></table></div>';
+}
+function ajouterBanner(){
+  var input = document.getElementById('bnImage');
+  var file = input && input.files && input.files[0];
+  if (!file) { alert('Veuillez sélectionner une image.'); return; }
+  if (file.size > 15 * 1024 * 1024) { alert('L’image ne doit pas dépasser 15 Mo.'); return; }
+
+  var reader = new FileReader();
+  reader.onload = function(){
+    var preview = new Image();
+    preview.onload = function(){
+      var processedDataUrl = reader.result;
+
+      // Adaptation et cadrage automatique au format standard 1920 × 700 px
+      try {
+        var canvas = document.createElement('canvas');
+        canvas.width = 1920;
+        canvas.height = 700;
+        var ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+
+        var targetRatio = 1920 / 700;
+        var srcRatio = preview.naturalWidth / preview.naturalHeight;
+        var sx = 0, sy = 0, sWidth = preview.naturalWidth, sHeight = preview.naturalHeight;
+
+        if (srcRatio > targetRatio) {
+          sWidth = preview.naturalHeight * targetRatio;
+          sx = (preview.naturalWidth - sWidth) / 2;
+        } else {
+          sHeight = preview.naturalWidth / targetRatio;
+          sy = (preview.naturalHeight - sHeight) / 2;
+        }
+
+        ctx.drawImage(preview, sx, sy, sWidth, sHeight, 0, 0, 1920, 700);
+        processedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+      } catch (canvasErr) {
+        console.warn('Canvas resize fallback:', canvasErr);
+        processedDataUrl = reader.result;
+      }
+
+      var payload = {
+        filename: (file.name || 'banner.jpg').replace(/\.[^/.]+$/, '') + '_1920x700.jpg',
+        data: processedDataUrl,
+        image: processedDataUrl,
+        dataUrl: processedDataUrl
+      };
+
+      var titleVal = (document.getElementById('bnTitle')?.value || '').trim();
+      var descVal = (document.getElementById('bnDescription')?.value || '').trim();
+      var linkVal = (document.getElementById('bnLink')?.value || '').trim();
+      var activeVal = document.getElementById('bnActive')?.value === 'true';
+      var orderVal = Number(document.getElementById('bnOrder')?.value) || 0;
+      var startVal = document.getElementById('bnStart')?.value || null;
+      var endVal = document.getElementById('bnEnd')?.value || null;
+
+      function finalizeBanner(finalUrl) {
+        var bannerId = Date.now();
+        var bannerObj = {
+          id: bannerId,
+          imageUrl: finalUrl,
+          image: finalUrl,
+          title: titleVal,
+          titre: titleVal,
+          description: descVal,
+          link: linkVal,
+          lien: linkVal,
+          active: activeVal,
+          statut: activeVal ? 'active' : 'inactive',
+          order: orderVal,
+          ordre: orderVal,
+          startDate: startVal,
+          endDate: endVal,
+          createdAt: new Date().toISOString()
+        };
+
+        var banners = store('dabanet_banners');
+        banners.push(bannerObj);
+        save('dabanet_banners', banners);
+
+        // Synchroniser également via l'API dédiée
+        fetch('/api/bannieres', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bannerObj)
+        }).catch(function(){});
+
+        input.value = '';
+        if (document.getElementById('bnTitle')) document.getElementById('bnTitle').value = '';
+        if (document.getElementById('bnDescription')) document.getElementById('bnDescription').value = '';
+        if (document.getElementById('bnLink')) document.getElementById('bnLink').value = '';
+        renderBanners();
+        alert('Bannière enregistrée avec succès au format 1920 × 700 px !');
+      }
+
+      fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(function(response){
+        if (response.ok) return response.json();
+        return { success: true, url: processedDataUrl };
+      })
+      .then(function(upload){
+        var finalUrl = (upload && upload.url) ? upload.url : processedDataUrl;
+        finalizeBanner(finalUrl);
+      })
+      .catch(function(error){
+        console.warn('Upload error, fallback to dataUrl:', error);
+        finalizeBanner(processedDataUrl);
+      });
+    };
+    preview.onerror = function(){
+      alert('Format de fichier image non reconnu ou fichier corrompu.');
+    };
+    preview.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+function toggleBanner(id){
+  var banners = store('dabanet_banners');
+  var banner = banners.find(function(b){ return String(b.id) === String(id); });
+  if (banner) {
+    var newState = !(banner.active !== false && banner.statut !== 'inactive');
+    banner.active = newState;
+    banner.statut = newState ? 'active' : 'inactive';
+    save('dabanet_banners', banners);
+    fetch('/api/bannieres', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(banner)
+    }).catch(function(){});
+    renderBanners();
+  }
+}
+function supprimerBanner(id){
+  if (!confirm('Supprimer cette bannière ?')) return;
+  fetch('/api/bannieres/' + id, { method: 'DELETE' }).catch(function(){});
+  var banners = store('dabanet_banners').filter(function(b){ return String(b.id) !== String(id); });
+  save('dabanet_banners', banners);
+  renderBanners();
+}
+
+function renderUniv(){
+  var profils = store('dabanet_profils');
+  var rdvs = store('dabanet_rdvs');
+  var insc = store('dabanet_inscriptions');
+
+  var avgScore = profils.length 
+    ? Math.round(profils.reduce(function(acc, p){ return acc + (p.score || 0); }, 0) / profils.length)
+    : 0;
+  var acceptes = rdvs.filter(function(r){ return r.status === 'accepted'; }).length;
+
+  var statsEl = document.getElementById('uStats');
+  if (statsEl) {
+    statsEl.innerHTML = 
+      '<div class="stat"><div class="n">' + profils.length + '</div><div class="l">Lauréats inscrits</div></div>' +
+      '<div class="stat"><div class="n">' + avgScore + '%</div><div class="l">Complétion moyenne</div></div>' +
+      '<div class="stat"><div class="n">' + rdvs.length + '</div><div class="l">RDVs demandés</div></div>' +
+      '<div class="stat"><div class="n">' + acceptes + '</div><div class="l">RDVs acceptés</div></div>' +
+      '<div class="stat"><div class="n">' + insc.length + '</div><div class="l">Ateliers suivis</div></div>';
+  }
+
+  // Établissements breakdown
+  var etabs = {};
+  profils.forEach(function(p){
+    var e = p.etablissement || 'Non spécifié';
+    if (!etabs[e]) etabs[e] = { count: 0, totalScore: 0 };
+    etabs[e].count++;
+    etabs[e].totalScore += (p.score || 0);
+  });
+
+  var etabEl = document.getElementById('uEtabTable');
+  if (etabEl) {
+    var etabHtml = '<table class="resp-table"><thead><tr><th>Établissement</th><th>Lauréats</th><th>Score Moyen</th></tr></thead><tbody>';
+    var keys = Object.keys(etabs);
+    if (!keys.length) {
+      etabEl.innerHTML = '<div class="empty">Aucune donnée disponible.</div>';
+    } else {
+      keys.sort(function(a,b){ return etabs[b].count - etabs[a].count; }).forEach(function(k){
+        var avg = Math.round(etabs[k].totalScore / etabs[k].count);
+        etabHtml += '<tr><td data-label="Établissement"><b>' + esc(k) + '</b></td><td data-label="Lauréats">' + etabs[k].count + '</td><td data-label="Score Moyen"><span class="score-pill">' + avg + '%</span></td></tr>';
+      });
+      etabHtml += '</tbody></table>';
+      etabEl.innerHTML = etabHtml;
+    }
+  }
+
+  // Lauréats table
+  var pTable = document.getElementById('uProfilTable');
+  if (pTable) {
+    if (!profils.length) {
+      pTable.innerHTML = '<div class="empty">Aucun lauréat enregistré.</div>';
+    } else {
+      var pHtml = '<table class="resp-table"><thead><tr><th>Nom</th><th>Établissement</th><th>Filière</th><th>Niveau</th><th>Score</th><th>Aperçu</th></tr></thead><tbody>';
+      profils.slice().reverse().forEach(function(p){
+        pHtml += '<tr>' +
+          '<td data-label="Nom"><b>' + esc(p.nom) + '</b></td>' +
+          '<td data-label="Établissement">' + esc(p.etablissement || '—') + '</td>' +
+          '<td data-label="Filière">' + esc(p.filiere || '—') + '</td>' +
+          '<td data-label="Niveau">' + esc(p.niveau || '—') + '</td>' +
+          '<td data-label="Score"><span class="score-pill">' + (p.score || 0) + '%</span></td>' +
+          '<td data-label="Action"><button class="act del" onclick="voirApercu(\'' + esc(p.email) + '\')">Consulter</button></td>' +
+        '</tr>';
+      });
+      pHtml += '</tbody></table>';
+      pTable.innerHTML = pHtml;
+    }
+  }
+
+  // RDVs table
+  var rTable = document.getElementById('uRdvTable');
+  if (rTable) {
+    if (!rdvs.length) {
+      rTable.innerHTML = '<div class="empty">Aucun rendez-vous enregistré.</div>';
+    } else {
+      var rHtml = '<table class="resp-table"><thead><tr><th>Lauréat</th><th>Date</th><th>Modalité</th><th>Statut</th></tr></thead><tbody>';
+      rdvs.slice().reverse().forEach(function(r){
+        var badge = r.status === 'accepted' ? '<span class="badge accepted">Accepté</span>'
+                  : r.status === 'refused' ? '<span class="badge refused">Refusé</span>'
+                  : '<span class="badge pending">En attente</span>';
+        rHtml += '<tr><td data-label="Lauréat"><b>' + esc(r.nom) + '</b></td><td data-label="Date">' + esc(r.date) + '</td><td data-label="Modalité">' + esc(r.type) + '</td><td data-label="Statut">' + badge + '</td></tr>';
+      });
+      rHtml += '</tbody></table>';
+      rTable.innerHTML = rHtml;
+    }
+  }
+}
+
+/* ══════════ Actions Conseiller ══════════ */
+window.annulerRdv = function(id) {
+  if (!confirm('Voulez-vous vraiment annuler ce rendez-vous ? Le créneau sera automatiquement libéré.')) return;
+  setRdvStatus(id, 'cancelled');
+};
+
+window.ouvrirReprogrammer = function(id) {
+  var rdvs = store('dabanet_rdvs');
+  var r = rdvs.find(function(x){ return String(x.id) === String(id); });
+  if (!r) { alert('Rendez-vous introuvable'); return; }
+
+  document.getElementById('reprogRdvId').value = id;
+  var candNom = r.nom || r.candidat_nom || 'Candidat';
+  document.getElementById('reprogLauréatInfo').textContent = candNom + ' · Actuel : ' + (r.date || '') + ' (' + (r.heure || '10:00') + ')';
+
+  var creneaux = store('dabanet_creneaux') || [];
+  var select = document.getElementById('reprogCreneauSelect');
+  select.innerHTML = '';
+
+  var libres = creneaux.filter(function(c){
+    return c.reserve !== true && String(c.statut||c.status||'').toLowerCase() !== 'réservé';
+  });
+
+  if (libres.length > 0) {
+    libres.forEach(function(c){
+      var opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.date + ' à ' + (c.heure || c.debut || '10:00') + ' (' + (c.type || 'Présentiel') + ' - ' + (c.conseiller || 'Conseiller') + ')';
+      opt.setAttribute('data-date', c.date);
+      opt.setAttribute('data-heure', c.heure || c.debut || '10:00');
+      select.appendChild(opt);
+    });
+  }
+
+  // Option manuelle
+  var optCustom = document.createElement('option');
+  optCustom.value = 'custom';
+  optCustom.textContent = 'Proposer une autre date / heure personnalisée...';
+  select.appendChild(optCustom);
+
+  handleReprogSelectChange();
+  document.getElementById('modalReprogrammer').style.display = 'flex';
+};
+
+window.handleReprogSelectChange = function() {
+  var sel = document.getElementById('reprogCreneauSelect');
+  var customWrap = document.getElementById('reprogCustomWrap');
+  if (sel && customWrap) {
+    customWrap.style.display = (sel.value === 'custom') ? 'block' : 'none';
+  }
+};
+
+window.confirmerReprogrammation = function() {
+  var id = document.getElementById('reprogRdvId').value;
+  var sel = document.getElementById('reprogCreneauSelect');
+  if (!id || !sel) return;
+
+  var newDate = '';
+  var newHeure = '';
+  var newCreneauId = null;
+
+  if (sel.value === 'custom') {
+    newDate = document.getElementById('reprogNewDate').value;
+    newHeure = document.getElementById('reprogNewHeure').value;
+    if (!newDate || !newHeure) {
+      alert('Veuillez renseigner la nouvelle date et la nouvelle heure.');
+      return;
+    }
+  } else {
+    newCreneauId = sel.value;
+    var opt = sel.options[sel.selectedIndex];
+    newDate = opt.getAttribute('data-date');
+    newHeure = opt.getAttribute('data-heure');
+  }
+
+  var rdvs = store('dabanet_rdvs');
+  var r = rdvs.find(function(x){ return String(x.id) === String(id); });
+  if (!r) return;
+
+  var prevDate = r.date;
+  var prevHeure = r.heure;
+  var prevCreneauId = r.creneauId;
+
+  // 1. Libérer l'ancien créneau
+  var creneaux = store('dabanet_creneaux') || [];
+  var oldSlot = creneaux.find(function(c){
+    return (prevCreneauId && String(c.id) === String(prevCreneauId)) ||
+           (c.date === prevDate && (c.heure === prevHeure || c.debut === prevHeure));
+  });
+  if (oldSlot) {
+    oldSlot.reserve = false;
+    oldSlot.status = 'libre';
+    oldSlot.statut = 'libre';
+  }
+
+  // 2. Réserver le nouveau créneau
+  if (newCreneauId && newCreneauId !== 'custom') {
+    var nextSlot = creneaux.find(function(c){ return String(c.id) === String(newCreneauId); });
+    if (nextSlot) {
+      nextSlot.reserve = true;
+      nextSlot.status = 'reserve';
+      nextSlot.statut = 'Réservé';
+    }
+  }
+  save('dabanet_creneaux', creneaux);
+
+  // 3. Mettre à jour le rendez-vous
+  r.date = newDate;
+  r.heure = newHeure;
+  r.creneauId = newCreneauId;
+  r.statut = 'Confirmé';
+  r.status = 'accepted';
+  save('dabanet_rdvs', rdvs);
+
+  // 4. Mettre à jour l'historique du candidat
+  var profils = store('dabanet_profils') || [];
+  var candEmail = (r.email || r.candidat_email || '').toLowerCase();
+  var p = profils.find(function(x){ return (x.email || '').toLowerCase() === candEmail; });
+  if (p) {
+    if (!Array.isArray(p.historique)) p.historique = [];
+    p.historique.push({
+      date: new Date().toISOString().split('T')[0],
+      timestamp: new Date().toISOString(),
+      action: 'Reprogrammation du rendez-vous',
+      statut: 'Confirmé',
+      details: 'Reprogrammé du ' + prevDate + ' (' + prevHeure + ') vers le ' + newDate + ' à ' + newHeure + ' avec ' + (r.conseiller_nom || 'le conseiller')
+    });
+    save('dabanet_profils', profils);
+  }
+
+  // 5. Sync API backend
+  fetch('/api/rdvs/status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: id,
+      action: 'reprogrammer',
+      newDate: newDate,
+      newHeure: newHeure,
+      newCreneauId: newCreneauId
+    })
+  }).catch(function(){});
+
+  fermerModal('modalReprogrammer');
+  renderConseiller();
+  renderRdvs();
+  alert('Rendez-vous reprogrammé avec succès au ' + newDate + ' à ' + newHeure + '. L\'ancien créneau a été libéré.');
+};
+
+function setRdvStatus(id, status){
+  var rdvs = store('dabanet_rdvs');
+  var targetRdv = null;
+  rdvs.forEach(function(r){
+    if (String(r.id) === String(id)) {
+      r.status = status;
+      r.statut = (status === 'realise' ? 'Réalisé' : (status === 'accepted' ? 'Confirmé' : (status === 'refused' ? 'Refusé' : status)));
+      targetRdv = r;
+    }
+  });
+
+  if (targetRdv) {
+    save('dabanet_rdvs', rdvs);
+
+    // Synchronisation du profil candidat
+    var profils = store('dabanet_profils') || [];
+    var candEmail = (targetRdv.email || targetRdv.candidat_email || '').toLowerCase();
+    var p = profils.find(function(x){ return (x.email || '').toLowerCase() === candEmail || (x.cin && targetRdv.cin && x.cin.toLowerCase() === targetRdv.cin.toLowerCase()); });
+
+    if (p) {
+      if (status === 'realise') {
+        p.statut = 'rendez_vous_realise';
+        p.rdvRealise = true;
+        p.rdvValideLe = new Date().toISOString();
+      } else if (status === 'accepted') {
+        if (p.statut !== 'rendez_vous_realise') {
+          p.statut = 'rendez_vous_reserve';
+        }
+      }
+      save('dabanet_profils', profils);
+    }
+
+    // Notification au serveur API
+    fetch('/api/rdvs/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: id, action: status })
+    }).catch(function(){});
+
+    renderConseiller();
+    renderRdvs();
+    if (status === 'realise') {
+      alert('Rendez-vous validé comme Réalisé. Les prestations d\'insertion sont désormais débloquées pour ce candidat.');
+    }
+  }
+}
+
+function supprimerRdv(id){
+  if (!confirm('Supprimer cette demande de rendez-vous ?')) return;
+  var rdvs = store('dabanet_rdvs').filter(function(r){ return String(r.id) !== String(id); });
+  save('dabanet_rdvs', rdvs);
+  fetch('/api/rdvs/' + id, { method: 'DELETE' }).catch(function(){});
+  renderConseiller();
+  renderRdvs();
+}
+
+window.validerRdvCandidatParEmail = function(email) {
+  var profils = store('dabanet_profils') || [];
+  var clean = (email || '').toLowerCase();
+  var p = profils.find(function(x){ return (x.email || '').toLowerCase() === clean; });
+  if (!p) { alert('Candidat introuvable.'); return; }
+
+  if (!confirm('Confirmer la réalisation de l\'entretien individuel pour ' + (p.nom || clean) + ' ?\n\nCette action débloquera automatiquement les prestations d\'insertion pour ce candidat.')) return;
+
+  p.statut = 'rendez_vous_realise';
+  p.rdvRealise = true;
+  p.rdvValideLe = new Date().toISOString();
+  save('dabanet_profils', profils);
+
+  // Mettre à jour les éventuels RDVs associés
+  var rdvs = store('dabanet_rdvs') || [];
+  rdvs.forEach(function(r){
+    if ((r.email || r.candidat_email || '').toLowerCase() === clean && r.status !== 'refused' && r.status !== 'cancelled') {
+      r.status = 'realise';
+      r.statut = 'Réalisé';
+    }
+  });
+  save('dabanet_rdvs', rdvs);
+
+  // Sync API
+  fetch('/api/data', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key: 'profils', value: profils })
+  }).catch(function(){});
+
+  renderConseiller();
+  alert('Entretien validé comme Réalisé. Les prestations sont maintenant débloquées pour ' + (p.nom || clean) + '.');
+};
+
+
+
+function supprimerLaureat(email, nom){
+  if (!confirm('Confirmer la suppression du candidat ' + (nom || email) + ' ?\n\nSes rendez-vous et inscriptions seront également supprimés.')) return;
+
+  var cleanEmail = (email || '').toLowerCase();
+
+  // 1. Supprimer le profil
+  var profils = store('dabanet_profils').filter(function(p){
+    return (p.email || '').toLowerCase() !== cleanEmail;
+  });
+  save('dabanet_profils', profils);
+
+  // 2. Libérer les créneaux et supprimer les RDVs
+  var rdvs = store('dabanet_rdvs');
+  var creneaux = store('dabanet_creneaux');
+  rdvs.forEach(function(r){
+    if ((r.email || '').toLowerCase() === cleanEmail && r.creneauId) {
+      creneaux.forEach(function(c){
+        if (c.id === r.creneauId) c.reserve = false;
+      });
+    }
+  });
+  save('dabanet_creneaux', creneaux);
+
+  var rdvsRestants = rdvs.filter(function(r){
+    return (r.email || '').toLowerCase() !== cleanEmail;
+  });
+  save('dabanet_rdvs', rdvsRestants);
+
+  // 3. Supprimer les inscriptions ateliers
+  var insc = store('dabanet_inscriptions').filter(function(i){
+    return (i.email || '').toLowerCase() !== cleanEmail;
+  });
+  save('dabanet_inscriptions', insc);
+
+  renderConseiller();
+  alert('Profil candidat et données associées supprimés.');
+}
+
+function delInsc(id, nom){
+  if (!confirm('Supprimer cette inscription aux ateliers' + (nom ? ' de ' + nom : '') + ' ?')) return;
+  var insc = store('dabanet_inscriptions').filter(function(i){ return i.id !== id; });
+  save('dabanet_inscriptions', insc);
+  renderConseiller();
+}
+
+function ajouterCreneau(){
+  var date = document.getElementById('crDate').value;
+  var debut = document.getElementById('crDebut').value;
+  var fin = document.getElementById('crFin').value;
+  var type = document.getElementById('crType').value;
+
+  if (!date || !debut || !fin) {
+    alert('Veuillez remplir la date et les horaires.');
+    return;
+  }
+
+  var creneaux = store('dabanet_creneaux');
+  creneaux.push({
+    id: Date.now(),
+    date: date,
+    debut: debut,
+    fin: fin,
+    type: type,
+    reserve: false
+  });
+  save('dabanet_creneaux', creneaux);
+  renderConseiller();
+  alert('Créneau ajouté avec succès.');
+}
+
+function supprimerCreneau(id){
+  if (!confirm('Supprimer ce créneau ?')) return;
+  var creneaux = store('dabanet_creneaux').filter(function(c){ return c.id !== id; });
+  save('dabanet_creneaux', creneaux);
+  renderConseiller();
+}
+
+function ajouterAtelier(){
+  var titre = document.getElementById('atTitre').value.trim();
+  var date = document.getElementById('atDate').value;
+  var animateur = document.getElementById('atAnimateur').value.trim();
+  var places = parseInt(document.getElementById('atPlaces').value) || 20;
+  var desc = document.getElementById('atDesc').value.trim();
+
+  if (!titre || !date) {
+    alert('Veuillez renseigner le titre et la date.');
+    return;
+  }
+
+  var ateliers = store('dabanet_ateliers');
+  ateliers.push({
+    id: Date.now(),
+    titre: titre,
+    date: date,
+    animateur: animateur || 'Conseiller ANAPEC',
+    places: places,
+    desc: desc
+  });
+  save('dabanet_ateliers', ateliers);
+  renderConseiller();
+  document.getElementById('atTitre').value = '';
+  document.getElementById('atDesc').value = '';
+  alert('Atelier programmé avec succès.');
+}
+
+function supprimerAtelier(id){
+  if (!confirm('Supprimer cet atelier ?')) return;
+  var ateliers = store('dabanet_ateliers').filter(function(a){ return a.id !== id; });
+  save('dabanet_ateliers', ateliers);
+  renderConseiller();
+}
+
+function ajouterNews(){
+  var title = document.getElementById('nwTitre').value.trim();
+  var tag = document.getElementById('nwTag').value.trim() || 'Actualité';
+  var desc = document.getElementById('nwContenu').value.trim();
+
+  if (!title || !desc) {
+    alert('Veuillez saisir un titre et un contenu.');
+    return;
+  }
+
+  var news = store('dabanet_news');
+  news.push({
+    id: Date.now(),
+    title: title,
+    tag: tag,
+    desc: desc,
+    date: new Date().toLocaleDateString('fr-MA')
+  });
+  save('dabanet_news', news);
+  renderConseiller();
+  document.getElementById('nwTitre').value = '';
+  document.getElementById('nwContenu').value = '';
+  alert('Actualité publiée avec succès.');
+}
+
+function supprimerNews(id){
+  if (!confirm('Supprimer cette actualité ?')) return;
+  var news = store('dabanet_news').filter(function(n){ return n.id !== id; });
+  save('dabanet_news', news);
+  renderConseiller();
+}
+
+/* ══════════ Modals ══════════ */
+function fermerModal(id){
+  var m = document.getElementById(id);
+  if (m) m.style.display = 'none';
+}
+
+function voirApercu(email){
+  var profils = store('dabanet_profils');
+  var rdvs = store('dabanet_rdvs');
+  var insc = store('dabanet_inscriptions');
+  var p = profils.find(function(item){ return (item.email||'').toLowerCase() === (email||'').toLowerCase(); });
+  if (!p) { alert('Profil introuvable.'); return; }
+
+  document.getElementById('mNom').textContent = (p.nom || 'Sans nom') + (p.cin ? ' · ' + p.cin : '');
+  document.getElementById('mSub').textContent = (p.filiere || 'Filière non spécifiée') + ' · ' + (p.etablissement || 'Université Cadi Ayyad Marrakech');
+
+  var cvBtn = p.cvUrl 
+    ? '<a href="' + p.cvUrl + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:var(--purple-700);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;font-size:0.86rem;margin-top:10px;min-height:44px;">Télécharger le CV (' + esc(p.cvName || 'Document') + ')</a>'
+    : '<span style="color:var(--muted);font-size:0.84rem;">Aucun CV au format PDF téléversé pour le moment.</span>';
+
+  var pos = p.positionnement || {};
+  var scores = pos.scores || {};
+  var userRdvs = rdvs.filter(function(r){ return (r.email||'').toLowerCase() === (p.email||'').toLowerCase() || (r.nom||'').toLowerCase() === (p.nom||'').toLowerCase(); });
+  var userInsc = insc.filter(function(i){ return (i.email||'').toLowerCase() === (p.email||'').toLowerCase(); });
+
+  var body = '<div>' +
+    <!-- Onglets institutionnels de la fiche candidat -->
+    '<div class="profile-tabs">' +
+      '<button type="button" class="profile-tab-btn active" onclick="switchProfileModalTab(\'ptInfos\', this)">Informations Personnelles</button>' +
+      '<button type="button" class="profile-tab-btn" onclick="switchProfileModalTab(\'ptFormation\', this)">Formation Académique</button>' +
+      '<button type="button" class="profile-tab-btn" onclick="switchProfileModalTab(\'ptExp\', this)">Expérience & Parcours</button>' +
+      '<button type="button" class="profile-tab-btn" onclick="switchProfileModalTab(\'ptComp\', this)">Compétences & Langues</button>' +
+      '<button type="button" class="profile-tab-btn" onclick="switchProfileModalTab(\'ptCV\', this)">Document CV</button>' +
+      '<button type="button" class="profile-tab-btn" onclick="switchProfileModalTab(\'ptPrests\', this)">Prestations & Diagnostic</button>' +
+      '<button type="button" class="profile-tab-btn" onclick="switchProfileModalTab(\'ptRdvs\', this)">Rendez-vous (' + userRdvs.length + ')</button>' +
+      '<button type="button" class="profile-tab-btn" onclick="switchProfileModalTab(\'ptAteliers\', this)">Ateliers (' + userInsc.length + ')</button>' +
+      '<button type="button" class="profile-tab-btn" onclick="switchProfileModalTab(\'ptHisto\', this)">Historique & Audit</button>' +
+    '</div>' +
+
+    <!-- Onglet 1 : Informations personnelles -->
+    '<div class="profile-tab-panel active" id="ptInfos">' +
+      '<div class="modal-grid">' +
+        '<div class="modal-field"><small>Identifiant National (CIN)</small><b>' + esc(p.cin || 'Non renseigné') + '</b></div>' +
+        '<div class="modal-field"><small>Nom complet</small><b>' + esc(p.nom || '—') + '</b></div>' +
+        '<div class="modal-field"><small>Email</small><b>' + esc(p.email || '—') + '</b></div>' +
+        '<div class="modal-field"><small>Téléphone</small><b>' + esc(p.tel || '—') + '</b></div>' +
+        '<div class="modal-field"><small>Mot de passe du compte</small><b>' + esc(p.password || p.motDePasse || 'uca2026') + '</b></div>' +
+        '<div class="modal-field"><small>Âge & Sexe</small><b>' + (p.age ? p.age + ' ans' : '—') + ' · ' + esc(p.sexe || 'Non précisé') + '</b></div>' +
+        '<div class="modal-field"><small>Ville de résidence</small><b>' + esc(p.ville || 'Marrakech') + '</b></div>' +
+        '<div class="modal-field"><small>Milieu Territorial</small><b>' + esc(p.zone || (p.ville === 'Marrakech' ? 'Urbain' : 'Rural')) + '</b></div>' +
+        '<div class="modal-field"><small>Statut du compte</small><b>' + (p.actif !== false ? 'Compte Actif' : 'Compte Désactivé') + '</b></div>' +
+        '<div class="modal-field" style="grid-column:span 2;background:#FAF3FB;border:1px solid #DDB8E0;border-radius:8px;padding:8px 10px;">' +
+          '<small style="color:#7E1F78;font-weight:700;">Consentement & Cadre Légal (ANAPEC &amp; UCA Marrakech)</small>' +
+          '<div style="font-size:0.82rem;margin-top:4px;display:flex;gap:12px;flex-wrap:wrap;">' +
+            '<span style="color:#2E7D32;font-weight:600;">Données traitées conformément à la loi 09-08</span>' +
+            '<span style="color:#2E7D32;font-weight:600;">Notifications SMS, WhatsApp & Email</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">' +
+        '<button type="button" class="act ok" onclick="fermerModal(\'modalApercu\'); navToModifForCandidate(\'' + esc(p.email) + '\');">Modifier les informations & mot de passe</button>' +
+        '<button type="button" class="act del" onclick="fermerModal(\'modalApercu\'); navToHistoForCandidate(\'' + esc(p.email) + '\');">Historique complet du profil</button>' +
+        '<button type="button" class="act ' + (p.actif !== false ? 'no' : 'ok') + '" onclick="toggleCompteActif(\'' + esc(p.email) + '\'); voirApercu(\'' + esc(p.email) + '\');">' + (p.actif !== false ? 'Désactiver le compte' : 'Activer le compte') + '</button>' +
+      '</div>' +
+    '</div>' +
+
+    <!-- Onglet 2 : Formation -->
+    '<div class="profile-tab-panel" id="ptFormation">' +
+      '<div class="modal-grid">' +
+        '<div class="modal-field"><small>Établissement UCA</small><b>' + esc(p.etablissement || 'Université Cadi Ayyad') + '</b></div>' +
+        '<div class="modal-field"><small>Niveau d\'études</small><b>' + esc(p.niveau || 'Licence') + '</b></div>' +
+        '<div class="modal-field"><small>Filière / Spécialité</small><b>' + esc(p.filiere || '—') + '</b></div>' +
+        '<div class="modal-field"><small>Année d\'obtention</small><b>' + esc(p.anneeDiplome || '2025') + '</b></div>' +
+        '<div class="modal-field" style="grid-column:span 2;"><small>Parcours académique & mentions</small><p style="font-size:0.84rem;margin-top:4px;color:var(--ink);">' + esc(p.formationDetails || 'Cursus régulier suivi à l\'Université Cadi Ayyad de Marrakech.') + '</p></div>' +
+      '</div>' +
+    '</div>' +
+
+    <!-- Onglet 3 : Expériences -->
+    '<div class="profile-tab-panel" id="ptExp">' +
+      '<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;">' +
+        '<small style="color:var(--muted);font-weight:700;">Expérience & Parcours professionnel</small>' +
+        '<p style="font-size:0.88rem;color:var(--ink);margin-top:6px;line-height:1.5;">' + (p.experience ? esc(p.experience).replace(/\n/g, '<br>') : 'Aucune expérience mentionnée.') + '</p>' +
+      '</div>' +
+      '<div style="background:#FAF4FB;border-radius:10px;padding:12px;font-size:0.84rem;">' +
+        '<b style="color:var(--purple-900);">Objectif & Projet Professionnel :</b><br>' +
+        (p.objectif ? esc(p.objectif) : 'Insertion professionnelle active sur la région Marrakech-Safi.') +
+      '</div>' +
+    '</div>' +
+
+    <!-- Onglet 4 : Compétences -->
+    '<div class="profile-tab-panel" id="ptComp">' +
+      '<div class="modal-grid">' +
+        '<div class="modal-field" style="grid-column:span 2;"><small>Compétences techniques & Savoir-faire</small><b style="font-size:0.92rem;color:var(--purple-900);">' + esc(p.competences || 'Bureautique, Communication, Travail en équipe') + '</b></div>' +
+        '<div class="modal-field"><small>Langues maîtrisées</small><b>' + esc(p.langues || 'Arabe (Maternelle), Français (Courant), Anglais') + '</b></div>' +
+        '<div class="modal-field"><small>Taux de complétion profil</small><b style="color:var(--purple-700);">' + (p.score || 0) + '%</b></div>' +
+      '</div>' +
+    '</div>' +
+
+    <!-- Onglet 5 : CV -->
+    '<div class="profile-tab-panel" id="ptCV">' +
+      '<div style="padding:16px;background:var(--purple-100);border-radius:12px;border:1px solid var(--purple-200);text-align:center;">' +
+        '<div style="font-weight:700;color:var(--anapec-purple);margin-bottom:6px;font-size:1.1rem;">CV NUMÉRIQUE</div>' +
+        '<b style="color:var(--purple-900);font-size:1rem;">Curriculum Vitae Numérique</b>' +
+        '<p style="font-size:0.84rem;color:var(--muted);margin-top:4px;">Document déposé lors de l\'inscription ou analysé par reconnaissance OCR.</p>' +
+        '<div style="margin-top:14px;">' + cvBtn + '</div>' +
+      '</div>' +
+    '</div>' +
+
+    <!-- Onglet 6 : Prestations & Prescriptions -->
+    '<div class="profile-tab-panel" id="ptPrests">' +
+      (scores.global !== undefined 
+        ? '<div style="margin-bottom:14px;padding:14px;background:#FAF3FB;border-radius:12px;border:1px solid #E8DEEC;">' +
+            '<h4 style="color:var(--purple-900);font-size:0.92rem;margin-bottom:8px;">Diagnostic 4D (Score Global : ' + scores.global + '/100)</h4>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.82rem;">' +
+              '<div>Projet : <b>' + (scores.projet||0) + '%</b></div>' +
+              '<div>Connaissance de soi : <b>' + (scores.soi||0) + '%</b></div>' +
+              '<div>Marché de l\'emploi : <b>' + (scores.territoire||0) + '%</b></div>' +
+              '<div>Méthodes recherche : <b>' + (scores.methode||0) + '%</b></div>' +
+            '</div>' +
+          '</div>'
+        : '<p style="color:var(--muted);font-size:0.84rem;margin-bottom:12px;">Diagnostic de positionnement non encore effectué.</p>') +
+      (p.prescription 
+        ? '<div style="padding:12px;background:#FEF3C7;border-radius:10px;border:1px solid #FCD34D;">' +
+            '<b style="color:#92400E;font-size:0.88rem;">Prestation prescrite : ' + esc(p.prescription.atelier) + '</b>' +
+            (p.prescription.notes ? '<p style="font-size:0.82rem;color:#78350F;margin-top:4px;">' + esc(p.prescription.notes) + '</p>' : '') +
+          '</div>'
+        : '<button class="act presc" onclick="ouvrirPrescription(\'' + esc(p.email) + '\')">+ Prescrire un atelier ou prestation ANAPEC</button>') +
+    '</div>' +
+
+    <!-- Onglet 7 : Rendez-vous -->
+    '<div class="profile-tab-panel" id="ptRdvs">' +
+      (userRdvs.length 
+        ? userRdvs.map(function(r){
+            var b = r.status === 'accepted' ? '<span class="badge accepted">Accepté</span>' : (r.status === 'refused' ? '<span class="badge refused">Refusé</span>' : '<span class="badge pending">En attente</span>');
+            return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid var(--border);font-size:0.84rem;">' +
+              '<div><b>' + esc(r.date) + '</b> · ' + esc(r.type || 'Présentiel') + '<br><small style="color:var(--muted);">' + esc(r.notes || 'Rendez-vous conseiller') + '</small></div>' +
+              b +
+            '</div>';
+          }).join('')
+        : '<div style="color:var(--muted);font-size:0.84rem;padding:14px;text-align:center;">Aucune demande de rendez-vous pour ce chercheur.</div>') +
+    '</div>' +
+
+    <!-- Onglet 8 : Ateliers & Inscriptions -->
+    '<div class="profile-tab-panel" id="ptAteliers">' +
+      (userInsc.length 
+        ? userInsc.map(function(inItem){
+            return '<div style="padding:10px;border-bottom:1px solid var(--border);font-size:0.84rem;">' +
+              '<b>' + esc(inItem.titreAtelier || 'Atelier collectif') + '</b><br>' +
+              '<small style="color:var(--muted);">Inscrit le ' + (inItem.dateInscription || inItem.createdAt?.split('T')[0] || '—') + '</small>' +
+            '</div>';
+          }).join('')
+        : '<div style="color:var(--muted);font-size:0.84rem;padding:14px;text-align:center;">Aucune inscription aux ateliers pour le moment.</div>') +
+    '</div>' +
+
+    <!-- Onglet 9 : Historique & Audit -->
+    '<div class="profile-tab-panel" id="ptHisto">' +
+      '<div style="font-size:0.82rem;display:flex;flex-direction:column;gap:10px;">' +
+        '<div style="padding:8px 12px;background:#fff;border:1px solid var(--border);border-radius:8px;">' +
+          '<b>Date de création du compte :</b> ' + (p.createdAt ? p.createdAt.split('T')[0] + ' (' + p.createdAt.split('T')[1]?.substring(0,5) + ')' : 'Initial') +
+        '</div>' +
+        '<div style="padding:8px 12px;background:#fff;border:1px solid var(--border);border-radius:8px;">' +
+          '<b>Dernière mise à jour du profil :</b> ' + (p.updatedAt ? p.updatedAt.split('T')[0] : 'Récent') +
+        '</div>' +
+        '<div style="padding:8px 12px;background:#FAF4FB;border:1px solid #DDB8E0;border-radius:8px;color:var(--purple-900);">' +
+          '<b>Statut administratif :</b> Dossier complet et enregistré à l\'Université Cadi Ayyad' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+
+  document.getElementById('mBody').innerHTML = body;
+  document.getElementById('modalApercu').style.display = 'flex';
+}
+
+function ouvrirPrescription(email){
+  var profils = store('dabanet_profils');
+  var p = profils.find(function(item){ return (item.email||'').toLowerCase() === (email||'').toLowerCase(); });
+  if (!p) { alert('Lauréat introuvable'); return; }
+
+  document.getElementById('pEmail').value = email;
+  document.getElementById('pLauréatInfo').textContent = (p.nom || 'Sans nom') + ' (' + (p.filiere || '') + ')';
+  document.getElementById('pNotes').value = p.prescription ? (p.prescription.notes || '') : '';
+  if (p.prescription && p.prescription.atelier) {
+    document.getElementById('pAtelierChoix').value = p.prescription.atelier;
+  }
+  document.getElementById('modalPrescription').style.display = 'flex';
+}
+
+function sauvegarderPrescription(){
+  var email = document.getElementById('pEmail').value;
+  var atelier = document.getElementById('pAtelierChoix').value;
+  var notes = document.getElementById('pNotes').value.trim();
+
+  var profils = store('dabanet_profils');
+  var p = profils.find(function(item){ return (item.email||'').toLowerCase() === (email||'').toLowerCase(); });
+  if (!p) return;
+
+  p.prescription = {
+    atelier: atelier,
+    notes: notes,
+    date: new Date().toISOString()
+  };
+
+  save('dabanet_profils', profils);
+  fermerModal('modalPrescription');
+  renderConseiller();
+  alert('Prescription enregistrée avec succès.');
+}
+
+/* ══════════ Initialisation ══════════ */
+showDash();
+dbSync(function(){
+  showDash();
+  renderRdvs();
+});
+setInterval(function(){
+  dbSync(function(){
+    renderConseiller();
+    renderRdvs();
+  });
+}, 10000);
+</script>
+<script src="/backoffice_extensions.js"></script>
+</body>
+</html>

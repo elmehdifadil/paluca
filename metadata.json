@@ -1,0 +1,6 @@
+{
+  "name": "PAL-UCA",
+  "description": "Plateforme d'Accompagnement des Lauréats Universitaires Cadi Ayyad",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

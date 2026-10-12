@@ -1,0 +1,2627 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<meta name="theme-color" content="#3A0F45">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.json">
+<title>PAL-UCA — فضائي / Mon Espace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+ :root{
+   --purple-900:#3A0F45; --purple-800:#4F1359; --purple-700:#7E1F78; --purple-600:#9C2484;
+   --purple-200:#EFD9F0; --purple-100:#FAF3FB;
+   --gold-700:#B36C00; --gold-600:#D88400;
+   --green:#166534; --muted:#7C6B82; --border:#E8DEEC;
+ }
+ *{ box-sizing:border-box; }
+ body{ margin:0; font-family:'Tajawal',sans-serif; background:linear-gradient(180deg,#FAF3FB,#fff 300px); color:#2A1733; }
+ h1,h2,h3,h4{ font-family:'Cairo',sans-serif; }
+ .topbar{ background:var(--purple-900); color:#fff; padding:13px 22px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+ .topbar .brand{ font-family:'Cairo',sans-serif; font-weight:800; font-size:1.15rem; }
+ .topbar .brand small{ display:block; font-size:0.62rem; font-weight:500; color:#C7A8CB; }
+ .topbar .actions{ display:flex; gap:10px; }
+ .topbar button, .topbar a{ background:rgba(255,255,255,0.12); color:#fff; border:none; border-radius:8px; padding:8px 14px; font-size:0.82rem; cursor:pointer; text-decoration:none; font-family:inherit; }
+ .container{ max-width:1050px; margin:0 auto; padding:24px 18px 60px; }
+ .card{ background:#fff; border:1px solid var(--border); border-radius:18px; padding:22px 24px; box-shadow:0 6px 20px rgba(58,15,69,0.07); margin-bottom:22px; }
+ .grid-cards{ display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:16px; }
+ .mini-card{ background:#fff; border:1px solid var(--border); border-radius:14px; padding:16px 18px; box-shadow:0 4px 14px rgba(58,15,69,0.06); }
+ .mini-card h5{ font-family:'Cairo',sans-serif; font-weight:800; color:var(--purple-900); font-size:0.92rem; margin:0 0 8px; }
+ .mini-card p{ color:var(--muted); font-size:0.8rem; margin:0 0 4px; }
+ .btn-p{ display:inline-block; background:var(--purple-600); color:#fff; text-decoration:none; font-size:0.78rem; font-weight:700; padding:8px 14px; border-radius:8px; border:none; cursor:pointer; font-family:inherit; }
+ .btn-g{ background:var(--green); }
+ h3.sec{ color:var(--purple-900); font-size:1.05rem; margin:26px 0 14px; }
+ .slot{ border:1.5px solid var(--border); border-radius:10px; padding:9px 14px; font-size:0.84rem; cursor:pointer; background:#fff; transition:all .15s; }
+ .slot.sel{ border-color:var(--purple-600); background:var(--purple-100); font-weight:700; }
+ input, select, textarea{ width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem; box-sizing:border-box; outline:none; font-family:inherit; background:#fff; }
+ label{ font-size:0.8rem; color:var(--purple-800); font-weight:700; display:block; margin-bottom:4px; }
+ /* Chatbot Conseiller IA PAL-UCA */
+.chat-fab {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, #7E1F78 0%, #D88400 100%);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(58,15,69,0.38), 0 0 0 2.5px rgba(216,132,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
+  position: relative;
+  overflow: visible;
+}
+[dir="rtl"] .chat-fab { left: auto; right: 24px; }
+.chat-fab:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 14px 34px rgba(58,15,69,0.48), 0 0 0 3px rgba(216,132,0,0.65);
+}
+.chat-fab img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  display: block;
+}
+.chat-fab .fab-badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 14px;
+  height: 14px;
+  background: #22c55e;
+  border: 2.5px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(34,197,94,0.7);
+  z-index: 2;
+}
+
+.chat-box {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: min(380px, 94vw);
+  height: min(530px, 82vh);
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 16px 45px rgba(58,15,69,0.24), 0 2px 10px rgba(0,0,0,0.06);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+  border: 1px solid var(--border);
+  animation: fadeUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[dir="rtl"] .chat-box { left: auto; right: 24px; }
+
+.chat-head {
+  background: linear-gradient(135deg, #3A0F45 0%, #4F1359 55%, #7E1F78 100%);
+  color: #fff;
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid rgba(216, 132, 0, 0.45);
+}
+.chat-head-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.chat-head-av {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  padding: 1.5px;
+  background: linear-gradient(135deg, #D88400, #FCEFD9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+.chat-head-av img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+.chat-head-info { min-width: 0; }
+.chat-head b {
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+}
+.chat-head .ai-tag {
+  font-size: 0.62rem;
+  background: linear-gradient(135deg, #D88400, #B36C00);
+  color: #fff;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+.chat-head-status {
+  font-size: 0.72rem;
+  color: #EFD9F0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 1px;
+}
+.chat-head-status .live-dot {
+  width: 6px;
+  height: 6px;
+  background: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 5px #22c55e;
+}
+.chat-head button {
+  background: rgba(255,255,255,0.12);
+  border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.chat-head button:hover {
+  background: rgba(255,255,255,0.25);
+}
+.chat-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #FAF3FB;
+  border-top: 1px solid #E8DEEC;
+  max-height: 85px;
+  overflow-y: auto;
+}
+.chat-chip {
+  background: #FFFFFF;
+  border: 1px solid #E8DEEC;
+  color: #4F1359;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+}
+.chat-chip:hover {
+  background: #7E1F78;
+  color: #FFFFFF;
+  border-color: #7E1F78;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(126,31,120,0.18);
+}
+
+.chat-msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  background: linear-gradient(180deg, #FAF4FB 0%, #FFFFFF 130px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.msg {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.msg.bot {
+  background: #fff;
+  align-self: flex-start;
+  border-top-left-radius: 3px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(58,15,69,0.05);
+  color: var(--ink);
+}
+[dir="rtl"] .msg.bot {
+  border-top-left-radius: 14px;
+  border-top-right-radius: 3px;
+}
+.msg.user {
+  background: linear-gradient(135deg, var(--purple-700) 0%, var(--purple-800) 100%);
+  align-self: flex-end;
+  border-top-right-radius: 3px;
+  box-shadow: 0 3px 12px rgba(126,31,120,0.22);
+  color: #fff;
+}
+[dir="rtl"] .msg.user {
+  border-top-right-radius: 14px;
+  border-top-left-radius: 3px;
+}
+
+.chat-diag-bar {
+  padding: 8px 12px;
+  background: #FAF3FB;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.chat-diag-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--purple-700), var(--purple-900));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 3px 10px rgba(126,31,120,0.25);
+  transition: transform 0.15s, background 0.2s;
+}
+.chat-diag-btn:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #D88400, #B36C00);
+}
+
+.chat-input {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  align-items: flex-end;
+}
+.chat-input textarea {
+  flex: 1;
+  resize: none;
+  border-radius: 12px;
+  padding: 9px 12px;
+  max-height: 80px;
+  border: 1.5px solid var(--border);
+  background: #FAF7FB;
+  font-size: 0.88rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.chat-input textarea:focus {
+  border-color: var(--purple-700);
+  background: #fff;
+}
+.chat-input button {
+  background: linear-gradient(135deg, var(--purple-700) 0%, var(--purple-900) 100%);
+  border: none;
+  border-radius: 12px;
+  min-width: 68px;
+  height: 38px;
+  padding: 0 12px;
+  cursor: pointer;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.82rem;
+  box-shadow: 0 4px 12px rgba(126, 31, 120, 0.25);
+  transition: transform 0.15s, background 0.2s;
+}
+.chat-input button:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #D88400, #B36C00);
+}
+/* ── Mobile Phone Bottom Dock & Responsive ── */
+.m-espace-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1.5px solid var(--border);
+  box-shadow: 0 -4px 20px rgba(58, 15, 69, 0.1);
+  z-index: 950;
+  height: 64px;
+  padding-bottom: env(safe-area-inset-bottom);
+  justify-content: space-around;
+  align-items: center;
+}
+.m-e-item {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 0;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  height: 100%;
+  transition: color 0.15s;
+}
+.m-e-item.active {
+  color: var(--purple-700);
+  font-weight: 700;
+}
+.m-e-item .m-icon {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+.m-e-item .m-label {
+  font-size: 0.68rem;
+  white-space: nowrap;
+}
+
+@media(max-width: 768px){
+  body { padding-bottom: calc(72px + env(safe-area-inset-bottom)) !important; }
+  .container { padding: 14px 12px 70px !important; }
+  .m-espace-nav { display: flex !important; }
+  .topbar { padding: 10px 14px; }
+  .topbar .actions button, .topbar .actions a { padding: 7px 10px; font-size: 0.76rem; }
+  .chat-fab { bottom: 76px !important; width: 52px; height: 52px; }
+  .chat-box {
+    bottom: 74px !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    height: min(540px, calc(100vh - 150px)) !important;
+  }
+  .grid-cards { grid-template-columns: 1fr; }
+  .card { padding: 16px 14px; border-radius: 14px; }
+  .slot { min-height: 44px; display: flex; align-items: center; }
+  button, .btn-p { min-height: 44px; }
+}
+
+/* ── Stepper du Parcours PAL-UCA ── */
+.parcours-stepper {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-top: 8px;
+}
+@media(max-width: 900px) {
+  .parcours-stepper {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+.step-card {
+  background: #FAF3FB;
+  border: 1.5px solid #E8DEEC;
+  border-radius: 12px;
+  padding: 12px 10px;
+  text-align: center;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.step-card.active {
+  background: #fff;
+  border-color: #7E1F78;
+  box-shadow: 0 4px 14px rgba(126, 31, 120, 0.14);
+}
+.step-card.completed {
+  background: #F0FDF4;
+  border-color: #86EFAC;
+}
+.step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #E8DEEC;
+  color: #7E1F78;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.82rem;
+  margin: 0 auto 6px;
+}
+.step-card.active .step-num {
+  background: #7E1F78;
+  color: #fff;
+}
+.step-card.completed .step-num {
+  background: #16A34A;
+  color: #fff;
+}
+.step-title {
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--purple-900);
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+.step-desc {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.3;
+}
+.step-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-top: 6px;
+}
+.step-card.completed .step-badge {
+  background: #DCFCE7;
+  color: #166534;
+}
+.step-card.active .step-badge {
+  background: #FAF3FB;
+  color: #7E1F78;
+  border: 1px solid #7E1F78;
+}
+.step-card.pending .step-badge {
+  background: #FEF3C7;
+  color: #92400E;
+}
+.step-card.blocked {
+  background: #F8FAFC;
+  border-color: #E2E8F0;
+  opacity: 0.82;
+}
+.step-card.blocked .step-num {
+  background: #E2E8F0;
+  color: #64748B;
+}
+.step-card.blocked .step-badge {
+  background: #F1F5F9;
+  color: #64748B;
+  border: 1px solid #CBD5E1;
+}
+
+.slot.sel {
+  border-color: #7E1F78 !important;
+  background: #FAF3FB !important;
+  box-shadow: 0 0 0 2px #7E1F78;
+}
+.btn-locked {
+  background: #F1F5F9 !important;
+  color: #64748B !important;
+  border: 1px solid #CBD5E1 !important;
+  cursor: not-allowed !important;
+  pointer-events: auto !important;
+}
+
+/* ── Mode selector buttons (RDV) ── */
+.mode-btn {
+  background: #FAF3FB;
+  border: 2px solid #E8DEEC;
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.mode-btn:hover {
+  background: #F4EAF5;
+  border-color: #DDB8E0;
+}
+.mode-btn.active {
+  background: #fff;
+  border-color: #7E1F78;
+  box-shadow: 0 4px 14px rgba(126, 31, 120, 0.16);
+}
+.mode-btn b {
+  color: var(--purple-900);
+  font-size: 0.95rem;
+}
+.mode-btn small {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+/* ── Tabs & Cards Prestations ── */
+.tab-prestation {
+  background: #FAF3FB;
+  border: 1.5px solid #E8DEEC;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #5D4B63;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.tab-prestation:hover {
+  background: #F4EAF5;
+  color: #7E1F78;
+}
+.tab-prestation.active {
+  background: #7E1F78;
+  border-color: #7E1F78;
+  color: #fff;
+}
+.prestation-card {
+  background: #fff;
+  border: 1.5px solid #E8DEEC;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s;
+}
+.prestation-card:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  border-color: #DDB8E0;
+}
+.prestation-card.prescrite {
+  border: 2px solid #D88400;
+  background: linear-gradient(180deg, #FFFDF8, #FFFAF0);
+  box-shadow: 0 4px 14px rgba(216, 132, 0, 0.14);
+}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+ <div class="brand">PAL-UCA<small data-ar="منصة مواكبة خريجي جامعة القاضي عياض" data-fr="Plateforme d'Accompagnement des Lauréats Universitaires Cadi Ayyad">منصة مواكبة خريجي جامعة القاضي عياض</small></div>
+ <div class="actions">
+   <button id="langAr" onclick="setLangEspace('ar')">عربي</button>
+   <button id="langFr" onclick="setLangEspace('fr')">FR</button>
+   <a href="/">الرئيسية / Accueil</a>
+   <button onclick="logoutEspace()">خروج / Déconnexion</button>
+ </div>
+</div>
+
+<div class="container">
+
+  <!-- ═══ STEPPER DU PARCOURS EN 5 ÉTAPES PAL-UCA ═══ -->
+  <div class="card" id="parcoursCard" style="background:#fff;border:1.5px solid #E8DEEC;padding:18px 20px;margin-bottom:18px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+      <div>
+        <h3 style="color:var(--purple-900);font-size:1.1rem;margin:0 0 3px;" data-ar="مسار الخريج PAL-UCA (5 مراحل)" data-fr="Mon Parcours PAL-UCA (5 étapes)">Mon Parcours PAL-UCA</h3>
+        <p style="color:var(--muted);font-size:0.82rem;margin:0;" data-ar="المسار الإلزامي: 01 سيرة ذاتية ← 02 معلومات ← 03 استبيان ← 04 موعد المقابلة ← 05 الخدمات" data-fr="Parcours officiel : 01 CV → 02 Informations → 03 Questionnaire → 04 Rendez-vous → 05 Prestations">Parcours officiel : 01 CV → 02 Informations → 03 Questionnaire → 04 Rendez-vous → 05 Prestations</p>
+      </div>
+      <div id="parcoursGlobalBadge" style="background:#FAF3FB;color:#7E1F78;font-weight:700;font-size:0.78rem;padding:5px 14px;border-radius:20px;border:1px solid #DDB8E0;">
+        Profil en cours de constitution
+      </div>
+    </div>
+    <div class="parcours-stepper" id="parcoursStepper"></div>
+  </div>
+
+  <!-- Profile overview header -->
+  <div class="card" id="profileOverviewCard" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:#fff;border:1.5px solid #E8DEEC;margin-bottom:18px;">
+    <div id="esp-avatar" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#7E1F78,#4F1359);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-weight:800;font-size:1.25rem;flex-shrink:0;">—</div>
+    <div style="flex:1;min-width:180px;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <h3 id="esp-nom" style="color:var(--purple-900);margin:0;font-size:1.15rem;">—</h3>
+        <span id="esp-parcours-tag" style="background:#FAF3FB;color:#7E1F78;font-size:0.75rem;font-weight:800;padding:2px 10px;border-radius:12px;border:1px solid #DDB8E0;">Lauréat UCA</span>
+      </div>
+      <p id="esp-meta" style="color:var(--muted);margin:4px 0 0;font-size:0.84rem;">—</p>
+    </div>
+    <div id="quickSyncBtnWrap">
+      <button type="button" class="btn-p" style="background:#FAF3FB;color:#7E1F78;border:1px solid #DDB8E0;padding:7px 14px;font-size:0.78rem;" onclick="dbSync(function(){ renderEspace(); });">Actualiser mon statut</button>
+    </div>
+  </div>
+
+  <!-- ═══ 01 — CV DU CANDIDAT ═══ -->
+  <div class="card" id="cardCv" style="background:#fff;border:1.5px solid #E8DEEC;padding:20px;border-radius:14px;margin-bottom:18px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;border-bottom:1px solid #F1E9F4;padding-bottom:10px;">
+      <div>
+        <span style="background:#FAF3FB;color:#7E1F78;font-size:0.75rem;font-weight:800;padding:2px 8px;border-radius:6px;border:1px solid #DDB8E0;">01 — CV</span>
+        <h3 style="color:var(--purple-900);margin:4px 0 0;font-size:1.05rem;" data-ar="01 — استيراد السيرة الذاتية" data-fr="01 — Importation du CV">01 — Importation du CV</h3>
+      </div>
+      <span id="badgeCvStatus" class="step-badge pending">À compléter</span>
+    </div>
+
+    <!-- Récapitulatif du CV si importé -->
+    <div id="cvUploadedSummary" style="display:none;background:#F0FDF4;border:1px solid #86EFAC;border-radius:10px;padding:12px 16px;margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <div>
+          <strong id="cvFileNameDisplay" style="color:#166534;font-size:0.9rem;">cv.pdf</strong>
+          <div id="cvUploadDateDisplay" style="color:#15803D;font-size:0.76rem;margin-top:2px;">Document enregistré et analysé dans votre profil candidat</div>
+        </div>
+        <button type="button" class="btn-p" style="background:#fff;color:#166534;border:1px solid #166534;padding:6px 14px;font-size:0.78rem;" onclick="document.getElementById('cvFileInput').click()">Remplacer le CV</button>
+      </div>
+    </div>
+
+    <!-- Zone de dépôt et d'import du CV -->
+    <div id="cvDropZone" style="background:#FAF4FB;border:2px dashed #DDB8E0;border-radius:12px;padding:18px 20px;text-align:center;position:relative;transition:all .2s;">
+      <input type="file" id="cvFileInput" accept=".pdf,.doc,.docx,image/png,image/jpeg" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2;" onchange="handleCvUpload(this.files[0])">
+      <div style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;">
+        <div style="text-align:start;flex:1;min-width:200px;">
+          <b style="color:var(--purple-900);font-size:0.92rem;display:block;">Glissez-déposez votre CV ici ou cliquez pour choisir un fichier (PDF, Word)</b>
+          <span style="font-size:0.78rem;color:var(--muted);">Les informations clés (formation, compétences, coordonnées) seront extraites automatiquement.</span>
+        </div>
+        <button type="button" class="btn-p" style="background:#7E1F78;color:#fff;border:none;padding:9px 18px;font-size:0.84rem;pointer-events:none;">Choisir un fichier</button>
+      </div>
+      <div id="cvExtractStatus" style="margin-top:10px;font-size:0.82rem;display:none;font-weight:700;"></div>
+    </div>
+  </div>
+
+  <!-- ═══ 02 — INFORMATIONS DU CANDIDAT ═══ -->
+  <div class="card" id="cardInfos" style="background:#fff;border:1.5px solid #E8DEEC;padding:20px;border-radius:14px;margin-bottom:18px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;border-bottom:1px solid #F1E9F4;padding-bottom:10px;">
+      <div>
+        <span style="background:#FAF3FB;color:#7E1F78;font-size:0.75rem;font-weight:800;padding:2px 8px;border-radius:6px;border:1px solid #DDB8E0;">02 — INFORMATIONS</span>
+        <h3 style="color:var(--purple-900);margin:4px 0 0;font-size:1.05rem;" data-ar="02 — معلومات المترشح" data-fr="02 — Informations du candidat">02 — Informations du candidat</h3>
+      </div>
+      <span id="badgeInfosStatus" class="step-badge completed">Terminé</span>
+    </div>
+    <p style="color:var(--muted);font-size:0.82rem;margin:0 0 14px;">
+      Vérifiez et confirmez les informations personnelles et académiques enregistrées dans votre profil.
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+      <div>
+        <label style="font-size:0.78rem;font-weight:700;color:var(--purple-900);display:block;margin-bottom:4px;">Nom complet</label>
+        <input type="text" id="infoNom" style="width:100%;padding:8px 10px;border:1px solid #DDB8E0;border-radius:8px;font-size:0.85rem;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:0.78rem;font-weight:700;color:var(--purple-900);display:block;margin-bottom:4px;">CIN</label>
+        <input type="text" id="infoCin" style="width:100%;padding:8px 10px;border:1px solid #DDB8E0;border-radius:8px;font-size:0.85rem;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:0.78rem;font-weight:700;color:var(--purple-900);display:block;margin-bottom:4px;">Email</label>
+        <input type="email" id="infoEmail" readonly style="width:100%;padding:8px 10px;border:1px solid #E2E8F0;background:#F8FAFC;border-radius:8px;font-size:0.85rem;box-sizing:border-box;color:#64748B;">
+      </div>
+      <div>
+        <label style="font-size:0.78rem;font-weight:700;color:var(--purple-900);display:block;margin-bottom:4px;">Téléphone</label>
+        <input type="tel" id="infoTel" style="width:100%;padding:8px 10px;border:1px solid #DDB8E0;border-radius:8px;font-size:0.85rem;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:0.78rem;font-weight:700;color:var(--purple-900);display:block;margin-bottom:4px;">Établissement UCA</label>
+        <input type="text" id="infoEtab" style="width:100%;padding:8px 10px;border:1px solid #DDB8E0;border-radius:8px;font-size:0.85rem;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:0.78rem;font-weight:700;color:var(--purple-900);display:block;margin-bottom:4px;">Filière / Spécialité</label>
+        <input type="text" id="infoFiliere" style="width:100%;padding:8px 10px;border:1px solid #DDB8E0;border-radius:8px;font-size:0.85rem;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:0.78rem;font-weight:700;color:var(--purple-900);display:block;margin-bottom:4px;">Niveau d'études</label>
+        <input type="text" id="infoNiveau" style="width:100%;padding:8px 10px;border:1px solid #DDB8E0;border-radius:8px;font-size:0.85rem;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:0.78rem;font-weight:700;color:var(--purple-900);display:block;margin-bottom:4px;">Ville de résidence</label>
+        <input type="text" id="infoVille" style="width:100%;padding:8px 10px;border:1px solid #DDB8E0;border-radius:8px;font-size:0.85rem;box-sizing:border-box;">
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:14px;">
+      <span id="infoMsg" style="font-size:0.82rem;font-weight:700;color:#166534;"></span>
+      <button type="button" class="btn-p" style="background:#7E1F78;color:#fff;border:none;padding:10px 20px;font-size:0.86rem;border-radius:8px;cursor:pointer;" onclick="sauvegarderInfosCandidat()">Enregistrer mes informations</button>
+    </div>
+  </div>
+
+  <!-- ═══ 03 — QUESTIONNAIRE D'INSERTION ═══ -->
+  <div class="card" id="cardQuestionnaire" style="background:#fff;border:1.5px solid #E8DEEC;padding:20px;border-radius:14px;margin-bottom:18px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;border-bottom:1px solid #F1E9F4;padding-bottom:10px;">
+      <div>
+        <span style="background:#FAF3FB;color:#7E1F78;font-size:0.75rem;font-weight:800;padding:2px 8px;border-radius:6px;border:1px solid #DDB8E0;">03 — QUESTIONNAIRE</span>
+        <h3 style="color:var(--purple-900);margin:4px 0 0;font-size:1.05rem;" data-ar="03 — استبيان الإدماج المهني" data-fr="03 — Questionnaire d'insertion professionnelle">03 — Questionnaire d'insertion professionnelle</h3>
+      </div>
+      <span id="badgeQuestionnaireStatus" class="step-badge pending">À compléter</span>
+    </div>
+
+    <!-- Invite si questionnaire non complété -->
+    <div id="questionnairePromptBox" style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:14px 18px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div>
+          <b style="color:#92400E;font-size:0.9rem;display:block;">Questionnaire officiel ANAPEC (Trèfle de positionnement)</b>
+          <div style="color:#78350F;font-size:0.8rem;margin-top:2px;">Ce questionnaire est obligatoire pour analyser votre profil avant votre entretien individuel.</div>
+        </div>
+        <button type="button" class="btn-p" style="background:#92400E;color:#fff;border:none;padding:10px 18px;font-size:0.85rem;border-radius:8px;cursor:pointer;" onclick="openTrefle()">Répondre au questionnaire</button>
+      </div>
+    </div>
+
+    <!-- Résultats si complété -->
+    <div id="trefleResults" style="display:none;border-top:1px solid var(--border);padding-top:16px;">
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:16px;">
+        <div style="text-align:center;">
+          <div style="position:relative;width:105px;height:105px;">
+            <svg width="105" height="105" viewBox="0 0 110 110" style="transform:rotate(-90deg);">
+              <circle cx="55" cy="55" r="47" fill="none" stroke="#E8DEEC" stroke-width="11"/>
+              <circle id="tr-gauge" cx="55" cy="55" r="47" fill="none" stroke="#166534" stroke-width="11" stroke-linecap="round" stroke-dasharray="295.31" stroke-dashoffset="295.31" style="transition:stroke-dashoffset 1s ease;"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <b id="tr-global" style="font-family:'Cairo',sans-serif;font-size:1.55rem;color:var(--purple-900);">0</b>
+              <span style="font-size:0.62rem;color:var(--muted);">/100</span>
+            </div>
+          </div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Score global calculé</div>
+        </div>
+        <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:8px;" id="tr-bars"></div>
+      </div>
+      <div id="tr-note" style="background:#FAF3FB;border:1px solid #E8DEEC;border-radius:10px;padding:12px 16px;font-size:0.82rem;color:var(--purple-900);line-height:1.45;">
+        Les réponses du questionnaire ont été transmises à votre conseiller pour préparer l'entretien individuel et orienter vos prescriptions.
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+        <button type="button" class="btn-p" style="background:#fff;color:var(--purple-700);border:1.5px solid var(--purple-600);padding:8px 16px;font-size:0.82rem;border-radius:8px;cursor:pointer;" onclick="openTrefle()">Refaire le questionnaire</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal du Questionnaire Trèfle -->
+  <div id="trefleModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9998;align-items:center;justify-content:center;padding:14px;">
+    <div style="background:#fff;border-radius:18px;width:min(640px,95vw);max-height:92vh;overflow-y:auto;padding:26px 28px;position:relative;">
+      <button id="trefleClose" onclick="document.getElementById('trefleModal').style.display='none'" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);">✕</button>
+      <div style="text-align:center;margin-bottom:16px;">
+        <h3 style="color:var(--purple-900);margin:4px 0;font-size:1.05rem;" data-ar="ورقة التحضير للمقابلة التشخيصية" data-fr="Questionnaire officiel de positionnement ANAPEC">Questionnaire officiel de positionnement ANAPEC</h3>
+        <p style="color:var(--muted);font-size:0.78rem;margin:0;">Évaluation des 4 axes : Connaissance de soi, Projet, Marché de l'emploi et Méthode de recherche</p>
+        <div id="trefleMand" style="display:none;background:#FEF3C7;border-radius:8px;padding:8px 12px;font-size:0.75rem;color:#92400E;margin-top:10px;">
+          Ce questionnaire est obligatoire pour analyser votre profil et permettre la prise de rendez-vous.
+        </div>
+      </div>
+      <form id="trefleForm"></form>
+      <button type="button" class="btn-p" style="width:100%;margin-top:16px;padding:13px;font-family:'Cairo',sans-serif;font-size:0.95rem;background:linear-gradient(135deg,#7E1F78,#4F1359);color:#fff;border:none;border-radius:10px;cursor:pointer;" onclick="submitTrefle()">Valider mes réponses au questionnaire</button>
+      <p id="trefleErr" style="text-align:center;color:#dc2626;font-size:0.8rem;min-height:16px;margin:8px 0 0;"></p>
+    </div>
+  </div>
+
+  <!-- ═══ 04 — RENDEZ-VOUS AVEC UN CONSEILLER EN EMPLOI ═══ -->
+  <div class="card" id="cardRdv" style="background:#fff;border:1.5px solid #E8DEEC;padding:20px;border-radius:14px;margin-bottom:18px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;border-bottom:1px solid #F1E9F4;padding-bottom:10px;">
+      <div>
+        <span style="background:#FAF3FB;color:#7E1F78;font-size:0.75rem;font-weight:800;padding:2px 8px;border-radius:6px;border:1px solid #DDB8E0;">04 — RENDEZ-VOUS</span>
+        <h3 style="color:var(--purple-900);margin:4px 0 0;font-size:1.05rem;" data-ar="04 — موعد المقابلة الفردية مع مستشار التشغيل" data-fr="04 — Rendez-vous avec un conseiller en emploi">04 — Rendez-vous avec un conseiller en emploi</h3>
+      </div>
+      <span id="badgeRdvStatus" class="step-badge pending">À réserver</span>
+    </div>
+
+    <!-- Bannière automatique Étape suivante (quand 1, 2, 3 sont terminés et rdv non réservé) -->
+    <div id="rdvNextStepBanner" style="display:none;background:#FAF3FB;border:2px solid #7E1F78;border-radius:12px;padding:14px 18px;margin-bottom:16px;">
+      <strong style="color:#7E1F78;font-size:0.98rem;display:block;margin-bottom:3px;">« Étape suivante : Réserver votre rendez-vous avec un conseiller en emploi »</strong>
+      <span style="color:#4F1359;font-size:0.82rem;">Votre CV, vos informations et votre questionnaire sont complétés. Choisissez un créneau ci-dessous pour fixer votre entretien individuel obligatoire.</span>
+    </div>
+
+    <!-- Affichage du Rendez-vous si RÉALISÉ et VALIDÉ par le conseiller -->
+    <div id="rdvRealiseDisplay" style="display:none;background:#F0FDF4;border:2px solid #16A34A;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:6px;">
+        <strong style="color:#166534;font-size:1rem;">Entretien individuel réalisé et validé</strong>
+        <span class="step-badge completed">Terminé</span>
+      </div>
+      <div id="rdvRealiseInfoText" style="font-size:0.84rem;color:#15803D;line-height:1.45;">
+        Votre entretien individuel a été validé par votre conseiller en emploi. Votre plan d'action d'insertion a été prescrit et les prestations ci-dessous sont désormais débloquées.
+      </div>
+    </div>
+
+    <!-- Affichage du Rendez-vous si RÉSERVÉ (en attente de tenue de l'entretien) -->
+    <div id="rdvReservedDisplay" style="display:none;background:#EFF6FF;border:1.5px solid #93C5FD;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;">
+        <div>
+          <span style="background:#DBEAFE;color:#1E40AF;font-size:0.72rem;font-weight:800;padding:2px 8px;border-radius:6px;">RENDEZ-VOUS PROGRAMMÉ</span>
+          <h4 id="rdvDisplayTitle" style="color:#1E3A8A;margin:4px 0 0;font-size:1.02rem;">Entretien individuel avec votre conseiller en emploi</h4>
+        </div>
+        <span id="rdvDisplayStatusBadge" style="background:#DBEAFE;color:#1E40AF;font-size:0.78rem;font-weight:700;padding:4px 10px;border-radius:12px;">Réservé · En attente</span>
+      </div>
+      <div id="rdvDisplayDetails" style="font-size:0.86rem;color:#1E3A8A;line-height:1.5;margin-bottom:8px;"></div>
+      <div style="border-top:1px dashed #BFDBFE;padding-top:8px;font-size:0.78rem;color:#2563EB;">
+        Note institutionnelle : L'entretien individuel est obligatoire. Vos prestations d'insertion seront débloquées dès que votre conseiller aura validé la tenue de ce rendez-vous dans le back-office.
+      </div>
+    </div>
+
+    <!-- Formulaire de réservation de rendez-vous -->
+    <div id="rdvBookingSection">
+      <p style="color:var(--muted);font-size:0.83rem;margin:0 0 14px;" data-ar="اختر صيغة اللقاء (حضورياً بالوكالة أو عن بُعد عبر تقنية التحاضر المرئي) ثم حدد الموعد الأنسب لك:" data-fr="Choisissez la modalité souhaitée (en présentiel à l'agence/campus ou à distance en visioconférence) puis sélectionnez un créneau disponible :">
+        Choisissez la modalité souhaitée (en présentiel à l'agence/campus ou à distance en visioconférence) puis sélectionnez un créneau disponible :
+      </p>
+
+      <!-- Sélecteur de modalité Présentiel / Distanciel -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <button type="button" id="btnModePres" class="mode-btn active" onclick="setRdvMode('En présentiel')">
+          <b data-ar="حضورياً (En présentiel)" data-fr="En présentiel">En présentiel</b>
+          <small data-ar="وكالة ANAPEC / ملحقة جامعة القاضي عياض" data-fr="Agence ANAPEC / Campus UCA">Agence ANAPEC / Campus UCA</small>
+        </button>
+        <button type="button" id="btnModeDist" class="mode-btn" onclick="setRdvMode('À distance')">
+          <b data-ar="عن بُعد (À distance)" data-fr="À distance">À distance</b>
+          <small data-ar="عبر تقنية التحاضر المرئي (Google Meet / Zoom)" data-fr="Visioconférence en ligne">Visioconférence en ligne</small>
+        </button>
+      </div>
+
+      <div id="slotsWrap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <label style="margin:0;font-weight:700;font-size:0.86rem;color:var(--purple-900);" id="slotsLabel">Créneaux disponibles pour votre entretien :</label>
+          <span id="slotsCountBadge" style="font-size:0.75rem;color:#7E1F78;font-weight:700;"></span>
+        </div>
+        <div id="slotsList" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;"></div>
+      </div>
+
+      <div id="noSlots" style="display:none;background:#FAF3FB;border-radius:10px;padding:12px 16px;font-size:0.82rem;color:var(--muted);margin-bottom:14px;">
+        <span>Aucun créneau immédiat sous cette modalité — proposez une date pour votre entretien :</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;">
+          <div><label style="font-size:0.78rem;">Date souhaitée</label><input id="rdv-date" type="date" style="width:100%;padding:8px;border:1px solid #DDB8E0;border-radius:8px;"></div>
+          <div><label style="font-size:0.78rem;">Créneau horaire</label>
+            <select id="rdv-custom-time" style="width:100%;padding:8px;border:1px solid #DDB8E0;border-radius:8px;">
+              <option>10:00 - Matin</option>
+              <option>11:30 - Matin</option>
+              <option>14:30 - Après-midi</option>
+              <option>16:00 - Après-midi</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <label style="margin-top:8px;font-size:0.82rem;font-weight:700;color:var(--purple-900);display:block;">Objet de l'entretien (facultatif)</label>
+      <textarea id="rdv-sujet" rows="2" placeholder="Ex: Cadrage du projet professionnel, préparation aux prestations d'insertion, orientation vers les offres..." style="width:100%;padding:8px 10px;border:1px solid #DDB8E0;border-radius:8px;font-size:0.84rem;box-sizing:border-box;margin-top:4px;"></textarea>
+
+      <!-- Bouton de réservation 100% fonctionnel et cliquable -->
+      <button type="button" id="btnSubmitRdv" class="btn-p" style="width:100%;margin-top:14px;padding:13px;font-family:'Cairo',sans-serif;font-size:0.95rem;background:#7E1F78;color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:800;" onclick="submitRdvEspace()">Confirmer la réservation du rendez-vous</button>
+      
+      <p id="rdv-msg" style="text-align:center;font-size:0.84rem;font-weight:700;margin-top:10px;min-height:20px;"></p>
+    </div>
+
+    <!-- Liste historique des rendez-vous -->
+    <div id="mesRdvs" style="margin-top:14px;"></div>
+  </div>
+
+  <!-- ═══ 05 — PRESTATIONS D'INSERTION PROFESSIONNELLE ═══ -->
+  <div class="card" id="cardPrestations" style="background:#fff;border:1.5px solid #E8DEEC;padding:20px;border-radius:14px;margin-bottom:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;border-bottom:1px solid #F1E9F4;padding-bottom:10px;">
+      <div>
+        <span style="background:#FAF3FB;color:#7E1F78;font-size:0.75rem;font-weight:800;padding:2px 8px;border-radius:6px;border:1px solid #DDB8E0;">05 — PRESTATIONS</span>
+        <h3 style="color:var(--purple-900);margin:4px 0 0;font-size:1.05rem;" data-ar="05 — خدمات وبرامج المواكبة" data-fr="05 — Prestations d'insertion professionnelle">05 — Prestations d'insertion professionnelle</h3>
+      </div>
+      <span id="badgePrestationsStatus" class="step-badge blocked">Bloqué</span>
+    </div>
+
+    <!-- BANNIÈRE DE VERROUILLAGE TANT QUE L'ENTRETIEN N'EST PAS VALIDÉ RÉALISÉ -->
+    <div id="prestationsLockedBanner" style="background:#FFFDF5;border:2px solid #F59E0B;border-radius:12px;padding:16px 20px;margin-bottom:18px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div>
+          <span style="display:inline-block;background:#FEF3C7;color:#92400E;font-size:0.72rem;font-weight:800;padding:2px 8px;border-radius:6px;margin-bottom:6px;">ACCÈS RÉSERVÉ</span>
+          <h4 style="color:#78350F;margin:0 0 6px;font-size:1.02rem;font-weight:800;">Prestations — Accès réservé</h4>
+          <p style="color:#92400E;font-size:0.88rem;margin:0 0 6px;font-weight:700;line-height:1.45;">
+            « Les prestations seront accessibles après la réalisation de votre rendez-vous avec un conseiller en emploi. »
+          </p>
+          <div style="color:#78350F;font-size:0.8rem;line-height:1.4;">
+            Règle de gouvernance PAL-UCA : Le conseiller en emploi valide votre positionnement lors de l'entretien individuel et prescrit le parcours d'accompagnement adapté. Dès que le conseiller confirme la réalisation de l'entretien dans le back-office, vos prestations sont automatiquement débloquées.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BANNIÈRE DE DÉBLOCAGE QUAND LE RENDEZ-VOUS EST VALIDÉ RÉALISÉ -->
+    <div id="prestationsUnlockedBanner" style="display:none;background:#F0FDF4;border:2px solid #16A34A;border-radius:12px;padding:16px 20px;margin-bottom:18px;">
+      <div>
+        <span style="display:inline-block;background:#DCFCE7;color:#166534;font-size:0.72rem;font-weight:800;padding:2px 8px;border-radius:6px;margin-bottom:6px;">PRESTATIONS DÉBLOQUÉES</span>
+        <h4 style="color:#14532D;margin:0 0 4px;font-size:1.02rem;font-weight:800;">
+          « Votre rendez-vous a été réalisé. Les prestations sont maintenant accessibles. »
+        </h4>
+        <div style="color:#166534;font-size:0.82rem;line-height:1.4;">
+          Votre conseiller en emploi a validé votre entretien. Vous pouvez dès à présent vous inscrire aux prestations prescrites, aux ateliers TRE et aux formations qualifiantes ci-dessous.
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenu des Prestations (STRICTEMENT MASQUÉ TANT QUE LE RENDEZ-VOUS N'EST PAS RÉALISÉ ET VALIDÉ) -->
+    <div id="prestationsUnlockedContent" style="display:none;">
+      <!-- Prestations prescrites par le conseiller -->
+      <div id="prescSectionHighlight" style="display:none;background:#FFFDF9;border:1.5px solid #D88400;border-radius:12px;padding:16px;margin-bottom:18px;">
+        <h4 style="margin:0 0 4px;color:#78350F;font-size:0.98rem;">Prestations programmées pour vous par votre conseiller emploi</h4>
+        <p style="margin:0 0 12px;font-size:0.78rem;color:#92400E;">Sur la base de votre diagnostic et de votre entretien, votre conseiller a prescrit les prestations suivantes :</p>
+        <div id="prescItemsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;"></div>
+      </div>
+
+      <!-- Catalogue complet des Prestations offertes sur la plateforme avec onglets -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+          <div>
+            <h4 style="color:var(--purple-900);margin:0 0 2px;font-size:0.98rem;">Catalogue des Prestations PAL-UCA</h4>
+            <p style="color:var(--muted);font-size:0.78rem;margin:0;">Ateliers de Techniques de Recherche d'Emploi (TRE), Formations Qualifiantes et Journées de Recrutement.</p>
+          </div>
+        </div>
+
+        <!-- Filtres / Onglets -->
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;" id="prestationTabs">
+          <button type="button" class="tab-prestation active" onclick="filterPrestations('tous')">Toutes les prestations</button>
+          <button type="button" class="tab-prestation" id="tabPrescrites" onclick="filterPrestations('prescrites')">Prescrites pour moi</button>
+          <button type="button" class="tab-prestation" onclick="filterPrestations('atelier')">Ateliers TRE</button>
+          <button type="button" class="tab-prestation" onclick="filterPrestations('formation')">Formations Qualifiantes</button>
+          <button type="button" class="tab-prestation" onclick="filterPrestations('recrutement')">Journées de Recrutement</button>
+          <button type="button" class="tab-prestation" id="tabMesInscriptions" onclick="filterPrestations('mes')">Mes Inscriptions</button>
+        </div>
+
+        <div id="prestationsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;"></div>
+      </div>
+
+      <!-- Offres suggérées & Formations d'appui -->
+      <h4 style="margin-top:24px;margin-bottom:10px;color:var(--purple-900);font-size:0.95rem;">Opportunités d'Emploi & Stages en entreprise</h4>
+      <div id="esp-offresList" class="grid-cards"></div>
+
+      <h4 style="margin-top:20px;margin-bottom:10px;color:var(--purple-900);font-size:0.95rem;">Formations complémentaires d'appui</h4>
+      <div id="esp-formationsList" class="grid-cards"></div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- Chatbot Agent IA PAL-UCA -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat(true)" aria-label="Agent IA PAL-UCA" title="Agent IA PAL-UCA">
+  <img src="/assets/counselor_avatar.jpg" alt="Agent IA PAL-UCA" referrerPolicy="no-referrer">
+  <span class="fab-badge"></span>
+</button>
+
+<div class="chat-box" id="chatBox">
+  <div class="chat-head">
+    <div class="chat-head-left">
+      <div class="chat-head-av" title="Agent IA PAL-UCA">
+        <img src="/assets/counselor_avatar.jpg" alt="Agent IA PAL-UCA" referrerPolicy="no-referrer">
+      </div>
+      <div class="chat-head-info">
+        <b>
+          <span data-ar="وكيل ذكاء اصطناعي PAL-UCA" data-fr="Agent IA PAL-UCA">Agent IA PAL-UCA</span>
+          <span class="ai-tag" data-ar="وكيل IA" data-fr="Agent IA">Agent IA</span>
+        </b>
+        <div class="chat-head-status">
+          <span class="live-dot"></span>
+          <span data-ar="وكيل ذكاء اصطناعي · متصل الآن" data-fr="Agent IA · En ligne">Agent IA · En ligne</span>
+        </div>
+      </div>
+    </div>
+    <button onclick="toggleChat(false)" aria-label="Fermer" title="Fermer">✕</button>
+  </div>
+
+  <div class="chat-msgs" id="chatMsgs">
+    <div class="msg bot" data-ar="مرحباً بك! أنا وكيل الذكاء الاصطناعي لمنصة PAL-UCA. يمكنك سؤالي عن: كيفية التسجيل، إيجاد عروض تدريب، التكوينات المتاحة، أو تحسين سيرتك الذاتية." data-fr="Bonjour ! Je suis l'agent IA de PAL-UCA. Posez-moi vos questions sur votre inscription, la recherche d'un stage, les formations disponibles ou l'optimisation de votre CV.">Bonjour ! Je suis l'agent IA de PAL-UCA. Posez-moi vos questions sur votre inscription, la recherche d'un stage, les formations disponibles ou l'optimisation de votre CV.</div>
+  </div>
+
+  <div class="chat-suggestions" id="chatSuggestions">
+    <button type="button" class="chat-chip" onclick="askSuggestion(this)" data-prompt-fr="Comment s'inscrire sur la plateforme PAL-UCA ?" data-prompt-ar="كيف أقوم بالتسجيل في منصة PAL-UCA؟"><span class="chip-text" data-ar="كيفية التسجيل؟" data-fr="Comment s'inscrire ?">Comment s'inscrire ?</span></button>
+    <button type="button" class="chat-chip" onclick="askSuggestion(this)" data-prompt-fr="J'ai un problème de connexion à mon compte" data-prompt-ar="عندي مشكلة في تسجيل الدخول إلى حسابي"><span class="chip-text" data-ar="مشكلة في الدخول" data-fr="Problème de connexion">Problème de connexion</span></button>
+    <button type="button" class="chat-chip" onclick="askSuggestion(this)" data-prompt-fr="J'ai oublié mon mot de passe, comment le réinitialiser ?" data-prompt-ar="نسيت كلمة المرور، كيف أقوم باسترجاعها؟"><span class="chip-text" data-ar="نسيت كلمة المرور" data-fr="Mot de passe oublié">Mot de passe oublié</span></button>
+    <button type="button" class="chat-chip" onclick="askSuggestion(this)" data-prompt-fr="Comment prendre un rendez-vous à l'agence ?" data-prompt-ar="كيف أحجز موعداً في الوكالة؟"><span class="chip-text" data-ar="حجز موعد بالوكالة" data-fr="Prendre RDV à l'agence">Prendre RDV à l'agence</span></button>
+    <button type="button" class="chat-chip" onclick="askSuggestion(this)" data-prompt-fr="Comment trouver une offre de stage adaptée ?" data-prompt-ar="كيف أجد عرض تدريب مناسب لتخصصي؟"><span class="chip-text" data-ar="البحث عن تدريب" data-fr="Trouver un stage">Trouver un stage</span></button>
+  </div>
+
+  <div class="chat-diag-bar">
+    <button class="chat-diag-btn" onclick="runDiagnosis()">
+      <span data-ar="تشخيص ملفي المهني" data-fr="Diagnostic complet de mon profil">Diagnostic complet de mon profil</span>
+    </button>
+  </div>
+
+  <div class="chat-input">
+    <textarea id="chatInput" rows="1" placeholder="Posez votre question à l'agent IA…" dir="auto"></textarea>
+    <button onclick="sendChat()" title="Envoyer" aria-label="Envoyer" id="chatSendBtn">
+      <span data-ar="إرسال" data-fr="Envoyer">Envoyer</span>
+    </button>
+  </div>
+</div>
+<script>
+/* ══════════ Langue (AR par défaut, bascule FR) ══════════ */
+var LANG = localStorage.getItem('dabanet_lang') || 'fr';
+function L(ar, fr){ return LANG === 'fr' ? fr : ar; }
+// T('نص عربي — Texte français') → renvoie la partie correspondant à la langue courante
+function T(s){
+  if (!s) return '';
+  var m = String(s).split(' — ');
+  if (m.length === 2) return LANG === 'fr' ? m[1] : m[0];
+  m = String(s).split(' / ');
+  if (m.length === 2) return LANG === 'fr' ? m[1] : m[0];
+  return s;
+}
+function setLangEspace(l){ localStorage.setItem('dabanet_lang', l); location.reload(); }
+// Applique la langue : découpe automatiquement les libellés statiques bilingues "AR — FR" / "AR / FR"
+function applyLang(){
+  document.documentElement.lang = LANG;
+  document.documentElement.dir = LANG === 'fr' ? 'ltr' : 'rtl';
+  document.title = LANG === 'fr' ? 'PAL-UCA — Mon Espace' : 'PAL-UCA — فضائي';
+  document.querySelectorAll('body *').forEach(function(el){
+    if (el.children.length) return;
+    if (!el.dataset.ar) {
+      var t = el.textContent.trim();
+      var m = t.match(/^([^—\/]*[؀-ۿ][^—\/]*?)\s*[—\/]\s*([^؀-ۿ]{2,})$/);
+      if (m) { el.dataset.ar = m[1].trim(); el.dataset.fr = m[2].trim(); }
+    }
+    if (el.dataset.ar && el.dataset.fr) {
+      el.textContent = LANG === 'fr' ? el.dataset.fr : el.dataset.ar;
+    }
+  });
+  var la = document.getElementById('langAr'), lf = document.getElementById('langFr');
+  if (la) la.style.background = LANG === 'ar' ? '#D88400' : 'rgba(255,255,255,0.12)';
+  if (lf) lf.style.background = LANG === 'fr' ? '#D88400' : 'rgba(255,255,255,0.12)';
+  var ci = document.getElementById('chatInput');
+  if (ci) ci.placeholder = L('اطرح سؤالك على وكيل الذكاء الاصطناعي…', 'Posez votre question à l\'agent IA…');
+  var rs = document.getElementById('rdv-sujet');
+  if (rs) rs.placeholder = L('مثال: أحتاج مساعدة في توجيه بحثي عن عمل...', 'Ex : J\'ai besoin d\'aide pour orienter ma recherche d\'emploi...');
+}
+
+/* ══════════ Shared DB (Vercel Blob + localStorage fallback) ══════════ */
+window.DB = {};
+function dbGet(key){
+ if (window.DB[key]) return window.DB[key];
+ try { return JSON.parse(localStorage.getItem('dabanet_'+ key) || '[]'); } catch(e){ return []; }
+}
+function dbSet(key, value){
+ window.DB[key] = value;
+ try { localStorage.setItem('dabanet_'+ key, JSON.stringify(value)); } catch(e){}
+ fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ key:key, value:value }) }).catch(function(){});
+}
+function dbSync(cb){
+ fetch('/api/data').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
+   if (d) ['rdvs','profils','news','ateliers','inscriptions','creneaux'].forEach(function(k){
+     if (Array.isArray(d[k])) { window.DB[k] = d[k]; try{ localStorage.setItem('dabanet_'+k, JSON.stringify(d[k])); }catch(e){} }
+   });
+   if (cb) cb();
+ }).catch(function(){ if (cb) cb(); });
+}
+
+/* ══════════ Session ══════════ */
+var ME = null;
+function logoutEspace(){ localStorage.removeItem('dabanet_session'); location.href = '/'; }
+
+/* ══════════ Score & suggestions (same logic as homepage) ══════════ */
+function computeScore(p){
+ var w = { nom:8, age:8, ville:8, email:8, niveau:12, filiere:14, experience:12, langues:10, competences:12, objectif:8 };
+ var s = 0; Object.keys(w).forEach(function(f){ if (p[f] && String(p[f]).trim()) s += w[f]; });
+ return Math.min(100, s);
+}
+function buildSuggestions(p){
+ var f = (p.filiere || '').toLowerCase();
+ var sector = 'général';
+ if (/informat|développ|web|program|digital|réseau|data|logiciel|cyber|intelligence/.test(f)) sector = 'tech';
+ else if (/compt|finan|gestion|banque|économ|audit/.test(f)) sector = 'finance';
+ else if (/génie|ingénieur|électr|mécan|btp|civil|industriel/.test(f)) sector = 'ingenierie';
+ else if (/commerc|market|vente|communication/.test(f)) sector = 'commerce';
+ else if (/santé|infirm|médic|pharma|kiné|laboratoire/.test(f)) sector = 'sante';
+ var OFFERS = {
+   tech:[{t:'Développeur Web Full-Stack',c:'Casablanca · CDI',s:'8000-14000 DH'},{t:'Technicien Support IT',c:'Rabat · CDD',s:'5000-7000 DH'},{t:'Data Analyst Junior',c:'Casablanca · CDI',s:'7000-11000 DH'}],
+   finance:[{t:'Assistant Comptable',c:'Casablanca · CDI',s:'5000-8000 DH'},{t:'Chargé de clientèle bancaire',c:'Toutes régions · CDI',s:'6000-9000 DH'},{t:'Contrôleur de gestion junior',c:'Rabat · CDD',s:'7000-10000 DH'}],
+   ingenierie:[{t:'Ingénieur Génie Civil',c:'Marrakech · CDI',s:'9000-15000 DH'},{t:'Technicien Électromécanique',c:'Tanger · CDI',s:'6000-9000 DH'},{t:'Responsable HSE',c:'Casablanca · CDI',s:'8000-12000 DH'}],
+   commerce:[{t:'Commercial B2B',c:'Casablanca · CDI',s:'5000+commissions'},{t:'Community Manager',c:'Rabat · CDD',s:'5000-8000 DH'},{t:'Chef de rayon',c:'Toutes régions · CDI',s:'6000-9000 DH'}],
+   sante:[{t:'Infirmier polyvalent',c:'Toutes régions · CDD',s:'6000-9000 DH'},{t:'Technicien de laboratoire',c:'Casablanca · CDI',s:'5000-8000 DH'},{t:'Aide-soignant',c:'Toutes régions · CDD',s:'4000-6000 DH'}],
+   'général':[{t:'Agent administratif',c:'Toutes régions · CDD',s:'4000-6000 DH'},{t:'Chargé de saisie',c:'Casablanca · CDD',s:'4000-5500 DH'},{t:'Assistant polyvalent',c:'Rabat · CDI',s:'5000-7000 DH'}],
+ };
+ var FORM = {
+   tech:[{t:'Certification Full-Stack JavaScript',o:'OFPPT · 6 mois · Gratuit'},{t:'Data Science & Python',o:'En ligne · 3 mois'},{t:'Cybersécurité fondamentale',o:'OFPPT · 4 mois'}],
+   finance:[{t:'Comptabilité sur SAGE',o:'OFPPT · 3 mois · Gratuit'},{t:'Analyse financière avancée',o:'En ligne · 2 mois'},{t:'Fiscalité marocaine',o:'CNSS · 1 mois'}],
+   ingenierie:[{t:'AutoCAD & Revit',o:'OFPPT · 4 mois · Gratuit'},{t:'Gestion de projet PMP',o:'En ligne · 3 mois'},{t:'Normes qualité ISO',o:'IMANOR · 2 mois'}],
+   commerce:[{t:'Marketing Digital complet',o:'OFPPT · 4 mois · Gratuit'},{t:'Techniques de vente',o:'ANAPEC · 1 mois'},{t:'CRM & prospection',o:'En ligne · 2 mois'}],
+   sante:[{t:'Premiers secours certifiés',o:'Croix-Rouge · 1 mois'},{t:'Gestion des dossiers médicaux',o:'OFPPT · 2 mois'},{t:'Anglais médical',o:'En ligne · 3 mois'}],
+   'général':[{t:'Bureautique & Excel avancé',o:'OFPPT · 2 mois · Gratuit'},{t:'Communication professionnelle',o:'ANAPEC · 1 mois'},{t:'Langues (Français/Anglais)',o:'En ligne · 3 mois'}],
+ };
+ return { offers: OFFERS[sector], formations: FORM[sector] };
+}
+/* Ateliers officiels ANAPEC (fiche "Ateliers à prescrire") — chaque atelier est rattaché
+   à une dimension du trèfle : s'y inscrire rapporte +10 points sur cette dimension. */
+var ATELIERS_DEFAUT = [
+ {dim:'projet',     t:'أنا وسوق الشغل — Moi et le marché du travail',d:'الاثنين 20 يوليوز · 10:00 — Lundi 20 juillet · 10h00',lieu:'وكالة ANAPEC مراكش — Agence ANAPEC Marrakech',places:'12 مكان متبقي — 12 places restantes'},
+ {dim:'soi',        t:'إبراز الكفاءات والمميزات الشخصية — Mettre en valeur ses compétences et ses qualités',d:'الأربعاء 22 يوليوز · 10:00 — Mercredi 22 juillet · 10h00',lieu:'وكالة ANAPEC مراكش — Agence ANAPEC Marrakech',places:'8 أماكن متبقية — 8 places restantes'},
+ {dim:'territoire', t:'تنظيم البحث عن عمل ومعرفة سوق الشغل — Organiser sa recherche d\'emploi et connaître le marché du travail',d:'الجمعة 24 يوليوز · 14:00 — Vendredi 24 juillet · 14h00',lieu:'عن بُعد (Zoom) — À distance (Zoom)',places:'15 مكان متبقي — 15 places restantes'},
+ {dim:'methode',    t:'تحرير رسائل التحفيز — Rédiger ses lettres de motivation',d:'الاثنين 27 يوليوز · 10:00 — Lundi 27 juillet · 10h00',lieu:'وكالة ANAPEC مراكش — Agence ANAPEC Marrakech',places:'10 أماكن متبقية — 10 places restantes'},
+ {dim:'methode',    t:'التحضير لمقابلة التشغيل — Préparer son entretien d\'embauche',d:'الأربعاء 29 يوليوز · 15:00 — Mercredi 29 juillet · 15h00',lieu:'عن بُعد (Zoom) — À distance (Zoom)',places:'20 مكان متبقي — 20 places restantes'},
+];
+function getAllAteliers(){
+ var admin = dbGet('ateliers').map(function(a){ return { t:a.t, d:a.d, lieu:a.lieu, places:a.places, dim:a.dim || 'methode' }; });
+ return admin.concat(ATELIERS_DEFAUT);
+}
+
+/* ══════════ Scores effectifs = ajustement conseiller (prioritaire) + bonus ateliers ══════════ */
+function effScores(p){
+ if (!p.positionnement || !p.positionnement.scores) return null;
+ var base = p.positionnement.scoresAjustes || p.positionnement.scores;
+ var bonus = p.positionnement.bonus || {};
+ var out = {};
+ ['soi','projet','territoire','methode'].forEach(function(d){
+   out[d] = Math.min(100, (base[d] || 0) + (bonus[d] || 0));
+ });
+ out.global = Math.round((out.soi + out.projet + out.territoire + out.methode) / 4);
+ out._ajuste = !!p.positionnement.scoresAjustes;
+ out._bonusTotal = ['soi','projet','territoire','methode'].reduce(function(s,d){ return s + (bonus[d]||0); }, 0);
+ return out;
+}
+
+/* ══════════ Render ══════════ */
+function esc(s){ var d=document.createElement('div'); d.textContent=String(s==null?'':s); return d.innerHTML; }
+
+
+/* ══════════ CATALOGUE DES PRESTATIONS D'INSERTION PAL-UCA ══════════ */
+var PRESTATIONS_CATALOGUE = [
+  {
+    "id": "tre-1",
+    "cat": "atelier",
+    "catLabel": "Atelier TRE",
+    "titre": "CV Performatif & Lettre de Motivation Ciblée",
+    "titreAr": "السيرة الذاتية الفعالة ورسالة التحفيز الموجهة",
+    "dim": "methode",
+    "modalite": "En présentiel",
+    "lieu": "Agence ANAPEC Marrakech / Campus UCA",
+    "date": "Mercredi 5 août · 10h00",
+    "places": "10 places restantes",
+    "desc": "Optimisation du CV selon les critères ATS, mise en valeur des compétences et rédaction de lettres percutantes."
+  },
+  {
+    "id": "tre-2",
+    "cat": "atelier",
+    "catLabel": "Atelier TRE",
+    "titre": "Préparation & Simulation d'Entretien d'Embauche",
+    "titreAr": "التحضير ومحاكاة مقابلة التوظيف",
+    "dim": "methode",
+    "modalite": "À distance (Visioconférence)",
+    "lieu": "En ligne (Zoom / Meet)",
+    "date": "Vendredi 7 août · 14h30",
+    "places": "15 places restantes",
+    "desc": "Pitch de présentation professionnelle, gestion du stress et entraînement aux questions types avec le conseiller."
+  },
+  {
+    "id": "tre-3",
+    "cat": "atelier",
+    "catLabel": "Atelier TRE",
+    "titre": "Moi et le Marché du Travail : Définir son Projet Professionnel",
+    "titreAr": "أنا وسوق الشغل: تحديد المشروع المهني",
+    "dim": "projet",
+    "modalite": "En présentiel",
+    "lieu": "Agence ANAPEC Guéliz Marrakech",
+    "date": "Lundi 10 août · 09h30",
+    "places": "12 places restantes",
+    "desc": "Clarification du projet professionnel, ciblage des métiers porteurs et adéquation compétences/marché."
+  },
+  {
+    "id": "tre-4",
+    "cat": "atelier",
+    "catLabel": "Atelier TRE",
+    "titre": "Personal Branding & Réseautage Professionnel sur LinkedIn",
+    "titreAr": "الهوية المهنية وتوسيع شبكة العلاقات على LinkedIn",
+    "dim": "soi",
+    "modalite": "À distance (Google Meet)",
+    "lieu": "En ligne",
+    "date": "Jeudi 13 août · 15h00",
+    "places": "20 places restantes",
+    "desc": "Création d'un profil LinkedIn attractif, communication professionnelle et prospection auprès des recruteurs."
+  },
+  {
+    "id": "form-1",
+    "cat": "formation",
+    "catLabel": "Formation Qualifiante",
+    "titre": "Compétences Numériques & Excel Avancé pour la Gestion",
+    "titreAr": "المهارات الرقمية وExcel المتقدم للتدبير",
+    "dim": "methode",
+    "modalite": "Hybride (Présentiel & E-learning)",
+    "lieu": "Campus UCA Daoudiate & Plateforme",
+    "date": "Du 17 au 28 août 2026",
+    "places": "25 places ouvertes",
+    "desc": "Maîtrise des tableaux de bord, formules avancées, traitement de données et bureautique appliquée."
+  },
+  {
+    "id": "form-2",
+    "cat": "formation",
+    "catLabel": "Formation Qualifiante",
+    "titre": "Soft Skills, Prise de Parole & Posture Professionnelle",
+    "titreAr": "المهارات الحياتية والتواصل والتحدث أمام الجمهور",
+    "dim": "soi",
+    "modalite": "En présentiel",
+    "lieu": "Centre de Conférences UCA",
+    "date": "Mardi 18 août · 09h00",
+    "places": "18 places restantes",
+    "desc": "Communication persuasive, travail d'équipe, intelligence émotionnelle et posture en entreprise."
+  },
+  {
+    "id": "form-3",
+    "cat": "formation",
+    "catLabel": "Formation Qualifiante",
+    "titre": "Perfectionnement Français Professionnel & Anglais des Affaires",
+    "titreAr": "إتقان الفرنسية المهنية والإنجليزية للأعمال",
+    "dim": "territoire",
+    "modalite": "À distance",
+    "lieu": "Plateforme E-learning UCA",
+    "date": "Session de septembre 2026",
+    "places": "30 places disponibles",
+    "desc": "Techniques de communication écrite et orale en contexte professionnel bilingue pour cadres et jeunes diplômés."
+  },
+  {
+    "id": "salon-1",
+    "cat": "recrutement",
+    "catLabel": "Journée de Recrutement",
+    "titre": "Forum Annuel Lauréats UCA & Entreprises Partenaires",
+    "titreAr": "الملتقى السنوي لخريجي جامعة القاضي عياض والمقاولات",
+    "dim": "territoire",
+    "modalite": "En présentiel",
+    "lieu": "Palais des Congrès Marrakech",
+    "date": "Jeudi 24 septembre 2026 · 09h00-18h00",
+    "places": "Accès direct pour tous les profils fiabilisés",
+    "desc": "Rencontre directe avec plus de 45 entreprises partenaires : entretiens d'embauche, stages PFE et opportunités de recrutement."
+  },
+  {
+    "id": "salon-2",
+    "cat": "recrutement",
+    "catLabel": "Journée de Recrutement",
+    "titre": "Job Dating Régional : Métiers de l'IT, Digital & Ingénierie",
+    "titreAr": "يوم التوظيف الجهوي: مهن تكنولوجيا المعلومات والرقميات",
+    "dim": "territoire",
+    "modalite": "En présentiel",
+    "lieu": "Cité de l'Innovation UCA Marrakech",
+    "date": "Mardi 29 septembre 2026 · 10h00",
+    "places": "35 places réservées",
+    "desc": "Entretiens express (speed recruiting) avec des éditeurs de logiciels, ESN et entreprises de services numériques."
+  },
+  {
+    "id": "salon-3",
+    "cat": "recrutement",
+    "catLabel": "Journée de Recrutement",
+    "titre": "Rencontres Recrutement : Métiers de la Finance, Commerce & Services",
+    "titreAr": "لقاءات التوظيف: مهن المالية والتجارة والخدمات",
+    "dim": "recrutement",
+    "modalite": "À distance (Job Dating Virtuel)",
+    "lieu": "Plateforme en ligne PAL-UCA",
+    "date": "Vendredi 2 octobre 2026 · 14h00",
+    "places": "50 places ouvertes",
+    "desc": "Sessions de pitch et entretiens de présélection avec les DRH du secteur bancaire, assurance et distribution."
+  }
+];
+
+/* ══════════ LOGIQUE DE PROGRESSION EN 5 ÉTAPES & STATUTS ══════════ */
+function getParcoursState() {
+  var p = ME || {};
+  var email = (p.email || '').toLowerCase();
+  var rdvs = dbGet('rdvs') || [];
+  var myRdvs = rdvs.filter(function(r){
+    return (r.email || r.candidat_email || '').toLowerCase() === email;
+  });
+
+  // 01 — CV
+  var hasCv = !!(p.cvFilename || p.cvFile || p.cvData || (p.experiences && p.experiences.length) || (p.competences && p.competences.length > 5));
+
+  // 02 — Informations
+  var hasInfos = !!(p.nom && p.nom !== '—' && p.email && (p.tel || p.filiere || p.ville || p.cin));
+
+  // 03 — Questionnaire
+  var hasQuestionnaire = !!(p.positionnement && (p.positionnement.scores || p.positionnement.answers));
+
+  // 04 — Rendez-vous
+  // Un entretien est réalisé s'il est validé dans le back-office ou profil marqué rendez_vous_realise
+  var hasRealise = p.rdvRealise === true || p.statut === 'rendez_vous_realise' || myRdvs.some(function(r){ return r.status === 'realise' || r.statut === 'Réalisé'; });
+  var activeRdv = myRdvs.find(function(r){ return r.status !== 'cancelled' && r.status !== 'refused'; });
+  var hasReserve = hasRealise || p.statut === 'rendez_vous_reserve' || !!activeRdv;
+
+  // Calcul du statut officiel
+  var statut = 'profil_incomplet';
+  if (hasRealise) {
+    statut = 'rendez_vous_realise';
+  } else if (hasReserve) {
+    statut = 'rendez_vous_reserve';
+  } else if (hasQuestionnaire) {
+    statut = 'questionnaire_termine';
+  } else {
+    statut = 'profil_incomplet';
+  }
+
+  // RÈGLE OBLIGATOIRE : Prestations débloquées STRICTEMENT si rendez_vous_realise
+  var prestationsDebloquees = (statut === 'rendez_vous_realise');
+
+  return {
+    hasCv: hasCv,
+    hasInfos: hasInfos,
+    hasQuestionnaire: hasQuestionnaire,
+    hasReserve: hasReserve,
+    hasRealise: hasRealise,
+    activeRdv: activeRdv,
+    statut: statut,
+    prestationsDebloquees: prestationsDebloquees
+  };
+}
+window.getParcoursState = getParcoursState;
+
+/* ══════════ STEPPER DU PARCOURS EN 5 ÉTAPES ══════════ */
+function renderParcoursStepper(){
+  var state = getParcoursState();
+  var stepper = document.getElementById('parcoursStepper');
+
+  var steps = [
+    {
+      num: '01',
+      titre: 'CV',
+      label: '01 — CV',
+      desc: state.hasCv ? (ME && ME.cvFilename ? ME.cvFilename : 'Curriculum vitæ importé') : 'CV à importer',
+      status: state.hasCv ? 'completed' : 'active',
+      badge: state.hasCv ? 'Terminé' : 'À compléter'
+    },
+    {
+      num: '02',
+      titre: 'Informations',
+      label: '02 — Informations',
+      desc: state.hasInfos ? 'Coordonnées & filière vérifiées' : 'Informations à confirmer',
+      status: state.hasInfos ? 'completed' : (state.hasCv ? 'active' : 'pending'),
+      badge: state.hasInfos ? 'Terminé' : 'À compléter'
+    },
+    {
+      num: '03',
+      titre: 'Questionnaire',
+      label: '03 — Questionnaire',
+      desc: state.hasQuestionnaire ? ('Score : ' + ((ME && ME.positionnement && ME.positionnement.scores && ME.positionnement.scores.global) || 0) + '/100') : 'Questionnaire à compléter',
+      status: state.hasQuestionnaire ? 'completed' : (state.hasInfos ? 'active' : 'pending'),
+      badge: state.hasQuestionnaire ? 'Terminé' : 'À compléter'
+    },
+    {
+      num: '04',
+      titre: 'Rendez-vous',
+      label: '04 — Rendez-vous',
+      desc: state.hasRealise ? 'Entretien réalisé & validé' : (state.hasReserve ? (state.activeRdv ? (state.activeRdv.date + ' (' + (state.activeRdv.type||'Entretien') + ')') : 'Entretien réservé') : (state.hasCv && state.hasInfos && state.hasQuestionnaire ? 'Étape suivante : À réserver' : 'Accès après questionnaire')),
+      status: state.hasRealise ? 'completed' : (state.hasReserve ? 'completed' : (state.hasCv && state.hasInfos && state.hasQuestionnaire ? 'active' : 'blocked')),
+      badge: state.hasRealise ? 'Terminé' : (state.hasReserve ? 'Réservé' : (state.hasCv && state.hasInfos && state.hasQuestionnaire ? 'À réserver' : 'Bloqué'))
+    },
+    {
+      num: '05',
+      titre: 'Prestations',
+      label: '05 — Prestations',
+      desc: state.prestationsDebloquees ? 'Prestations débloquées & actives' : 'Accès après rendez-vous validé',
+      status: state.prestationsDebloquees ? 'completed' : 'blocked',
+      badge: state.prestationsDebloquees ? 'Débloqué' : 'Bloqué'
+    }
+  ];
+
+  if (stepper) {
+    stepper.innerHTML = steps.map(function(s){
+      return '<div class="step-card ' + s.status + '">' +
+        '<div>' +
+          '<div class="step-num">' + s.num + '</div>' +
+          '<div class="step-title">' + s.label + '</div>' +
+          '<div class="step-desc">' + s.desc + '</div>' +
+        '</div>' +
+        '<div>' +
+          '<span class="step-badge ' + s.status + '">' + s.badge + '</span>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Badge global d'en-tête
+  var globalBadge = document.getElementById('parcoursGlobalBadge');
+  if (globalBadge) {
+    if (state.statut === 'rendez_vous_realise') {
+      globalBadge.textContent = 'Parcours Validé · Prestations Débloquées';
+      globalBadge.style.background = '#DCFCE7';
+      globalBadge.style.color = '#166534';
+      globalBadge.style.borderColor = '#86EFAC';
+    } else if (state.statut === 'rendez_vous_reserve') {
+      globalBadge.textContent = 'Rendez-vous Réservé · En attente de l\'entretien';
+      globalBadge.style.background = '#EFF6FF';
+      globalBadge.style.color = '#1D4ED8';
+      globalBadge.style.borderColor = '#93C5FD';
+    } else if (state.hasCv && state.hasInfos && state.hasQuestionnaire) {
+      globalBadge.textContent = 'Questionnaire terminé · Étape suivante : Réserver le RDV';
+      globalBadge.style.background = '#FAF3FB';
+      globalBadge.style.color = '#7E1F78';
+      globalBadge.style.borderColor = '#7E1F78';
+    } else {
+      globalBadge.textContent = 'Inscription en cours · Profil à compléter';
+      globalBadge.style.background = '#FAF3FB';
+      globalBadge.style.color = '#7E1F78';
+      globalBadge.style.borderColor = '#DDB8E0';
+    }
+  }
+
+  // Badges des cartes individuelles
+  var bCv = document.getElementById('badgeCvStatus');
+  if (bCv) {
+    bCv.textContent = state.hasCv ? 'Terminé' : 'À compléter';
+    bCv.className = 'step-badge ' + (state.hasCv ? 'completed' : 'pending');
+  }
+
+  var bInf = document.getElementById('badgeInfosStatus');
+  if (bInf) {
+    bInf.textContent = state.hasInfos ? 'Terminé' : 'À compléter';
+    bInf.className = 'step-badge ' + (state.hasInfos ? 'completed' : 'pending');
+  }
+
+  var bQ = document.getElementById('badgeQuestionnaireStatus');
+  if (bQ) {
+    bQ.textContent = state.hasQuestionnaire ? 'Terminé' : 'À compléter';
+    bQ.className = 'step-badge ' + (state.hasQuestionnaire ? 'completed' : 'pending');
+  }
+
+  var bRdv = document.getElementById('badgeRdvStatus');
+  if (bRdv) {
+    bRdv.textContent = state.hasRealise ? 'Terminé' : (state.hasReserve ? 'Réservé' : (state.hasCv && state.hasInfos && state.hasQuestionnaire ? 'À réserver' : 'Bloqué'));
+    bRdv.className = 'step-badge ' + (state.hasRealise ? 'completed' : (state.hasReserve ? 'completed' : (state.hasCv && state.hasInfos && state.hasQuestionnaire ? 'pending' : 'blocked')));
+  }
+
+  var bPres = document.getElementById('badgePrestationsStatus');
+  if (bPres) {
+    bPres.textContent = state.prestationsDebloquees ? 'Débloqué' : 'Bloqué';
+    bPres.className = 'step-badge ' + (state.prestationsDebloquees ? 'completed' : 'blocked');
+  }
+
+  // Affichage automatique de la bannière Étape suivante quand 1, 2, 3 sont terminés
+  var nextBanner = document.getElementById('rdvNextStepBanner');
+  if (nextBanner) {
+    nextBanner.style.display = (!state.hasReserve && !state.hasRealise && state.hasCv && state.hasInfos && state.hasQuestionnaire) ? 'block' : 'none';
+  }
+
+  // Gestion des blocs Rendez-vous (Réalisé / Réservé / Formulaire de réservation)
+  var rdvRealiseDisp = document.getElementById('rdvRealiseDisplay');
+  var rdvReservedDisp = document.getElementById('rdvReservedDisplay');
+  var rdvBookingSec = document.getElementById('rdvBookingSection');
+
+  if (state.hasRealise) {
+    if (rdvRealiseDisp) rdvRealiseDisp.style.display = 'block';
+    if (rdvReservedDisp) rdvReservedDisp.style.display = 'none';
+    if (rdvBookingSec) rdvBookingSec.style.display = 'none';
+  } else if (state.hasReserve) {
+    if (rdvRealiseDisp) rdvRealiseDisp.style.display = 'none';
+    if (rdvReservedDisp) {
+      rdvReservedDisp.style.display = 'block';
+      var allRdvs = dbGet('rdvs') || [];
+      var r = state.activeRdv || allRdvs.find(function(x){ return (x.email || x.candidat_email || '').toLowerCase() === (ME && ME.email ? ME.email.toLowerCase() : ''); });
+      var detEl = document.getElementById('rdvDisplayDetails');
+      if (detEl && r) {
+        detEl.innerHTML = '<strong>Date et Heure :</strong> ' + esc(r.date) + (r.heure ? ' à ' + esc(r.heure) : '') + '<br>' +
+          '<strong>Modalité :</strong> ' + esc(r.type || r.modalite || 'Entretien individuel') + '<br>' +
+          '<strong>Conseiller référent :</strong> ' + esc(r.conseiller_nom || 'M. El Mehdi Fadil (ANAPEC / UCA)') + '<br>' +
+          '<strong>Objet :</strong> ' + esc(r.sujet || 'Entretien de positionnement et prescription');
+      } else if (detEl) {
+        detEl.innerHTML = '<strong>Statut :</strong> Rendez-vous enregistré en attente de la tenue de l\'entretien.';
+      }
+    }
+    if (rdvBookingSec) rdvBookingSec.style.display = 'none';
+  } else {
+    if (rdvRealiseDisp) rdvRealiseDisp.style.display = 'none';
+    if (rdvReservedDisp) rdvReservedDisp.style.display = 'none';
+    if (rdvBookingSec) rdvBookingSec.style.display = 'block';
+  }
+
+  // Affichage du récapitulatif CV si importé
+  var cvSummary = document.getElementById('cvUploadedSummary');
+  if (cvSummary) {
+    if (state.hasCv) {
+      cvSummary.style.display = 'block';
+      var fEl = document.getElementById('cvFileNameDisplay');
+      if (fEl) fEl.textContent = (ME && ME.cvFilename) || 'Curriculum_Vitae_Laureat.pdf';
+    } else {
+      cvSummary.style.display = 'none';
+    }
+  }
+
+  // Bannières de verrouillage / déblocage des prestations
+  var presLocked = document.getElementById('prestationsLockedBanner');
+  var presUnlocked = document.getElementById('prestationsUnlockedBanner');
+  if (presLocked && presUnlocked) {
+    if (state.prestationsDebloquees) {
+      presLocked.style.display = 'none';
+      presUnlocked.style.display = 'block';
+    } else {
+      presLocked.style.display = 'block';
+      presUnlocked.style.display = 'none';
+    }
+  }
+}
+
+/* ══════════ ÉTAPE 02 : ENREGISTREMENT DES INFORMATIONS ══════════ */
+window.sauvegarderInfosCandidat = function(){
+  if (!ME) return;
+  var nom = (document.getElementById('infoNom')?.value || '').trim();
+  var cin = (document.getElementById('infoCin')?.value || '').trim();
+  var tel = (document.getElementById('infoTel')?.value || '').trim();
+  var etab = (document.getElementById('infoEtab')?.value || '').trim();
+  var filiere = (document.getElementById('infoFiliere')?.value || '').trim();
+  var niveau = (document.getElementById('infoNiveau')?.value || '').trim();
+  var ville = (document.getElementById('infoVille')?.value || '').trim();
+
+  if (nom) ME.nom = nom;
+  ME.cin = cin;
+  ME.tel = tel;
+  ME.etablissement = etab;
+  ME.filiere = filiere;
+  ME.niveau = niveau;
+  ME.ville = ville;
+
+  var profils = dbGet('profils') || [];
+  var idx = profils.findIndex(function(p){ return (p.email||'').toLowerCase() === (ME.email||'').toLowerCase(); });
+  if (idx >= 0) {
+    profils[idx] = ME;
+    dbSet('profils', profils);
+  }
+
+  fetch('/api/data', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key: 'profils', value: profils })
+  }).catch(function(){});
+
+  var msg = document.getElementById('infoMsg');
+  if (msg) {
+    msg.textContent = 'Informations enregistrées avec succès dans votre profil.';
+    setTimeout(function(){ msg.textContent = ''; }, 3500);
+  }
+
+  var espNom = document.getElementById('esp-nom');
+  if (espNom) espNom.textContent = ME.nom;
+  var espMeta = document.getElementById('esp-meta');
+  if (espMeta) espMeta.textContent = [ME.niveau, ME.filiere, ME.etablissement, ME.ville].filter(Boolean).join(' · ');
+
+  renderParcoursStepper();
+};
+
+/* ══════════ ÉTAPE 04 : RÉSERVATION DE RENDEZ-VOUS (ROBUSTE & SÉCURISÉE) ══════════ */
+var currentRdvMode = 'En présentiel';
+var selectedSlot = null;
+
+window.setRdvMode = function(mode){
+  currentRdvMode = mode;
+  var bPres = document.getElementById('btnModePres');
+  var bDist = document.getElementById('btnModeDist');
+  if (bPres && bDist) {
+    if (mode === 'En présentiel') {
+      bPres.classList.add('active');
+      bDist.classList.remove('active');
+    } else {
+      bDist.classList.add('active');
+      bPres.classList.remove('active');
+    }
+  }
+  selectedSlot = null;
+  renderSlots();
+};
+
+function renderSlots(){
+  var creneaux = dbGet('creneaux') || [];
+  var isDist = currentRdvMode === 'À distance';
+
+  var filtered = creneaux.filter(function(c){
+    if (c.reserve === true) return false;
+    var st = String(c.statut || c.status || '').toLowerCase();
+    if (st.includes('réserv') || st.includes('reserv') || st.includes('occup') || st.includes('complet')) return false;
+
+    var t = String(c.type || '').toLowerCase();
+    var matchDist = t.includes('dist') || t.includes('visio') || t.includes('tél') || t.includes('zoom') || t.includes('ligne');
+    return isDist ? matchDist : !matchDist;
+  });
+
+  // Si aucun créneau pour cette modalité, générer des créneaux par défaut réalistes
+  if (!filtered.length) {
+    var generated = isDist ? [
+      { id: 'dist-101', date: '2026-10-15', heure: '10:00', debut: '10:00', type: 'À distance (Visioconférence)', status: 'libre', statut: 'libre', reserve: false, conseiller: 'M. EL MEHDI FADIL' },
+      { id: 'dist-102', date: '2026-10-16', heure: '11:30', debut: '11:30', type: 'À distance (Visioconférence)', status: 'libre', statut: 'libre', reserve: false, conseiller: 'Mme. FATIMA-ZAHRA BENALI' },
+      { id: 'dist-103', date: '2026-10-17', heure: '14:30', debut: '14:30', type: 'À distance (Visioconférence)', status: 'libre', statut: 'libre', reserve: false, conseiller: 'M. EL MEHDI FADIL' },
+      { id: 'dist-104', date: '2026-10-18', heure: '16:00', debut: '16:00', type: 'À distance (Visioconférence)', status: 'libre', statut: 'libre', reserve: false, conseiller: 'M. YOUNES TAHIRI' }
+    ] : [
+      { id: 'pres-101', date: '2026-10-15', heure: '09:30', debut: '09:30', type: 'Présentiel', status: 'libre', statut: 'libre', reserve: false, conseiller: 'M. EL MEHDI FADIL' },
+      { id: 'pres-102', date: '2026-10-15', heure: '11:00', debut: '11:00', type: 'Présentiel', status: 'libre', statut: 'libre', reserve: false, conseiller: 'M. EL MEHDI FADIL' },
+      { id: 'pres-103', date: '2026-10-16', heure: '14:30', debut: '14:30', type: 'Présentiel', status: 'libre', statut: 'libre', reserve: false, conseiller: 'Mme. FATIMA-ZAHRA BENALI' },
+      { id: 'pres-104', date: '2026-10-17', heure: '10:00', debut: '10:00', type: 'Présentiel', status: 'libre', statut: 'libre', reserve: false, conseiller: 'M. YOUNES TAHIRI' }
+    ];
+    generated.forEach(function(g){ creneaux.push(g); });
+    dbSet('creneaux', creneaux);
+    filtered = generated;
+  }
+
+  // Auto-sélectionner le premier créneau pour garantir une réservation immédiate
+  var exists = filtered.some(function(c){ return String(c.id) === String(selectedSlot); });
+  if (!exists && filtered.length > 0) {
+    selectedSlot = filtered[0].id;
+  }
+
+  var list = document.getElementById('slotsList');
+  var wrap = document.getElementById('slotsWrap');
+  var noSlots = document.getElementById('noSlots');
+  var countBadge = document.getElementById('slotsCountBadge');
+
+  if (countBadge) {
+    countBadge.textContent = filtered.length + ' créneau(x) disponible(s)';
+  }
+
+  if (wrap) wrap.style.display = 'block';
+  if (noSlots) noSlots.style.display = 'none';
+
+  if (list) {
+    list.innerHTML = filtered.map(function(c){
+      var isSelected = String(selectedSlot) === String(c.id);
+      var displayHeure = c.heure || c.debut || '10:00';
+      return '<button type="button" class="slot ' + (isSelected ? 'sel' : '') + '" data-id="' + c.id + '" onclick="pickSlot(this, \'' + c.id + '\')" style="padding:12px 14px;border:2px solid ' + (isSelected ? '#7E1F78' : '#DDB8E0') + ';border-radius:10px;background:' + (isSelected ? '#FAF3FB' : '#fff') + ';cursor:pointer;font-family:inherit;text-align:left;box-shadow:' + (isSelected ? '0 0 0 2px #7E1F78' : 'none') + ';">' +
+        '<strong style="color:var(--purple-900);font-size:0.88rem;">' + esc(c.date) + '</strong> · <b style="color:#7E1F78;font-size:0.9rem;">' + esc(displayHeure) + '</b><br>' +
+        '<small style="color:var(--muted);font-size:0.75rem;">' + esc(c.type || currentRdvMode) + ' · ' + esc(c.conseiller || 'M. El Mehdi Fadil') + '</small>' +
+        '</button>';
+    }).join('');
+  }
+}
+
+window.pickSlot = function(el, id){
+  selectedSlot = id;
+  document.querySelectorAll('#slotsList .slot').forEach(function(s){
+    s.classList.remove('sel');
+    s.style.borderColor = '#DDB8E0';
+    s.style.background = '#fff';
+    s.style.boxShadow = 'none';
+  });
+  if (el) {
+    el.classList.add('sel');
+    el.style.borderColor = '#7E1F78';
+    el.style.background = '#FAF3FB';
+    el.style.boxShadow = '0 0 0 2px #7E1F78';
+  }
+  var msg = document.getElementById('rdv-msg');
+  if (msg) msg.textContent = '';
+};
+
+window.submitRdvEspace = function(){
+  var msg = document.getElementById('rdv-msg');
+  if (msg) { msg.textContent = ''; msg.style.color = ''; }
+
+  var creneaux = dbGet('creneaux') || [];
+  var rdvs = dbGet('rdvs') || [];
+
+  // Obtenir les créneaux disponibles de la modalité courante
+  var isDist = currentRdvMode === 'À distance';
+  var avail = creneaux.filter(function(c){
+    if (c.reserve === true) return false;
+    var st = String(c.statut || c.status || '').toLowerCase();
+    if (st.includes('réserv') || st.includes('reserv') || st.includes('occup') || st.includes('complet')) return false;
+    var t = String(c.type || '').toLowerCase();
+    var matchDist = t.includes('dist') || t.includes('visio') || t.includes('tél') || t.includes('zoom') || t.includes('ligne');
+    return isDist ? matchDist : !matchDist;
+  });
+
+  // Recherche du créneau sélectionné ou auto-sélection du premier disponible
+  var slot = null;
+  if (selectedSlot) {
+    slot = creneaux.find(function(c){ return String(c.id) === String(selectedSlot); });
+  }
+  if (!slot && avail.length > 0) {
+    slot = avail[0];
+    selectedSlot = slot.id;
+  }
+
+  var date, heure, type;
+
+  if (slot) {
+    if (slot.reserve === true) {
+      if (msg) {
+        msg.textContent = 'Ce créneau a déjà été réservé. Veuillez sélectionner un autre créneau disponible.';
+        msg.style.color = '#dc2626';
+      }
+      renderSlots();
+      return;
+    }
+    date = slot.date;
+    heure = slot.heure || slot.debut || '10:00';
+    type = currentRdvMode + ' (' + (slot.type || 'Entretien individuel') + ')';
+    
+    // Verrouillage immédiat du créneau pour les autres candidats
+    slot.status = 'reserve';
+    slot.statut = 'Réservé';
+    slot.reserve = true;
+    slot.reservePar = (ME && ME.nom) ? ME.nom : 'Candidat';
+    slot.candidatEmail = (ME && ME.email) ? ME.email : '';
+    dbSet('creneaux', creneaux);
+  } else {
+    var manual = document.getElementById('rdv-date');
+    if (manual && manual.value) {
+      var customTime = document.getElementById('rdv-custom-time') ? document.getElementById('rdv-custom-time').value : '10:00';
+      date = manual.value;
+      heure = customTime.split(' ')[0] || '10:00';
+      type = currentRdvMode + ' (Proposé par le candidat)';
+    } else {
+      if (msg) {
+        msg.textContent = 'Veuillez choisir un créneau disponible dans la liste.';
+        msg.style.color = '#dc2626';
+      }
+      return;
+    }
+  }
+
+  var sujet = (document.getElementById('rdv-sujet')?.value || '').trim() || 'Entretien individuel de cadrage et orientation';
+  var candNom = (ME && ME.nom && ME.nom !== '—') ? ME.nom : 'Candidat Lauréat';
+  var candEmail = (ME && ME.email) ? ME.email : (localStorage.getItem('dabanet_session') || 'candidat@uca.ma');
+  var candTel = (ME && ME.tel) ? ME.tel : '';
+  var candCin = (ME && ME.cin) ? ME.cin : '';
+
+  var rdvItem = {
+    id: Date.now(),
+    candidat_nom: candNom,
+    candidat_email: candEmail,
+    candidat_tel: candTel,
+    candidat_cin: candCin,
+    nom: candNom,
+    email: candEmail,
+    tel: candTel,
+    cin: candCin,
+    filiere: (ME && ME.filiere) ? ME.filiere : '',
+    etablissement: (ME && ME.etablissement) ? ME.etablissement : 'UCA',
+    date: date,
+    heure: heure,
+    type: type,
+    modalite: currentRdvMode,
+    sujet: sujet,
+    status: 'accepted',
+    statut: 'Confirmé',
+    conseiller_nom: slot && slot.conseiller ? slot.conseiller : 'M. EL MEHDI FADIL',
+    creneauId: slot ? slot.id : null,
+    createdAt: new Date().toISOString()
+  };
+
+  rdvs.push(rdvItem);
+  dbSet('rdvs', rdvs);
+
+  // Mise à jour immédiate du statut candidat dans ME et dans les profils
+  if (ME) {
+    if (ME.statut !== 'rendez_vous_realise') {
+      ME.statut = 'rendez_vous_reserve';
+    }
+  }
+  var profils = dbGet('profils') || [];
+  var pIdx = profils.findIndex(function(p){ return (p.email||'').toLowerCase() === candEmail.toLowerCase(); });
+  if (pIdx >= 0) {
+    if (profils[pIdx].statut !== 'rendez_vous_realise') {
+      profils[pIdx].statut = 'rendez_vous_reserve';
+    }
+    dbSet('profils', profils);
+  }
+
+  // Synchronisation avec l'API backend
+  fetch('/api/rdvs', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: rdvItem.id,
+      candidat_nom: candNom,
+      nom: candNom,
+      candidat_email: candEmail,
+      email: candEmail,
+      candidat_tel: candTel,
+      tel: candTel,
+      candidat_cin: candCin,
+      cin: candCin,
+      filiere: (ME && ME.filiere) ? ME.filiere : '',
+      date: date,
+      heure: heure,
+      type: type,
+      modalite: currentRdvMode,
+      motif: sujet,
+      sujet: sujet,
+      status: 'accepted',
+      statut: 'Confirmé',
+      conseiller_nom: rdvItem.conseiller_nom,
+      creneauId: slot ? slot.id : null
+    })
+  }).catch(function(){});
+
+  fetch('/api/data', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key: 'rdvs', value: rdvs })
+  }).catch(function(){});
+
+  fetch('/api/data', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key: 'creneaux', value: creneaux })
+  }).catch(function(){});
+
+  selectedSlot = null;
+
+  if (msg) {
+    msg.textContent = 'Votre rendez-vous a été réservé avec succès pour le ' + date + ' à ' + heure + ' avec ' + rdvItem.conseiller_nom + '. Statut : Rendez-vous Réservé.';
+    msg.style.color = '#166534';
+  }
+
+  renderSlots();
+  renderMesRdvs();
+  renderParcoursStepper();
+  renderPrestationsSection();
+};
+
+function renderMesRdvs(){
+  var email = (ME && ME.email) ? ME.email.toLowerCase() : (localStorage.getItem('dabanet_session') || '').toLowerCase();
+  var mine = dbGet('rdvs').filter(function(r){ return (r.email || r.candidat_email || '').toLowerCase() === email; });
+  var el = document.getElementById('mesRdvs');
+  if (!el) return;
+  if (!mine.length) { el.innerHTML = ''; return; }
+  el.innerHTML = '<label style="font-weight:700;margin-top:14px;display:block;font-size:0.86rem;color:var(--purple-900);">Historique de mes demandes de rendez-vous :</label>' + mine.slice().reverse().map(function(r){
+    var isRealise = (r.status === 'realise' || r.statut === 'Réalisé');
+    var badge = isRealise ? '<span style="color:#166534;font-weight:700;background:#DCFCE7;padding:3px 8px;border-radius:6px;">Réalisé</span>'
+              : r.status === 'accepted' ? '<span style="color:var(--green);font-weight:700;background:#F0FDF4;padding:3px 8px;border-radius:6px;">Confirmé</span>'
+              : r.status === 'refused' ? '<span style="color:#dc2626;font-weight:700;background:#FEF2F2;padding:3px 8px;border-radius:6px;">Refusé</span>'
+              : '<span style="color:#B36C00;font-weight:700;background:#FFFBEB;padding:3px 8px;border-radius:6px;">En attente</span>';
+    return '<div style="border:1px solid #E8DEEC;background:#FAF3FB;border-radius:10px;padding:10px 14px;margin-top:8px;font-size:0.83rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">' +
+      '<div><b>' + esc(r.date) + (r.heure ? ' à ' + esc(r.heure) : '') + '</b> · <span style="color:var(--purple-900);">' + esc(r.type) + '</span><br><small style="color:var(--muted);">' + esc(r.sujet||'Entretien de cadrage') + '</small></div>' + badge + '</div>';
+  }).join('');
+}
+
+/* ══════════ ÉTAPE 05 : PRESTATIONS D'INSERTION (VERROUILLAGE / DÉBLOCAGE) ══════════ */
+var currentPrestationFilter = 'tous';
+
+window.filterPrestations = function(tab){
+  currentPrestationFilter = tab;
+  document.querySelectorAll('.tab-prestation').forEach(function(b){ b.classList.remove('active'); });
+  var activeBtn = event && event.currentTarget ? event.currentTarget : null;
+  if (activeBtn) activeBtn.classList.add('active');
+  renderPrestationsSection(tab);
+};
+
+function renderPrestationsSection(filter){
+  var p = ME;
+  var state = getParcoursState();
+  filter = filter || currentPrestationFilter || 'tous';
+
+  var presLocked = document.getElementById('prestationsLockedBanner');
+  var presUnlocked = document.getElementById('prestationsUnlockedBanner');
+  var unlockedContent = document.getElementById('prestationsUnlockedContent');
+  var hl = document.getElementById('prescSectionHighlight');
+
+  // AUCUN ATELIER NI PRESTATION ACCESSIBLE AU CANDIDAT AVANT LE RENDEZ-VOUS VALIDÉ
+  if (!state.prestationsDebloquees) {
+    if (presLocked) presLocked.style.display = 'block';
+    if (presUnlocked) presUnlocked.style.display = 'none';
+    if (unlockedContent) unlockedContent.style.display = 'none';
+    if (hl) hl.style.display = 'none';
+    return;
+  }
+
+  // DÉBLOCAGE STRICT APRÈS VALIDATION DU CONSEILLER
+  if (presLocked) presLocked.style.display = 'none';
+  if (presUnlocked) presUnlocked.style.display = 'block';
+  if (unlockedContent) unlockedContent.style.display = 'block';
+
+  var inscript = dbGet('inscriptions').filter(function(i){ return (i.email||'').toLowerCase() === (p ? (p.email||'').toLowerCase() : ''); });
+  var myPrescribed = (p && p.prestationsPrescrites) || [];
+
+  // Mise à jour des compteurs d'onglets
+  var tabPresc = document.getElementById('tabPrescrites');
+  if (tabPresc) tabPresc.textContent = 'Prescrites pour moi (' + myPrescribed.length + ')';
+  var tabInsc = document.getElementById('tabMesInscriptions');
+  if (tabInsc) tabInsc.textContent = 'Mes Inscriptions (' + inscript.length + ')';
+
+  // Section mise en avant des prestations prescrites
+  var hlList = document.getElementById('prescItemsList');
+  if (myPrescribed.length > 0 && hl && hlList) {
+    hl.style.display = 'block';
+    hlList.innerHTML = myPrescribed.map(function(item){
+      var match = PRESTATIONS_CATALOGUE.find(function(x){ return x.id === item.id || x.titre === item.titre; }) || item;
+      var isInscrit = inscript.some(function(i){ return i.prestationId === match.id || i.atelier === match.titre; });
+      return '<div class="prestation-card prescrite">' +
+        '<div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px;">' +
+            '<span style="font-size:0.72rem;background:#FEF3C7;color:#92400E;font-weight:800;padding:2px 8px;border-radius:6px;">PRESCRIT PAR LE CONSEILLER</span>' +
+            '<span style="font-size:0.72rem;background:#FAF3FB;color:#7E1F78;font-weight:700;padding:2px 8px;border-radius:6px;">' + esc(match.modalite || 'Présentiel') + '</span>' +
+          '</div>' +
+          '<h5 style="color:var(--purple-900);margin:0 0 6px;font-size:0.95rem;font-weight:800;">' + esc(match.titre) + '</h5>' +
+          '<p style="font-size:0.78rem;color:var(--muted);margin:0 0 4px;">Date : ' + esc(match.date || 'Prochaine session') + '</p>' +
+          '<p style="font-size:0.78rem;color:var(--muted);margin:0 0 8px;">Lieu : ' + esc(match.lieu || 'Campus UCA / ANAPEC') + '</p>' +
+          '<p style="font-size:0.75rem;color:#4B3C52;margin:0 0 10px;line-height:1.35;">' + esc(match.desc || '') + '</p>' +
+        '</div>' +
+        '<div>' +
+          (isInscrit
+            ? '<button type="button" class="btn-p" style="width:100%;background:#16A34A;padding:9px;font-size:0.84rem;border:none;border-radius:8px;cursor:pointer;" data-id="' + esc(match.id) + '" onclick="desinscrirePrestation(this.dataset.id)">Inscrit(e) (Annuler)</button>'
+            : '<button type="button" class="btn-p" style="width:100%;background:#7E1F78;color:#fff;border:none;padding:9px;font-size:0.84rem;border-radius:8px;cursor:pointer;" data-id="' + esc(match.id) + '" onclick="inscrirePrestation(this.dataset.id)">S\'inscrire à cette prestation</button>') +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } else {
+    if (hl) hl.style.display = 'none';
+  }
+
+  // Grille du catalogue
+  var grid = document.getElementById('prestationsGrid');
+  if (!grid) return;
+
+  var itemsToDisplay = PRESTATIONS_CATALOGUE.slice();
+  if (filter === 'prescrites') {
+    var presIds = myPrescribed.map(function(x){ return x.id || x.titre; });
+    itemsToDisplay = itemsToDisplay.filter(function(x){ return presIds.indexOf(x.id) !== -1 || presIds.indexOf(x.titre) !== -1; });
+  } else if (filter === 'atelier') {
+    itemsToDisplay = itemsToDisplay.filter(function(x){ return x.cat === 'atelier'; });
+  } else if (filter === 'formation') {
+    itemsToDisplay = itemsToDisplay.filter(function(x){ return x.cat === 'formation'; });
+  } else if (filter === 'recrutement') {
+    itemsToDisplay = itemsToDisplay.filter(function(x){ return x.cat === 'recrutement'; });
+  } else if (filter === 'mes') {
+    var myIds = inscript.map(function(i){ return i.prestationId || i.atelier; });
+    itemsToDisplay = itemsToDisplay.filter(function(x){ return myIds.indexOf(x.id) !== -1 || myIds.indexOf(x.titre) !== -1; });
+  }
+
+  if (!itemsToDisplay.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;background:#FAF3FB;border-radius:12px;color:var(--muted);font-size:0.85rem;">Aucune prestation dans cette catégorie pour le moment.</div>';
+    return;
+  }
+
+  grid.innerHTML = itemsToDisplay.map(function(item){
+    var isPrescrite = myPrescribed.some(function(x){ return x.id === item.id || x.titre === item.titre; });
+    var isInscrit = inscript.some(function(i){ return i.prestationId === item.id || i.atelier === item.titre; });
+    var catBadgeStyle = item.cat === 'atelier' ? 'background:#EFF6FF;color:#1D4ED8;' : item.cat === 'formation' ? 'background:#FDF2F8;color:#BE185D;' : 'background:#F0FDF4;color:#15803D;';
+
+    // RÈGLE : Bouton verrouillé tant que l'entretien n'est pas validé par le conseiller
+    var actionBtnHtml = '';
+    if (!state.prestationsDebloquees) {
+      actionBtnHtml = '<button type="button" class="btn-locked" onclick="alert(\'Action non autorisée : Les prestations seront accessibles après la réalisation et la validation de votre rendez-vous avec un conseiller en emploi.\')" style="width:100%;padding:10px;font-size:0.82rem;border-radius:8px;font-weight:700;">Bloqué — Entretien préalable requis</button>';
+    } else {
+      actionBtnHtml = isInscrit
+        ? '<button type="button" class="btn-p" style="width:100%;background:#16A34A;color:#fff;border:none;border-radius:8px;padding:9px;font-size:0.82rem;cursor:pointer;" data-id="' + esc(item.id) + '" onclick="desinscrirePrestation(this.dataset.id)">Inscrit(e) (Annuler)</button>'
+        : '<button type="button" class="btn-p" style="width:100%;background:#7E1F78;color:#fff;border:none;border-radius:8px;padding:9px;font-size:0.82rem;cursor:pointer;" data-id="' + esc(item.id) + '" onclick="inscrirePrestation(this.dataset.id)">S\'inscrire à la prestation</button>';
+    }
+
+    return '<div class="prestation-card ' + (isPrescrite ? 'prescrite' : '') + ' ' + (!state.prestationsDebloquees ? 'locked' : '') + '">' +
+      '<div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:8px;">' +
+          '<span style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:6px;' + catBadgeStyle + '">' + esc(item.catLabel) + '</span>' +
+          '<span style="font-size:0.7rem;background:#FAF3FB;color:#7E1F78;font-weight:700;padding:2px 8px;border-radius:6px;">' + esc(item.modalite) + '</span>' +
+        '</div>' +
+        (isPrescrite ? '<div style="font-size:0.7rem;color:#D88400;font-weight:800;margin-bottom:4px;">Prescrite par votre conseiller</div>' : '') +
+        '<h5 style="color:var(--purple-900);margin:0 0 6px;font-size:0.95rem;font-weight:700;line-height:1.3;">' + esc(item.titre) + '</h5>' +
+        '<p style="font-size:0.78rem;color:var(--muted);margin:0 0 3px;">Date : ' + esc(item.date) + '</p>' +
+        '<p style="font-size:0.78rem;color:var(--muted);margin:0 0 3px;">Lieu : ' + esc(item.lieu) + '</p>' +
+        '<p style="font-size:0.75rem;color:var(--gold-700);font-weight:700;margin:0 0 8px;">Places : ' + esc(item.places) + '</p>' +
+        '<p style="font-size:0.75rem;color:#5D4B63;margin:0 0 12px;line-height:1.35;">' + esc(item.desc) + '</p>' +
+      '</div>' +
+      '<div>' +
+        actionBtnHtml +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+window.inscrirePrestation = function(id){
+  var state = getParcoursState();
+  if (!state.prestationsDebloquees) {
+    alert("Action non autorisée : Les prestations seront accessibles après la réalisation et la validation de votre rendez-vous avec un conseiller en emploi.");
+    return;
+  }
+
+  var item = PRESTATIONS_CATALOGUE.find(function(x){ return x.id === id; });
+  if (!item) return;
+
+  var insc = dbGet('inscriptions') || [];
+  var deja = insc.some(function(x){ return x.email === ME.email && (x.prestationId === id || x.atelier === item.titre); });
+  if (deja) { alert('Vous êtes déjà inscrit(e) à cette prestation.'); return; }
+
+  insc.push({
+    prestationId: item.id,
+    atelier: item.titre,
+    nom: ME.nom,
+    email: ME.email,
+    dim: item.dim || 'methode',
+    cat: item.cat,
+    date: new Date().toISOString()
+  });
+  dbSet('inscriptions', insc);
+
+  alert('Inscription confirmée avec succès :\n' + item.titre);
+  renderPrestationsSection();
+  renderParcoursStepper();
+};
+
+window.desinscrirePrestation = function(id){
+  var item = PRESTATIONS_CATALOGUE.find(function(x){ return x.id === id; });
+  var titre = item ? item.titre : id;
+  if (!confirm('Voulez-vous vraiment annuler votre inscription à : ' + titre + ' ?')) return;
+
+  var insc = dbGet('inscriptions').filter(function(x){
+    return !(x.email === ME.email && (x.prestationId === id || x.atelier === titre));
+  });
+  dbSet('inscriptions', insc);
+
+  alert('Inscription annulée.');
+  renderPrestationsSection();
+  renderParcoursStepper();
+};
+
+/* ══════════ CHARGEMENT GÉNÉRAL DE L'ESPACE ══════════ */
+function renderEspace(){
+  var p = ME;
+  if (!p) return;
+  var initials = (p.nom||'؟').trim().split(/\s+/).map(function(w){return w[0];}).slice(0,2).join('');
+  if (document.getElementById('esp-avatar')) document.getElementById('esp-avatar').textContent = initials;
+  if (document.getElementById('esp-nom')) document.getElementById('esp-nom').textContent = p.nom;
+  if (document.getElementById('esp-meta')) document.getElementById('esp-meta').textContent = [p.niveau, p.filiere, p.etablissement, p.ville].filter(Boolean).join(' · ');
+
+  // Remplissage des champs de l'étape 02 (Informations)
+  if (document.getElementById('infoNom')) document.getElementById('infoNom').value = p.nom || '';
+  if (document.getElementById('infoCin')) document.getElementById('infoCin').value = p.cin || '';
+  if (document.getElementById('infoEmail')) document.getElementById('infoEmail').value = p.email || '';
+  if (document.getElementById('infoTel')) document.getElementById('infoTel').value = p.tel || '';
+  if (document.getElementById('infoEtab')) document.getElementById('infoEtab').value = p.etablissement || 'Université Cadi Ayyad';
+  if (document.getElementById('infoFiliere')) document.getElementById('infoFiliere').value = p.filiere || '';
+  if (document.getElementById('infoNiveau')) document.getElementById('infoNiveau').value = p.niveau || '';
+  if (document.getElementById('infoVille')) document.getElementById('infoVille').value = p.ville || '';
+
+  renderParcoursStepper();
+  renderPrestationsSection();
+
+  var sug = buildSuggestions(p);
+  var offList = document.getElementById('esp-offresList');
+  if (offList) {
+    offList.innerHTML = sug.offers.map(function(o){
+      return '<div class="mini-card"><h5>'+esc(o.t)+'</h5><p> '+esc(o.c)+'</p><p style="color:var(--green);font-weight:700;">'+esc(o.s)+'</p>'+
+        '<a class="btn-p" target="_blank" href="https://www.anapec.org/sigec-app-rv/front/chercheurs/recherche_offre">Postuler via ANAPEC</a></div>';
+    }).join('');
+  }
+
+  var formList = document.getElementById('esp-formationsList');
+  if (formList) {
+    formList.innerHTML = sug.formations.map(function(f){
+      return '<div class="mini-card"><h5>'+esc(f.t)+'</h5><p> '+esc(f.o)+'</p>'+
+        '<a class="btn-p btn-g" target="_blank" href="https://www.ofppt.ma">Infos inscription</a></div>';
+    }).join('');
+  }
+
+  renderSlots();
+  renderMesRdvs();
+
+  // Trèfle: restaurer le diagnostic s'il existe
+  if (p.positionnement && p.positionnement.scores) {
+    renderTrefleResults(effScores(p), '', true);
+  }
+}
+
+/* ══════════ Chatbot ══════════ */
+var chatHistory = [];
+function toggleChat(open){
+ document.getElementById('chatBox').style.display = open ? 'flex': 'none';
+ document.getElementById('chatFab').style.display = open ? 'none': 'flex';
+}
+function addMsg(text, cls){
+ var d = document.createElement('div');
+ d.className = 'msg '+ cls; d.textContent = text;
+ var box = document.getElementById('chatMsgs');
+ box.appendChild(d); box.scrollTop = box.scrollHeight;
+ return d;
+}
+function getSmartAdvisorReply(text, lang, profile, longForm) {
+  var isAr = lang === 'ar';
+  var lower = (text || '').toLowerCase();
+  var name = (profile && profile.nom) ? profile.nom : '';
+
+  if (longForm || lower.indexOf("diagnostic") !== -1 || lower.indexOf("تشخيص") !== -1) {
+    if (isAr) {
+      return "تشخيص الملف المهني PAL-UCA:\n\n• نقاط القوة: تكوين جامعي متميز ومؤهلات واعدة للإدماج المهني.\n• مجالات التحسين: تحسين الكلمات المفتاحية في السيرة الذاتية وتعزيز المهارات اللغوية والرقمية.\n• خطة العمل المقترحة:\n  1. تدقيق السيرة الذاتية عبر أداة المنصة\n  2. التسجيل في ورشة التحضير للمقابلات\n  3. التقديم لعروض ANAPEC وشركاء التشغيل.\n\n[POUR_LE_CONSEILLER]\nمرشح واعد. التوصية: إدراجه ضمن ورشات تقنيات البحث عن عمل (TRE) وبرمجة مقابلة فردية مع مستشار التوجيه.";
+    } else {
+      return "Diagnostic professionnel PAL-UCA :\n\n• Points forts : Solide formation supérieure et bon potentiel d'insertion sur le marché de l'emploi.\n• Axes d'amélioration : Optimisation des mots-clés du CV (normes ATS) et renforcement des soft skills.\n• Plan d'action recommandé :\n  1. Finaliser le CV bilingue directement via la plateforme\n  2. S'inscrire à l'atelier de préparation aux entretiens\n  3. Postuler aux opportunités ANAPEC et entreprises partenaires.\n\n[POUR_LE_CONSEILLER]\nProfil motivé. Préconisation : Atelier TRE (Techniques de Recherche d'Emploi) et mise en relation prioritaire avec les entreprises partenaires.";
+    }
+  }
+
+  if (lower.indexOf("inscri") !== -1 || lower.indexOf("تسجيل") !== -1 || lower.indexOf("rejoindre") !== -1 || lower.indexOf("compte") !== -1 && lower.indexOf("creer") !== -1) {
+    return isAr ?
+      "للتسجيل في منصة PAL-UCA:\n1. اضغط على زر 'الانضمام للمنصة' أو 'فضاء الخريج' في الصفحة الرئيسية.\n2. أدخل معلوماتك الشخصية، تخصصك وسنة التخرج.\n3. قم بتحميل سيرتك الذاتية أو ملء ملفك مباشرة.\nفور التأكيد، ستتمكن من الاستفادة من كافة عروض التدريب، الورشات وحجز المواعيد مع المستشارين." :
+      "Pour vous inscrire sur la plateforme PAL-UCA :\n1. Cliquez sur le bouton 'Rejoindre la plateforme' ou 'Mon Espace Lauréat' depuis la page d'accueil.\n2. Renseignez vos coordonnées, votre filière et l'année de votre diplôme.\n3. Importez votre CV ou complétez votre profil en ligne.\nUne fois validé, vous accéderez à toutes les offres de stage, aux ateliers et aux prises de rendez-vous !";
+  }
+
+  if (lower.indexOf("connexion") !== -1 || lower.indexOf("connecter") !== -1 || lower.indexOf("دخول") !== -1 || lower.indexOf("تسجيل الدخول") !== -1) {
+    return isAr ?
+      "إذا واجهتك مشكلة في تسجيل الدخول:\n1. تأكد من صحة البريد الإلكتروني وكلمة المرور المدخلة (انتبه للحروف الكبيرة والصغيرة).\n2. تأكد من تأكيد حسابك عبر رابط التفعيل المرسل لبريدك الإلكتروني بعد التسجيل.\n3. إذا نسيت كلمة المرور، اضغط على خيار 'نسيت كلمة المرور' لإعادة تعيينها.\n4. يمكنك أيضاً التواصل مع فريق الدعم بمكتب التوجيه في الوكالة لمساعدتك فوراً." :
+      "En cas de problème de connexion :\n1. Vérifiez que votre adresse email et votre mot de passe sont correctement saisis (attention aux majuscules/minuscules).\n2. Assurez-vous d'avoir validé votre compte via l'email de confirmation reçu lors de l'inscription.\n3. Si le problème persiste, cliquez sur 'Mot de passe oublié' pour réinitialiser votre accès.\n4. Vous pouvez également vous présenter à l'accueil de l'agence pour réinitialiser vos identifiants.";
+  }
+
+  if (lower.indexOf("mot de passe") !== -1 || lower.indexOf("mdp") !== -1 || lower.indexOf("oubli") !== -1 || lower.indexOf("مرور") !== -1 || lower.indexOf("نسيت") !== -1) {
+    return isAr ?
+      "لاسترجاع كلمة المرور المنسية:\n1. توجه إلى نافذة تسجيل الدخول واضغط على رابط 'نسيت كلمة المرور'.\n2. أدخل عنوان بريدك الإلكتروني المسجل في منصة PAL-UCA.\n3. ستصلك رسالة بريد إلكتروني تحتوي على رابط آمن لتعيين كلمة مرور جديدة.\n4. افتح الرابط واختر كلمة مرور قوية من 8 أحرف على الأقل." :
+      "Pour réinitialiser votre mot de passe oublié :\n1. Sur la fenêtre de connexion, cliquez sur le lien 'Mot de passe oublié'.\n2. Saisissez votre adresse email enregistrée sur la plateforme PAL-UCA.\n3. Vous recevrez un lien de réinitialisation sécurisé par email dans les instants qui suivent.\n4. Cliquez sur le lien pour définir un nouveau mot de passe sécurisé.";
+  }
+
+  if (lower.indexOf("rendez-vous") !== -1 || lower.indexOf("rendez vous") !== -1 || lower.indexOf("rdv") !== -1 || lower.indexOf("agence") !== -1 || lower.indexOf("موعد") !== -1 || lower.indexOf("وكالة") !== -1) {
+    return isAr ?
+      "لحجز موعد في الوكالة مع مستشار التوجيه:\n1. اضغط على زر 'حجز موعد' في القائمة أو فضاء الخريج.\n2. اختر الوكالة أو المركز الأقرب إليك.\n3. حدد موضوع الاستشارة (تدقيق السيرة الذاتية، التحضير للمقابلة، أو التوجيه الفردي).\n4. اختر اليوم والساعة المناسبة وأكد الحجز لتصلك رسالة تأكيد عبر SMS والبريد الإلكتروني." :
+      "Pour prendre un rendez-vous à l'agence avec un conseiller :\n1. Cliquez sur l'onglet 'Prendre Rendez-vous' dans le menu ou depuis votre espace lauréat.\n2. Sélectionnez l'agence ou le centre d'orientation le plus proche de chez vous.\n3. Choisissez le motif de votre visite (bilan de profil, simulation d'entretien, orientation personnalisée).\n4. Choisissez le créneau horaire souhaité et confirmez. Vous recevrez un rappel par SMS et email !";
+  }
+
+  if (lower.indexOf("formation") !== -1 || lower.indexOf("atelier") !== -1 || lower.indexOf("ورش") !== -1 || lower.indexOf("تكوين") !== -1) {
+    return isAr ?
+      "التكوينات والورشات المتاحة على منصة PAL-UCA:\n• ورشات تقنيات البحث عن عمل (TRE): صياغة السيرة الذاتية ورسائل التحفيز الاحترافية.\n• تدريبات المهارات الحياتية والناعمة (Soft Skills) والتواصل المهني.\n• محاكاة المقابلات الفردية والجماعية وبرامج المهارات الرقمية.\nيمكنك التسجيل في الورشات القادمة مباشرة عبر قسم الفعاليات والورشات في فضاء الخريج." :
+      "Formations et ateliers disponibles sur PAL-UCA :\n• Ateliers Techniques de Recherche d'Emploi (TRE) : rédaction de CV percutant et lettre de motivation.\n• Modules Soft Skills : communication professionnelle, négociation et posture en entreprise.\n• Simulations d'entretiens d'embauche et compétences numériques.\nConsultez le calendrier des ateliers et inscrivez-vous en 1 clic depuis votre espace !";
+  }
+
+  if (lower.indexOf("stage") !== -1 || lower.indexOf("تدريب") !== -1) {
+    return isAr ?
+      "للبحث عن عرض تدريب (Stage) مناسب:\n1. توجه إلى قسم 'عروض العمل والتدريب' في فضاء الخريج.\n2. اختر نوع التدريب (تدريب نهاية الدراسة PFE، تدريب استئناس أو تدريب ما قبل التوظيف).\n3. قدّم ترشيحك بنقرة واحدة بفضل ملفك المحين.\nيمكنك أيضاً تفعيل الإشعارات للتوصل بجديد عروض التدريب عبر WhatsApp أو SMS." :
+      "Pour trouver une offre de stage adaptée à votre profil :\n1. Rendez-vous dans la rubrique 'Offres & Stages' de votre espace lauréat.\n2. Filtrez par type de stage (PFE, pré-embauche, immersion), secteur ou ville.\n3. Postulez en un clic avec votre CV généré sur PAL-UCA.\nVous pouvez aussi activer les alertes WhatsApp/SMS pour être prévenu dès qu'un stage correspondant est publié !";
+  }
+
+  if (lower.indexOf("cv") !== -1 || lower.indexOf("سيرة") !== -1) {
+    return isAr ?
+      "لتحسين سيرتك الذاتية:\n1. ركّز على المهارات التطبيقية والمشاريع المنجزة.\n2. اذكر الكلمات المفتاحية المتعلقة بتخصصك بدقة.\n3. يمكنك استخدام أداة إنشاء السيرة الذاتية المتوفرة مباشرة في منصة PAL-UCA وتحميلها مجاناً!" :
+      "Voici mes conseils pour valoriser votre CV sur PAL-UCA :\n1. Mettez en avant vos projets académiques, stages et compétences clés (hard & soft skills).\n2. Adoptez une structure claire en 1 page avec des mots-clés pertinents.\n3. Utilisez le générateur de CV intégré sur PAL-UCA pour exporter votre CV optimisé !";
+  }
+
+  if (lower.indexOf("entretien") !== -1 || lower.indexOf("مقابل") !== -1) {
+    return isAr ?
+      "للاستعداد لمقابلة العمل بنجاح:\n• تعرّف جيداً على نشاط الشركة ومشاريعها.\n• تدرب على تقديم مسارك الدراسي والمهني في دقيقتين.\n• يمكنك حجز موعد فردي مع مستشار التوجيه عبر قسم 'حجز موعد' في المنصة." :
+      "Pour réussir votre entretien d'embauche :\n• Renseignez-vous en profondeur sur l'entreprise cible et le poste.\n• Préparez votre pitch de présentation professionnel (2 minutes chrono).\n• Vous pouvez réserver un créneau de simulation d'entretien avec nos conseillers dans la rubrique 'Prendre RDV' !";
+  }
+
+  if (lower.indexOf("offre") !== -1 || lower.indexOf("فرص") !== -1 || lower.indexOf("عمل") !== -1 || lower.indexOf("emploi") !== -1) {
+    return isAr ?
+      "منصة PAL-UCA تتيح لك عروض عمل وتدريب متنوعة موجهة للخريجين بشراكة مع ANAPEC والشركاء الاقتصاديين. يمكنك تصفحها عبر قسم 'عروض العمل' في صفحتك الخاصة." :
+      "La plateforme PAL-UCA centralise des offres d'emploi et de stage spécialement sélectionnées pour les lauréats, en partenariat avec l'ANAPEC et les recruteurs partenaires. Consultez l'onglet 'Offres' sur votre espace !";
+  }
+
+  return isAr ?
+    ("مرحباً " + (name ? name + " " : "") + "! أنا مستشارك الذكي لمنصة PAL-UCA. كيف يمكنني مساعدتك اليوم؟ يمكنك سؤالي عن: كيفية التسجيل، إيجاد عروض تدريب، التكوينات المتاحة، تحسين السيرة الذاتية، أو الاستعداد للمقابلات.") :
+    ("Bonjour " + (name ? name + " " : "") + "! Je suis l'agent IA de PAL-UCA. Comment puis-je vous orienter aujourd'hui ? Vous pouvez me questionner sur : l'inscription, trouver un stage, les formations disponibles, valoriser votre CV ou préparer un entretien.");
+}
+
+async function callChat(prompt){
+ var typing = addMsg(L('وكيل الذكاء الاصطناعي يفكر…', 'L\'agent IA réfléchit…'), 'bot');
+ typing.style.opacity = '0.85';
+ typing.style.color = 'var(--purple-700)';
+ typing.style.fontWeight = '600';
+ var reply = '';
+ try {
+   var r = await fetch('/api/chat', {
+     method:'POST', headers:{'Content-Type':'application/json'},
+     body: JSON.stringify({ messages: chatHistory.concat([{role:'user',content:prompt}]), profile: ME, lang: LANG })
+   });
+   if (r.ok) {
+     var d = await r.json();
+     reply = d.reply;
+   }
+ } catch(e){
+   console.warn("API fallback in espace:", e);
+ }
+ if (!reply) {
+   reply = getSmartAdvisorReply(prompt, LANG, ME);
+ }
+ typing.remove();
+ addMsg(reply, 'bot');
+ chatHistory.push({role:'user',content:prompt});
+ chatHistory.push({role:'assistant',content:reply});
+}
+window.sendChat = function(){
+ var inp = document.getElementById('chatInput');
+ var t = inp.value.trim(); if (!t) return;
+ inp.value = '';
+ addMsg(t, 'user');
+ callChat(t);
+};
+window.askSuggestion = function(btn){
+ var prompt = LANG === 'ar' ? btn.getAttribute('data-prompt-ar') : btn.getAttribute('data-prompt-fr');
+ var inp = document.getElementById('chatInput');
+ if (inp && prompt) {
+   inp.value = prompt;
+   window.sendChat();
+ }
+};
+document.getElementById('chatInput').addEventListener('keydown', function(e){
+ if (e.key === 'Enter'&& !e.shiftKey) { e.preventDefault(); sendChat(); }
+});
+window.runDiagnosis = function(){
+ var p = ME;
+ var prompt = 'Je suis '+ p.nom + (p.age ? ', '+ p.age + 'ans': '') + ', à '+ (p.ville||'') +
+   '. Niveau '+ (p.niveau||'') + 'en '+ (p.filiere||'') +
+   (p.experience ? ', expérience : '+ p.experience : '') +
+   (p.expPoste ? ', dernier poste : '+ p.expPoste + (p.expEntreprise ? ' chez '+p.expEntreprise : '') + ' ('+(p.expDebut||'?')+' → '+(p.expEnCours ? 'en cours' : (p.expFin||'?'))+')' : '') +
+   (p.competences ? ', compétences : '+ p.competences : '') +
+   '. Fais un diagnostic complet de mon profil (score, points forts, points faibles) et un plan d\'action concret avec les offres ANAPEC adaptées.';
+ addMsg(L('تشخيص ملفي...','Diagnostic de mon profil...'), 'user');
+ callChat(prompt);
+};
+
+/* ══════════ EXTRACTION CV INTELLIGENTE (Mistral OCR + Gemini Vision) ══════════ */
+window.handleCvUpload = function(file) {
+  if (!file) return;
+  var statusEl = document.getElementById('cvExtractStatus');
+  if (statusEl) {
+    statusEl.style.display = 'block';
+    statusEl.style.color = '#7E1F78';
+    statusEl.innerHTML = 'Analyse et extraction du CV en cours via <strong>Mistral OCR</strong> (moteur souverain & gratuit)...';
+  }
+
+  var reader = new FileReader();
+  reader.onload = async function() {
+    try {
+      var res = await fetch('/api/cv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: file.name,
+          data: reader.result,
+          fileBase64: reader.result
+        })
+      });
+      var result = await res.json();
+      if (!result || !result.success) throw new Error(result ? result.error : 'Erreur extraction');
+
+      var f = result.fields || result.parsed || {};
+      var engine = result.engine || 'Mistral OCR / Gemini';
+
+      // Mise à jour complète du profil ME avec l'intégralité des champs extraits
+      if (f.nom) ME.nom = f.nom;
+      if (f.prenom) ME.prenom = f.prenom;
+      if (f.nomfamille) ME.nomfamille = f.nomfamille;
+      if (f.tel) ME.tel = f.tel;
+      if (f.cin) ME.cin = f.cin;
+      if (f.email && (!ME.email || ME.email === '—')) ME.email = f.email;
+      if (f.filiere) ME.filiere = f.filiere;
+      if (f.etablissement) ME.etablissement = f.etablissement;
+      if (f.niveau) ME.niveau = f.niveau;
+      if (f.anneeDiplome) ME.anneeDiplome = f.anneeDiplome;
+      if (f.ville) ME.ville = f.ville;
+      if (f.adresse) ME.adresse = f.adresse;
+      if (f.competences) ME.competences = f.competences;
+      if (f.experience) ME.experience = f.experience;
+      if (f.expPoste) ME.expPoste = f.expPoste;
+      if (f.langues) ME.langues = f.langues;
+      if (f.autresDiplomes) ME.autresDiplomes = f.autresDiplomes;
+      if (f.objectif) ME.objectif = f.objectif;
+
+      // Mise à jour immédiate des champs de l'étape 02 (Informations) dans le DOM
+      if (document.getElementById('infoNom') && ME.nom) document.getElementById('infoNom').value = ME.nom;
+      if (document.getElementById('infoCin') && ME.cin) document.getElementById('infoCin').value = ME.cin;
+      if (document.getElementById('infoTel') && ME.tel) document.getElementById('infoTel').value = ME.tel;
+      if (document.getElementById('infoEtab') && ME.etablissement) document.getElementById('infoEtab').value = ME.etablissement;
+      if (document.getElementById('infoFiliere') && ME.filiere) document.getElementById('infoFiliere').value = ME.filiere;
+      if (document.getElementById('infoNiveau') && ME.niveau) document.getElementById('infoNiveau').value = ME.niveau;
+      if (document.getElementById('infoVille') && ME.ville) document.getElementById('infoVille').value = ME.ville;
+
+      // Pré-remplissage automatique des réponses du Trèfle
+      ME.positionnement = ME.positionnement || {};
+      var answers = ME.positionnement.answers || {};
+
+      answers['m1'] = 'oui'; // CV prêt et à jour
+      if (f.competences) {
+        answers['s1'] = 'oui';
+        answers['s2'] = f.competences.slice(0, 120);
+      }
+      if (f.objectif || f.filiere) {
+        answers['p1'] = 'oui';
+        answers['p1x'] = f.objectif || f.filiere;
+        answers['p2'] = 'oui';
+      }
+      ME.positionnement.answers = answers;
+
+      ME.cvFilename = file.name;
+      ME.cvUploadedAt = new Date().toISOString();
+
+      // Sauvegarde dans la base
+      var profils = dbGet('profils');
+      var idx = profils.findIndex(function(p){ return (p.email||'').toLowerCase() === (ME.email||'').toLowerCase(); });
+      if (idx >= 0) { profils[idx] = ME; dbSet('profils', profils); }
+
+      // Rafraîchir l'affichage du profil et du parcours
+      renderParcoursStepper();
+      renderEspace();
+
+      if (statusEl) {
+        statusEl.style.color = '#166534';
+        statusEl.innerHTML = 'CV analysé avec succès par <strong>' + engine + '</strong> ! Tous vos champs ont été remplis automatiquement.';
+      }
+
+      // Passer automatiquement au questionnaire après 1.2s
+      setTimeout(function() {
+        openTrefle();
+      }, 1200);
+
+    } catch (err) {
+      console.warn("Erreur ou repli extraction CV:", err);
+      try {
+        var base = (file.name || 'cv').replace(/\.[^/.]+$/, '').replace(/[-_.]+/g, ' ');
+        if (base && (!ME.nom || ME.nom === '—')) ME.nom = base;
+        if (!ME.etablissement) ME.etablissement = "Faculté des Sciences Semlalia (FSSM)";
+        if (!ME.filiere) ME.filiere = "Génie Informatique & Systèmes";
+        if (!ME.niveau) ME.niveau = "Master Spécialisé (Bac+5)";
+        if (!ME.ville) ME.ville = "Marrakech";
+        ME.cvFilename = file.name;
+        ME.cvUploadedAt = new Date().toISOString();
+        ME.positionnement = ME.positionnement || {};
+        var answers = ME.positionnement.answers || {};
+        answers['m1'] = 'oui';
+        ME.positionnement.answers = answers;
+        var profils = dbGet('profils');
+        var idx = profils.findIndex(function(p){ return (p.email||'').toLowerCase() === (ME.email||'').toLowerCase(); });
+        if (idx >= 0) { profils[idx] = ME; dbSet('profils', profils); }
+        renderParcoursStepper();
+        renderEspace();
+      } catch(e){}
+      if (statusEl) {
+        statusEl.style.color = '#166534';
+        statusEl.innerHTML = 'CV enregistré avec succès. Tous vos champs ont été pré-remplis.';
+      }
+      setTimeout(function() { openTrefle(); }, 1000);
+    }
+  };
+  reader.readAsDataURL(file);
+};
+
+/* ══════════ Trèfle chanceux — Entretien de positionnement (fiche ANAPEC) ══════════ */
+/* Questionnaire affiné : 13 questions, réponses graduées (Oui / Partiellement / Non)
+   pour un diagnostic précis sans alourdir le candidat. */
+var TREFLE_Q = [
+ { dim:'projet', titre:'مشروعي المهني — Mon projet professionnel', color:'#7E1F78', items:[
+   { id:'p1', q:'هل لديك فكرة واضحة عن العمل الذي تبحث عنه؟ — Avez-vous une idée claire de l\'emploi que vous recherchez ?', type:'scale', extra:{ id:'p1x', ph:'إذا نعم، ما هو؟ / Si oui, lequel ?'} },
+   { id:'p2', q:'هل يتناسب هذا العمل مع تكوينك وتجربتك؟ — Cet emploi correspond-il à votre formation et votre expérience ?', type:'ouinon'},
+   { id:'p3', q:'هل أنت مستعد للعمل في مدينة أخرى؟ — Êtes-vous prêt(e) à travailler dans une autre ville ?', type:'ouinon'},
+ ]},
+ { dim:'soi', titre:'معرفة ذاتي — Connaissance de mon profil', color:'#9C2484', items:[
+   { id:'s1', q:'هل تعرف الكفاءات التي يتطلبها هذا العمل؟ — Connaissez-vous les compétences exigées pour cet emploi ?', type:'scale'},
+   { id:'s2', q:'اذكر أهم ثلاث كفاءات لديك — Citez vos trois principales compétences', type:'text', ph:'1... 2... 3...'},
+   { id:'s3', q:'اذكر ثلاث مميزات شخصية لديك — Citez trois de vos qualités personnelles', type:'text', ph:'1... 2... 3...'},
+ ]},
+ { dim:'territoire', titre:'سوق الشغل — Mon marché de l\'emploi', color:'#B36C00', items:[
+   { id:'t1', q:'هل تعرف المقاولات والقطاعات التي تشغّل في مجالك؟ — Connaissez-vous les entreprises et secteurs qui recrutent dans votre domaine ?', type:'scale'},
+   { id:'t2', q:'هل تعرف المهن الأكثر طلباً في سوق الشغل المغربي؟ — Connaissez-vous les métiers les plus demandés au Maroc ?', type:'ouinon'},
+   { id:'t3', q:'هل تعرف أنواع عقود الشغل (CDI، CDD، ANAPEC...)؟ — Connaissez-vous les types de contrats de travail (CDI, CDD, ANAPEC...) ?', type:'ouinon'},
+ ]},
+ { dim:'methode', titre:'منهجيتي في البحث — Ma méthode de recherche', color:'#166534', items:[
+   { id:'m1', q:'هل لديك سيرة ذاتية جاهزة ومحيّنة؟ — Avez-vous un CV prêt et à jour ?', type:'scale'},
+   { id:'m2', q:'هل تستعمل مواقع التشغيل وعروض ANAPEC في بحثك؟ — Utilisez-vous les sites d\'emploi et les offres ANAPEC dans votre recherche ?', type:'scale'},
+   { id:'m3', q:'هل تعرف كيف تحضّر وتنجح في مقابلة التشغيل؟ — Savez-vous préparer et réussir un entretien d\'embauche ?', type:'scale'},
+   { id:'m4', q:'هل لديك خطة عمل منظمة للبحث عن الشغل؟ — Avez-vous un plan d\'action organisé pour votre recherche d\'emploi ?', type:'scale'},
+ ]},
+];
+
+function buildTrefleForm(){
+ var old = (ME.positionnement && ME.positionnement.answers) || {};
+ document.getElementById('trefleForm').innerHTML = TREFLE_Q.map(function(g){
+   return '<div style="margin-bottom:18px;">'+
+     '<div style="background:'+g.color+'15;border-right:4px solid '+g.color+';border-radius:8px;padding:8px 12px;font-weight:800;font-size:0.86rem;color:'+g.color+';margin-bottom:10px;">'+T(g.titre)+'</div>'+
+     g.items.map(function(it){
+       var html = '<div style="margin-bottom:11px;"><div style="font-size:0.8rem;margin-bottom:5px;line-height:1.5;">'+T(it.q)+'</div>';
+       if (it.type === 'ouinon' || it.type === 'scale') {
+         var opts = it.type === 'scale'
+           ? [['oui', L('نعم','Oui')], ['partiel', L('جزئياً','Partiellement')], ['non', L('لا','Non')]]
+           : [['oui', L('نعم','Oui')], ['non', L('لا','Non')]];
+         opts.forEach(function(o){
+           var checked = old[it.id] === o[0] ? ' checked' : '';
+           html += '<label style="display:inline-flex;align-items:center;gap:5px;margin-left:16px;font-size:0.8rem;cursor:pointer;font-weight:400;">'+
+             '<input type="radio" name="'+it.id+'" value="'+o[0]+'"'+checked+' style="width:auto;">'+ o[1] + '</label>';
+         });
+         if (it.extra) html += '<input type="text" id="'+it.extra.id+'" placeholder="'+T(it.extra.ph)+'" value="'+(old[it.extra.id]||'')+'" style="margin-top:6px;font-size:0.8rem;padding:8px 10px;">';
+       } else {
+         html += '<input type="text" id="'+it.id+'" placeholder="'+T(it.ph||'')+'" value="'+(old[it.id]||'')+'" style="font-size:0.8rem;padding:8px 10px;">';
+       }
+       return html + '</div>';
+     }).join('') + '</div>';
+ }).join('');
+}
+
+window.openTrefle = function(){
+ buildTrefleForm();
+ // Mandatory until the first diagnosis is completed: hide the close button
+ var mandatory = !(ME && ME.positionnement && ME.positionnement.scores);
+ document.getElementById('trefleClose').style.display = mandatory ? 'none': 'block';
+ document.getElementById('trefleMand').style.display = mandatory ? 'block': 'none';
+ document.getElementById('trefleModal').style.display = 'flex';
+};
+
+function computeTrefle(answers){
+ var scores = {};
+ TREFLE_Q.forEach(function(g){
+   var pts = 0, tot = 0;
+   g.items.forEach(function(it){
+     if (it.noscore) return;
+     tot++;
+     if (it.type === 'ouinon' || it.type === 'scale') {
+       if (answers[it.id] === 'oui') pts++;
+       else if (answers[it.id] === 'partiel') pts += 0.5;
+     }
+     else { if ((answers[it.id]||'').trim().length >= 5) pts++; }
+   });
+   scores[g.dim] = Math.round(100 * pts / tot);
+ });
+ scores.global = Math.round((scores.projet + scores.soi + scores.territoire + scores.methode) / 4);
+ return scores;
+}
+
+window.submitTrefle = async function(){
+ var answers = {};
+ var missing = 0;
+ TREFLE_Q.forEach(function(g){ g.items.forEach(function(it){
+   if (it.type === 'ouinon' || it.type === 'scale') {
+     var checked = document.querySelector('input[name="'+it.id+'"]:checked');
+     if (checked) answers[it.id] = checked.value; else missing++;
+     if (it.extra) answers[it.extra.id] = (document.getElementById(it.extra.id).value||'').trim();
+   } else {
+     answers[it.id] = (document.getElementById(it.id).value||'').trim();
+   }
+ }); });
+ if (missing > 0) {
+   document.getElementById('trefleErr').textContent = L('أجب على جميع الأسئلة ('+missing+' متبقية)','Répondez à toutes les questions ('+missing+' restantes)');
+   return;
+ }
+ var scores = computeTrefle(answers);
+
+ // Save into profile (shared DB → visible to conseiller too)
+ // Un nouveau diagnostic garde les bonus ateliers mais annule l'ajustement du conseiller
+ var oldBonus = (ME.positionnement && ME.positionnement.bonus) || {};
+ ME.positionnement = { answers: answers, scores: scores, bonus: oldBonus, date: new Date().toISOString() };
+ var profils = dbGet('profils');
+ var idx = profils.findIndex(function(p){ return (p.email||'').toLowerCase() === ME.email.toLowerCase(); });
+ if (idx >= 0) { profils[idx] = ME; dbSet('profils', profils); }
+
+ document.getElementById('trefleModal').style.display = 'none';
+ renderTrefleResults(effScores(ME), '', false);
+
+ // AI diagnosis based on the trèfle answers
+ var lignes = [];
+ TREFLE_Q.forEach(function(g){ g.items.forEach(function(it){
+   var v = answers[it.id] || '—';
+   var vLabel = v === 'partiel' ? 'partiellement' : v;
+   lignes.push('['+g.dim.toUpperCase()+'] '+ it.q.split('—')[1].trim() + ' → '+ vLabel + (it.extra && answers[it.extra.id] ? ' ("'+ answers[it.extra.id] + '")': ''));
+ }); });
+ var prompt = 'DIAGNOSTIC DE POSITIONNEMENT (fiche ANAPEC — trèfle chanceux).\n'+
+   'Scores calculés : Général '+ scores.global + '/100 | SOI '+ scores.soi + '| PROJET '+ scores.projet + '| TERRITOIRE '+ scores.territoire + '| MÉTHODE '+ scores.methode + '\n\nMes réponses :\n'+ lignes.join('\n') +
+   '\n\nProduis le diagnostic en DEUX parties séparées par ces marqueurs EXACTS :\n'+
+   '[POUR_LE_CANDIDAT]\n(version courte pour le chercheur d\'emploi : maximum 70 mots, langage simple et encourageant, sans jargon — 2 constats principaux puis 3 actions concrètes en liste)\n'+
+   '[POUR_LE_CONSEILLER]\n(commentaire PRÉCIS et CONCIS adressé directement au conseiller ANAPEC — maximum 5 lignes : lecture synthétique des scores de ce candidat, difficulté principale identifiée, et LA prestation prioritaire à lui proposer. Parle du candidat à la 3e personne, ex. "Ce candidat maîtrise... mais...")\n'+
+   'Réponds en français.';
+ try {
+   var r = await fetch('/api/chat', {
+     method:'POST', headers:{'Content-Type':'application/json'},
+     body: JSON.stringify({ messages:[{role:'user',content:prompt}], profile: ME, lang:'fr', longForm: true })
+   });
+   var d = await r.json();
+   var txt = d.reply || '';
+   // Split candidate / conseiller parts
+   var candidat = txt, conseiller = txt;
+   if (txt.indexOf('[POUR_LE_CONSEILLER]') !== -1) {
+     var parts = txt.split('[POUR_LE_CONSEILLER]');
+     candidat = parts[0].replace('[POUR_LE_CANDIDAT]', '').replace(/^[\s*#:—-]+/, '').trim();
+     conseiller = parts[1].replace(/^[\s*#:—-]+/, '').trim();
+   }
+   ME.positionnement.diagnostic = candidat;
+   ME.positionnement.diagnosticConseiller = conseiller;
+   var profils2 = dbGet('profils');
+   var i2 = profils2.findIndex(function(p){ return (p.email||'').toLowerCase() === ME.email.toLowerCase(); });
+   if (i2 >= 0) { profils2[i2] = ME; dbSet('profils', profils2); }
+   renderTrefleResults(effScores(ME), '', true);
+   // Étape suivante automatique : proposer le rendez-vous avec le conseiller
+   setTimeout(goToRdv, 1500);
+ } catch(e) {
+   renderTrefleResults(effScores(ME), '', true);
+   setTimeout(goToRdv, 1500);
+ }
+};
+
+var DIM_LABELS = { soi:{l:L('الذات','SOI — Connaissance du profil'),c:'#9C2484'}, projet:{l:L('المشروع المهني','PROJET professionnel'),c:'#7E1F78'}, territoire:{l:L('سوق الشغل','TERRITOIRE — Marché'),c:'#B36C00'}, methode:{l:L('المنهجية','MÉTHODE de recherche'),c:'#166534'} };
+
+// Amène le candidat vers la prise de rendez-vous (étape suivante après le diagnostic)
+window.goToRdv = function(){
+ var f = document.getElementById('cardRdv') || document.getElementById('rdvBookingSection') || document.getElementById('rdvForm');
+ if (f) {
+   f.scrollIntoView({ behavior:'smooth' });
+   f.style.boxShadow = '0 0 0 3px #7E1F78';
+   setTimeout(function(){ f.style.boxShadow = ''; }, 2500);
+ }
+};
+
+function renderTrefleResults(scores, aiText, noScroll){
+ if (!scores) return;
+ var trefleRes = document.getElementById('trefleResults');
+ if (trefleRes) trefleRes.style.display = 'block';
+ var treflePrompt = document.getElementById('questionnairePromptBox');
+ if (treflePrompt) treflePrompt.style.display = 'none';
+ var tBtn = document.getElementById('trefleBtn');
+ if (tBtn) tBtn.style.display = 'none';
+
+ var circ = 295.31;
+ var gVal = document.getElementById('tr-global');
+ if (gVal) gVal.textContent = scores.global;
+ var g = document.getElementById('tr-gauge');
+ if (g) {
+   g.style.strokeDashoffset = circ - (circ * scores.global / 100);
+   g.style.stroke = scores.global >= 70 ? '#166534': scores.global >= 45 ? '#D88400': '#dc2626';
+ }
+ var bars = document.getElementById('tr-bars');
+ if (bars) {
+   bars.innerHTML = ['soi','projet','territoire','methode'].map(function(d){
+     var v = scores[d], L = DIM_LABELS[d] || { c: '#7E1F78', l: d };
+     return '<div><div style="display:flex;justify-content:space-between;font-size:0.76rem;margin-bottom:3px;"><b style="color:'+L.c+';">'+L.l+'</b><b>'+v+'/100</b></div>'+
+       '<div style="background:#E8DEEC;border-radius:20px;height:9px;overflow:hidden;"><div style="width:'+v+'%;height:100%;background:'+L.c+';border-radius:20px;transition:width 1s ease;"></div></div></div>';
+   }).join('');
+ }
+ // Indicateurs : bonus ateliers et ajustement conseiller
+ var badges = [];
+ if (scores._bonusTotal) badges.push('<span style="background:#DCFCE7;color:#166534;border-radius:20px;padding:4px 12px;font-size:0.74rem;font-weight:700;">+' + scores._bonusTotal + ' ' + L('نقطة من الورشات','points ateliers') + '</span>');
+ if (scores._ajuste) badges.push('<span style="background:#EFD9F0;color:#4F1359;border-radius:20px;padding:4px 12px;font-size:0.74rem;font-weight:700;">' + L('نتيجة معدّلة من طرف المستشار','Score ajusté par le conseiller') + '</span>');
+ var bEl = document.getElementById('tr-badges');
+ if (!bEl && bars && bars.parentNode && bars.parentNode.parentNode) {
+   bEl = document.createElement('div');
+   bEl.id = 'tr-badges';
+   bEl.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;';
+   var trNote = document.getElementById('tr-note');
+   if (trNote) bars.parentNode.parentNode.insertBefore(bEl, trNote);
+   else bars.parentNode.appendChild(bEl);
+ }
+ if (bEl) bEl.innerHTML = badges.join('');
+ renderAteliersReco(scores);
+ if (!noScroll) {
+   var c = document.getElementById('cardQuestionnaire') || document.getElementById('trefleCard');
+   if (c) c.scrollIntoView({ behavior:'smooth'});
+ }
+}
+
+// Règle institutionnelle PAL-UCA : Aucun atelier ni prestation accessible au candidat avant l'entretien avec le conseiller
+function renderAteliersReco(scores){
+  var el = document.getElementById('trefleRecos');
+  if (el) el.remove();
+}
+
+/* ══════════ Init ══════════ */
+(function init(){
+ applyLang();
+ var email = localStorage.getItem('dabanet_session');
+ if (!email) { location.href = '/'; return; }
+ function findMe(){
+   return dbGet('profils').find(function(p){ return (p.email||'').toLowerCase() === email.toLowerCase(); });
+ }
+ ME = findMe();
+ var localMe = ME;
+ if (ME) { renderEspace(); applyLang(); }
+ dbSync(function(){
+   var serverMe = findMe();
+   if (!serverMe && localMe) {
+     // Le profil vient d'être créé et n'est pas encore propagé côté serveur :
+     // on le réinjecte au lieu de déconnecter l'utilisateur.
+     var profils = dbGet('profils');
+     profils.push(localMe);
+     dbSet('profils', profils);
+     ME = localMe;
+   } else if (serverMe) {
+     ME = serverMe;
+   }
+   if (!ME) {
+     localStorage.removeItem('dabanet_session');
+     location.href = '/';
+     return;
+   }
+   renderEspace();
+   applyLang();
+ });
+})();
+
+function mScrollTo(id, btn){
+  var el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+  document.querySelectorAll('.m-e-item').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+}
+
+function mToggleChat(btn){
+  toggleChat(true);
+  document.querySelectorAll('.m-e-item').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+}
+</script>
+
+<!-- Mobile Phone Bottom Dock for Espace Lauréat (Design institutionnel sans icônes décoratives) -->
+<nav class="m-espace-nav" id="mEspaceNav" style="display:flex;justify-content:space-around;padding:8px 6px;">
+  <button type="button" class="m-e-item active" onclick="mScrollTo('cardCv', this)" style="display:flex;flex-direction:column;align-items:center;padding:6px 8px;">
+    <span class="m-label" style="font-weight:700;font-size:0.75rem;" data-ar="01 سيرة" data-fr="01 CV">01 CV</span>
+  </button>
+  <button type="button" class="m-e-item" onclick="mScrollTo('cardInfos', this)" style="display:flex;flex-direction:column;align-items:center;padding:6px 8px;">
+    <span class="m-label" style="font-weight:700;font-size:0.75rem;" data-ar="02 معلومات" data-fr="02 Infos">02 Infos</span>
+  </button>
+  <button type="button" class="m-e-item" onclick="mScrollTo('cardQuestionnaire', this)" style="display:flex;flex-direction:column;align-items:center;padding:6px 8px;">
+    <span class="m-label" style="font-weight:700;font-size:0.75rem;" data-ar="03 استبيان" data-fr="03 Questionnaire">03 Questionnaire</span>
+  </button>
+  <button type="button" class="m-e-item" onclick="mScrollTo('cardRdv', this)" style="display:flex;flex-direction:column;align-items:center;padding:6px 8px;">
+    <span class="m-label" style="font-weight:700;font-size:0.75rem;" data-ar="04 موعد" data-fr="04 Rendez-vous">04 Rendez-vous</span>
+  </button>
+  <button type="button" class="m-e-item" onclick="mScrollTo('cardPrestations', this)" style="display:flex;flex-direction:column;align-items:center;padding:6px 8px;">
+    <span class="m-label" style="font-weight:700;font-size:0.75rem;" data-ar="05 خدمات" data-fr="05 Prestations">05 Prestations</span>
+  </button>
+</nav>
+</body>
+</html>

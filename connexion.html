@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<meta name="theme-color" content="#3A0F45">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.json">
+<title>Connexion à votre Espace - PAL-UCA | Université Cadi Ayyad & ANAPEC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+ :root{
+   --purple-900:#3A0F45; --purple-800:#4F1359; --purple-700:#7E1F78; --purple-600:#9C2484;
+   --purple-200:#EFD9F0; --purple-100:#FAF3FB;
+   --gold-700:#B36C00; --gold-600:#D88400;
+   --green:#166534; --muted:#7C6B82; --border:#E8DEEC;
+ }
+ *{ box-sizing:border-box; }
+ body{
+   margin:0;
+   font-family:'Tajawal',sans-serif;
+   background:linear-gradient(135deg, #FAF3FB 0%, #F5ECF7 50%, #FAF3FB 100%);
+   min-height:100vh;
+   display:flex;
+   flex-direction:column;
+   color:#2A1733;
+ }
+ h1,h2,h3,h4{ font-family:'Cairo',sans-serif; }
+ .topbar{
+   background:var(--purple-900);
+   color:#fff;
+   padding:12px 20px;
+   display:flex;
+   align-items:center;
+   justify-content:space-between;
+   gap:12px;
+   box-shadow:0 4px 14px rgba(58,15,69,0.18);
+ }
+ .topbar .brand{
+   display:flex;
+   align-items:center;
+   gap:10px;
+   color:#fff;
+   text-decoration:none;
+   font-family:'Cairo',sans-serif;
+   font-weight:800;
+   font-size:1.15rem;
+ }
+ .topbar .brand small{
+   display:block;
+   font-size:0.68rem;
+   font-weight:500;
+   color:#E0CDE4;
+ }
+ .topbar .actions{
+   display:flex;
+   align-items:center;
+   gap:10px;
+ }
+ .btn-top{
+   background:rgba(255,255,255,0.14);
+   color:#fff;
+   border:none;
+   border-radius:8px;
+   padding:7px 14px;
+   font-size:0.82rem;
+   cursor:pointer;
+   text-decoration:none;
+   font-family:inherit;
+   font-weight:600;
+   display:inline-flex;
+   align-items:center;
+   gap:6px;
+   transition:background .15s;
+ }
+ .btn-top:hover{ background:rgba(255,255,255,0.22); }
+ .lang-btn{
+   background:transparent;
+   border:1px solid rgba(255,255,255,0.3);
+   color:#fff;
+   border-radius:6px;
+   padding:4px 8px;
+   font-size:0.75rem;
+   cursor:pointer;
+   font-weight:700;
+ }
+ .lang-btn.active{
+   background:#D88400;
+   border-color:#D88400;
+ }
+ .page-content{
+   flex:1;
+   display:flex;
+   align-items:center;
+   justify-content:center;
+   padding:32px 16px 50px;
+ }
+ .auth-card{
+   background:#ffffff;
+   border:1.5px solid var(--border);
+   border-radius:24px;
+   width:100%;
+   max-width:470px;
+   padding:36px 32px;
+   box-shadow:0 24px 60px rgba(58,15,69,0.14);
+   position:relative;
+ }
+ .auth-header{
+   text-align:center;
+   margin-bottom:26px;
+ }
+ .auth-badge{
+   display:inline-flex;
+   align-items:center;
+   justify-content:center;
+   width:56px;
+   height:56px;
+   border-radius:18px;
+   background:linear-gradient(135deg,#FAF3FB,#F4EAF5);
+   border:1.5px solid #DDB8E0;
+   color:var(--purple-700);
+   font-size:1.6rem;
+   margin-bottom:12px;
+   box-shadow:0 4px 14px rgba(126,31,120,0.12);
+ }
+ .auth-title{
+   font-size:1.4rem;
+   color:var(--purple-900);
+   margin:0 0 6px;
+   font-weight:800;
+ }
+ .auth-subtitle{
+   font-size:0.88rem;
+   color:var(--muted);
+   margin:0;
+   line-height:1.5;
+ }
+ .form-group{
+   margin-bottom:16px;
+ }
+ label{
+   font-size:0.82rem;
+   color:var(--purple-800);
+   font-weight:700;
+   display:block;
+   margin-bottom:6px;
+ }
+ .input-wrap{
+   position:relative;
+ }
+ input[type="email"], input[type="password"], input[type="text"]{
+   width:100%;
+   padding:12px 14px;
+   border:1.5px solid var(--border);
+   border-radius:12px;
+   font-size:0.92rem;
+   box-sizing:border-box;
+   outline:none;
+   background:#FAF9FB;
+   font-family:inherit;
+   transition:border-color .15s, box-shadow .15s;
+ }
+ input:focus{
+   border-color:var(--purple-700);
+   box-shadow:0 0 0 3px rgba(126,31,120,0.12);
+   background:#fff;
+ }
+ .pw-toggle{
+   position:absolute;
+   right:12px;
+   top:50%;
+   transform:translateY(-50%);
+   background:none;
+   border:none;
+   color:var(--muted);
+   cursor:pointer;
+   font-size:0.8rem;
+   padding:4px;
+   font-weight:600;
+ }
+ html[dir="rtl"] .pw-toggle{
+   right:auto;
+   left:12px;
+ }
+ .err-box{
+   color:#dc2626;
+   font-size:0.82rem;
+   min-height:20px;
+   margin-top:10px;
+   text-align:center;
+   font-weight:600;
+ }
+ .btn-submit{
+   width:100%;
+   margin-top:12px;
+   padding:14px;
+   background:linear-gradient(135deg,var(--purple-700),var(--purple-800));
+   color:#fff;
+   border:none;
+   border-radius:12px;
+   font-family:'Cairo',sans-serif;
+   font-size:1.02rem;
+   font-weight:800;
+   cursor:pointer;
+   box-shadow:0 6px 18px rgba(126,31,120,0.28);
+   transition:transform .15s, box-shadow .15s;
+ }
+ .btn-submit:hover{
+   transform:translateY(-1px);
+   box-shadow:0 8px 22px rgba(126,31,120,0.34);
+ }
+ .auth-footer{
+   margin-top:24px;
+   padding-top:20px;
+   border-top:1px solid #F0E6F2;
+   text-align:center;
+ }
+ .auth-footer p{
+   font-size:0.85rem;
+   color:#6B5870;
+   margin:0 0 8px;
+ }
+ .link-btn{
+   color:var(--purple-700);
+   font-weight:800;
+   font-size:0.92rem;
+   text-decoration:underline;
+   text-underline-offset:3px;
+ }
+ @media (max-width: 480px){
+   .auth-card{
+     padding:24px 18px;
+     border-radius:18px;
+   }
+   .topbar{
+     padding:10px 14px;
+   }
+   .topbar .brand small{
+     display:none;
+   }
+ }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="/" class="brand">
+    <div style="width:36px;height:36px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--purple-900);font-weight:900;font-size:1.05rem;">UCA</div>
+    <div>
+      <div>PAL-UCA</div>
+      <small data-ar="منصة مواكبة خريجي جامعة القاضي عياض" data-fr="Plateforme d'Accompagnement des Lauréats">Plateforme d'Accompagnement des Lauréats</small>
+    </div>
+  </a>
+
+  <div class="actions">
+    <div style="display:flex;gap:4px;">
+      <button type="button" class="lang-btn" id="btnAr" onclick="setLang('ar')">عربي</button>
+      <button type="button" class="lang-btn active" id="btnFr" onclick="setLang('fr')">FR</button>
+    </div>
+    <a href="/" class="btn-top">
+      <span data-ar="الرئيسية" data-fr="Accueil">Accueil</span>
+    </a>
+  </div>
+</header>
+
+<main class="page-content">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-badge" style="font-size:0.85rem;font-weight:800;letter-spacing:0.5px;">UCA</div>
+      <h1 class="auth-title" data-ar="تسجيل الدخول إلى فضائكم" data-fr="Connexion à votre Espace">Connexion à votre Espace</h1>
+      <p class="auth-subtitle" data-ar="الولوج إلى فضائكم الشخصي لمتابعة مساركم والاستفادة من خدمات المواكبة" data-fr="Connectez-vous pour accéder à votre espace lauréat et suivre vos démarches">Connectez-vous pour accéder à votre espace lauréat et suivre vos démarches</p>
+    </div>
+
+    <form onsubmit="handleLoginSubmit(event)">
+      <div class="form-group">
+        <label for="login-email" data-ar="البريد الإلكتروني" data-fr="Adresse email">Adresse email</label>
+        <div class="input-wrap">
+          <input id="login-email" type="email" required placeholder="exemple@gmail.com" autocomplete="email" autofocus>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <label for="login-password" style="margin-bottom:0;" data-ar="كلمة المرور" data-fr="Mot de passe">Mot de passe</label>
+          <a href="#" onclick="showForgotPassword(); return false;" style="font-size:0.75rem;color:var(--purple-700);text-decoration:none;font-weight:600;" data-ar="نسيت كلمة المرور؟" data-fr="Mot de passe oublié ?">Mot de passe oublié ?</a>
+        </div>
+        <div class="input-wrap">
+          <input id="login-password" type="password" required placeholder="••••••••" autocomplete="current-password">
+          <button type="button" class="pw-toggle" onclick="togglePasswordVisibility('login-password', this)">Voir</button>
+        </div>
+      </div>
+
+      <div id="login-err" class="err-box" role="alert"></div>
+
+      <button type="submit" id="loginBtn" class="btn-submit" data-ar="دخول إلى حسابي" data-fr="Se connecter">Se connecter</button>
+    </form>
+
+    <div class="auth-footer">
+      <p data-ar="ليس لديكم حساب بعد على المنصة؟" data-fr="Vous n'avez pas encore d'espace personnel ?">Vous n'avez pas encore d'espace personnel ?</p>
+      <a href="/inscription" target="_blank" rel="noopener noreferrer" class="link-btn" data-ar="إنشاء حساب جديد (مجاناً) ←" data-fr="Créer mon espace gratuitement →">Créer mon espace gratuitement →</a>
+    </div>
+  </div>
+</main>
+
+<script>
+var currentLang = 'fr';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+  document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
+  document.getElementById('btnFr').classList.toggle('active', lang === 'fr');
+  document.querySelectorAll('[data-ar]').forEach(function(el) {
+    var txt = el.getAttribute('data-' + lang);
+    if (txt) el.textContent = txt;
+  });
+}
+
+function L(ar, fr) {
+  return currentLang === 'ar' ? ar : fr;
+}
+
+function togglePasswordVisibility(inputId, btn) {
+  var input = document.getElementById(inputId);
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = L('إخفاء', 'Masquer');
+  } else {
+    input.type = 'password';
+    btn.textContent = L('إظهار', 'Voir');
+  }
+}
+
+function showForgotPassword() {
+  var email = document.getElementById('login-email').value.trim();
+  var err = document.getElementById('login-err');
+  if (email) {
+    err.style.color = '#166534';
+    err.textContent = L('إذا كان البريد مسجلاً، تم إرسال تعليمات استعادة كلمة المرور.', 'Un lien de réinitialisation vous a été envoyé par email s\'il est bien enregistré.');
+  } else {
+    err.style.color = '#7E1F78';
+    err.textContent = L('يرجى كتابة بريدك الإلكتروني في الحقل أعلاه أولاً.', 'Veuillez saisir votre adresse email dans le champ ci-dessus pour la réinitialisation.');
+  }
+}
+
+function simpleHash(s) {
+  var h = 5381;
+  for (var i = 0; i < s.length; i++) { h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; }
+  return 'h' + h.toString(36);
+}
+
+function dbGet(key) {
+  try { return JSON.parse(localStorage.getItem('dabanet_' + key) || '[]'); } catch(e){ return []; }
+}
+
+function dbSet(key, val) {
+  try { localStorage.setItem('dabanet_' + key, JSON.stringify(val)); } catch(e){}
+}
+
+async function handleLoginSubmit(e) {
+  if (e) e.preventDefault();
+  var email = (document.getElementById('login-email').value || '').trim().toLowerCase();
+  var pass = document.getElementById('login-password').value || '';
+  var err = document.getElementById('login-err');
+  var btn = document.getElementById('loginBtn');
+
+  if (!email || !pass) {
+    err.style.color = '#dc2626';
+    err.textContent = L('أدخل البريد الإلكتروني وكلمة المرور', 'Veuillez entrer votre email et mot de passe');
+    return;
+  }
+
+  err.style.color = '#7E1F78';
+  err.textContent = L('جاري التحقق من بيانات الدخول...', 'Vérification de vos identifiants...');
+  if (btn) btn.disabled = true;
+
+  try {
+    // 1. Fetch server state first to support cross-device authentication
+    var serverProfils = [];
+    try {
+      var res = await fetch('/api/profils');
+      if (res.ok) {
+        var data = await res.json();
+        if (Array.isArray(data)) {
+          serverProfils = data;
+          dbSet('profils', data);
+        }
+      }
+    } catch(fetchErr) {}
+
+    var allProfils = serverProfils.length > 0 ? serverProfils : dbGet('profils');
+    var found = allProfils.find(function(x) {
+      var isEmail = (x.email || '').toLowerCase() === email;
+      var isPass = (x.passhash === simpleHash(pass)) || (x.passhash === pass) || (x.password === pass) || (x.motDePasse === pass);
+      return isEmail && isPass;
+    });
+
+    if (!found) {
+      err.style.color = '#dc2626';
+      err.textContent = L('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'Adresse email ou mot de passe incorrect.');
+      if (btn) btn.disabled = false;
+      return;
+    }
+
+    if (found.actif === false) {
+      err.style.color = '#dc2626';
+      err.textContent = L('تم تجميد حسابك مؤقتا من طرف إدارة الجامعة', 'Votre compte est suspendu par l\'administration.');
+      if (btn) btn.disabled = false;
+      return;
+    }
+
+    // Success
+    localStorage.setItem('dabanet_session', found.email);
+    err.style.color = '#166534';
+    err.textContent = L('تم تسجيل الدخول بنجاح ! جاري توجيهكم...', 'Connexion réussie ! Redirection vers votre Espace...');
+    
+    setTimeout(function() {
+      location.href = '/espace';
+    }, 450);
+
+  } catch(error) {
+    err.style.color = '#dc2626';
+    err.textContent = L('حدث خطأ أثناء الاتصال، يرجى المحاولة ثانية', 'Une erreur est survenue lors de la connexion.');
+    if (btn) btn.disabled = false;
+  }
+}
+</script>
+
+</body>
+</html>
