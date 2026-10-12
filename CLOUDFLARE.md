@@ -1,7 +1,7 @@
 # Déployer PALUCA sur Cloudflare Workers
 
 Cette configuration publie les pages Vite et le serveur Express ensemble.
-Les données sont conservées dans SQLite (Durable Object `PalucaStore`) ; les fichiers envoyés sont conservés dans R2 (`paluca-uploads`).
+Les données sont conservées dans SQLite (Durable Object `PalucaStore`) ; les fichiers envoyés sont conservés dans des tables SQLite, par blocs de 512 Kio. Aucun abonnement R2 n’est nécessaire.
 Le développement Node existant reste disponible avec `npm run dev`.
 
 ## Première publication
@@ -11,14 +11,13 @@ Depuis le dossier du projet, avec Node.js 22 ou plus récent :
 ```sh
 npm ci
 npx wrangler login
-npx wrangler r2 bucket create paluca-uploads
 npx wrangler secret put GEMINI_API_KEY
 npx wrangler secret put MISTRAL_API_KEY
 npm run deploy:cloudflare
 ```
 
 Les clés IA sont facultatives pour afficher le site. Saisir les nouvelles clés dans les invites Wrangler, jamais dans le dépôt GitHub.
-La création du bucket nécessite que R2 soit activé dans le compte Cloudflare.
+Conserver le forfait Workers Free. Les Durable Objects SQLite sont disponibles dans ce forfait ; les quotas gratuits restent applicables.
 La commande de déploiement crée le Durable Object et son schéma SQLite.
 Wrangler affiche ensuite l'adresse `https://paluca.<sous-domaine>.workers.dev`.
 
@@ -31,7 +30,6 @@ Dans Cloudflare, créer un projet **Workers** et connecter `elmehdifadil/paluca`
 - Commande de déploiement : `npx wrangler deploy`.
 - Nom du Worker : `paluca`.
 
-Créer le bucket `paluca-uploads` avant la première compilation distante.
 Configurer les secrets `GEMINI_API_KEY` et `MISTRAL_API_KEY` dans les paramètres du Worker, puis redéployer.
 
 ## Vérifier localement
@@ -46,7 +44,7 @@ Pendant que l'émulateur est ouvert, exécuter `node scripts/test-cloudflare.mjs
 Ce test écrit uniquement dans l'émulateur local : routes HTML, API, mises à jour simultanées et uploads image/document.
 
 Tester `/`, `/espace`, `/connexion`, `/inscription`, `/admin` et `/api/health`.
-L'émulation locale conserve SQLite et les fichiers R2 dans `.wrangler/state`.
+L'émulation locale conserve SQLite et les fichiers dans `.wrangler/state`.
 
 ## Données existantes
 
@@ -59,3 +57,10 @@ Le stockage JSON dans une seule ligne SQLite conserve le format existant et ordo
 Cette architecture convient à une première migration ; une forte charge nécessitera de répartir les tables et les traitements IA.
 
 Documentation : https://developers.cloudflare.com/workers/tutorials/deploy-an-express-app/
+
+## Limites sans R2
+
+Chaque fichier est limité à 10 Mio. Le stockage total par Durable Object sur le forfait gratuit est limité à 1 Go. Les limites quotidiennes de requêtes et d’opérations SQLite s’appliquent aussi. Cette solution convient à un petit site ; elle ne remplace pas un service de stockage de gros fichiers à forte charge.
+
+Tarification : https://developers.cloudflare.com/durable-objects/platform/pricing/
+Limites : https://developers.cloudflare.com/durable-objects/platform/limits/

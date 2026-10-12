@@ -6,7 +6,6 @@ import { createApiRouter } from '../src/apiRouter.ts';
 interface Env {
   ASSETS: Fetcher;
   PALUCA_STORE: DurableObjectNamespace<PalucaStore>;
-  UPLOADS: R2Bucket;
 }
 
 // One named object owns the platform store. SQLite replaces data/store.json.
@@ -17,6 +16,8 @@ export class PalucaStore extends DurableObject<Env> {
     super(ctx, env);
     const sql = ctx.storage.sql;
     sql.exec('CREATE TABLE IF NOT EXISTS platform_store (id INTEGER PRIMARY KEY CHECK (id = 1), data TEXT NOT NULL)');
+    sql.exec('CREATE TABLE IF NOT EXISTS platform_files (key TEXT PRIMARY KEY, content_type TEXT NOT NULL)');
+    sql.exec('CREATE TABLE IF NOT EXISTS platform_file_chunks (key TEXT NOT NULL, part INTEGER NOT NULL, data BLOB NOT NULL, PRIMARY KEY (key, part))');
     const app = express();
     app.use(express.json({ limit: '50mb' }));
     app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -29,12 +30,30 @@ export class PalucaStore extends DurableObject<Env> {
         sql.exec('INSERT INTO platform_store (id, data) VALUES (1, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data', JSON.stringify(data));
       },
       async upload(key, data, contentType) {
-        await env.UPLOADS.put(key, data, { httpMetadata: { contentType } });
+        if (data.byteLength > 10 * 1024 * 1024) throw new Error('Fichier trop volumineux : maximum 10 Mio');
+        ctx.storage.transactionSync(() => {
+          sql.exec('INSERT OR REPLACE INTO platform_files (key, content_type) VALUES (?, ?)', key, contentType);
+          sql.exec('DELETE FROM platform_file_chunks WHERE key = ?', key);
+          // Stay below SQLite's limit of 2 MB per row, including large documents.
+          const chunkSize = 512 * 1024;
+          for (let offset = 0, part = 0; offset < data.byteLength; offset += chunkSize, part++) {
+            const chunk = new Uint8Array(data.subarray(offset, offset + chunkSize));
+            sql.exec('INSERT INTO platform_file_chunks (key, part, data) VALUES (?, ?, ?)', key, part, chunk.buffer);
+          }
+        });
         return '/uploads/' + encodeURIComponent(key);
       },
       async download(key) {
-        const object = await env.UPLOADS.get(key);
-        return object ? { data: await object.arrayBuffer(), contentType: object.httpMetadata?.contentType || 'application/octet-stream' } : null;
+        const files = sql.exec<{ content_type: string }>('SELECT content_type FROM platform_files WHERE key = ?', key).toArray();
+        if (!files.length) return null;
+        const chunks = sql.exec<{ data: ArrayBuffer }>('SELECT data FROM platform_file_chunks WHERE key = ? ORDER BY part', key).toArray();
+        const result = new Uint8Array(chunks.reduce((size, chunk) => size + chunk.data.byteLength, 0));
+        let offset = 0;
+        for (const chunk of chunks) {
+          result.set(new Uint8Array(chunk.data), offset);
+          offset += chunk.data.byteLength;
+        }
+        return { data: result.buffer, contentType: files[0].content_type };
       },
     }));
     app.use((_req, res) => { res.status(404).json({ error: 'Route API introuvable' }); });
@@ -66,12 +85,8 @@ export default {
       return env.PALUCA_STORE.get(env.PALUCA_STORE.idFromName('paluca')).fetch(request);
     }
     if (url.pathname.startsWith('/uploads/')) {
-      const key = decodeURIComponent(url.pathname.slice('/uploads/'.length));
-      const object = await env.UPLOADS.get(key);
-      if (!object) return new Response('Fichier introuvable', { status: 404 });
-      const headers = new Headers({ 'X-Content-Type-Options': 'nosniff', ETag: object.httpEtag });
-      object.writeHttpMetadata(headers);
-      return new Response(request.method === 'HEAD' ? null : object.body, { headers });
+      url.pathname = '/api' + url.pathname;
+      return env.PALUCA_STORE.get(env.PALUCA_STORE.idFromName('paluca')).fetch(new Request(url, request));
     }
     const aliases: Record<string, string> = {
       '/': '/index.html', '/espace': '/espace.html', '/connexion': '/connexion.html', '/login': '/connexion.html',

@@ -36,4 +36,8 @@ const blob = await json('/api/upload-blob', { filename: 'document.txt', fileBase
 assert.equal(await (await fetch(base + blob.url)).text(), 'PALUCA migration');
 assert.equal((await fetch(base + '/api/inconnue')).status, 404);
 assert.equal((await fetch(base + '/uploads/inconnu.png')).status, 404);
-console.log('PASS: pages, API, concurrent writes, R2 image/document upload and missing routes');
+// Verify that a file spanning several SQLite rows is reassembled exactly.
+const large = Buffer.alloc(1200000, 42);
+const multi = await json('/api/upload-blob', { filename: 'multi.bin', fileBase64: large.toString('base64') });
+assert.deepEqual(Buffer.from(await (await fetch(base + multi.url)).arrayBuffer()), large);
+console.log('PASS: pages, API, concurrent writes, SQLite image/document upload, multi-chunk file and missing routes');

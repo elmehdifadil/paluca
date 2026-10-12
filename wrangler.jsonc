@@ -9,6 +9,5 @@
     "bindings": [{ "name": "PALUCA_STORE", "class_name": "PalucaStore" }]
   },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["PalucaStore"] }],
-  "r2_buckets": [{ "binding": "UPLOADS", "bucket_name": "paluca-uploads" }],
   "observability": { "enabled": true }
 }
