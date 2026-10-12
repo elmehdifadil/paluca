@@ -1,4 +1,4 @@
-import { PAL_UCA_REFERENTIEL, type StructuredCvOutput } from "./referentielUCA.ts";
+import { PAL_UCA_REFERENTIEL, type StructuredCvOutput } from "./referentielUCA.js";
 
 /**
  * Normalise un numéro de téléphone au format marocain conventionnel PAL-UCA (ex: 0612345678)
@@ -412,7 +412,9 @@ export function calculatePALDiagnostics(fields: any): {
   ));
   const diagGlobal = Math.round((diagSoi + diagProjet + diagTerritoire + diagMethode) / 4);
 
-  const diagnosticText = `Diagnostic d'employabilité PAL-UCA :\n• Points forts : Profil académique complet (${fields.niveau || "Non spécifié"} en ${fields.filiere || "Non spécifié"}), compétences identifiées (${fields.competences || "Générales"}).\n• Axes d'amélioration : Optimisation du CV aux formats ATS et renforcement des techniques d'entretien.\n• Plan d'action recommandé :\n  1. Finaliser et fiabiliser le profil sur la plateforme\n  2. S'inscrire à l'atelier Techniques de Recherche d'Emploi (TRE)\n  3. Réserver un entretien individuel avec un conseiller ANAPEC.`;
+  const present=[fields.niveau&&`Niveau déclaré : ${fields.niveau}`,fields.filiere&&`Filière déclarée : ${fields.filiere}`,fields.competences&&`Compétences extraites : ${fields.competences}`].filter(Boolean);
+  const absent=[!fields.niveau&&'Niveau d’études',!fields.filiere&&'Filière',!fields.competences&&'Compétences'].filter(Boolean);
+  const diagnosticText=['Synthèse du contenu extrait du CV',...present,absent.length?'Informations non extraites à vérifier : '+absent.join(', '):'', 'Les scores du parcours et les suggestions de prestations sont établis après le questionnaire obligatoire et examinés par le conseiller.'].filter(Boolean).join('\n');
 
   return {
     scores: {

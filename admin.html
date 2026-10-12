@@ -309,6 +309,8 @@
    .modal-grid{ grid-template-columns:1fr; }
  }
 </style>
+<link rel="stylesheet" href="/institutional.css">
+<script src="/paluca-client.js"></script>
 </head>
 <body>
 
@@ -324,11 +326,6 @@
     <button class="btn-login" id="btnLogin" onclick="doLogin()">Se connecter</button>
     <div class="login-err" id="loginErr"></div>
 
-    <div class="demo-hint">
-      <b>Comptes disponibles :</b><br>
-      • Conseiller ANAPEC : <code>conseiller</code> / <code>anapec2026</code><br>
-      • Université UCA : <code>universite</code> / <code>univ2026</code>
-    </div>
   </div>
 </div>
 
@@ -338,7 +335,6 @@
   <header class="anapec-header">
     <div class="anapec-header-top">
       <div style="display:flex;align-items:center;gap:12px;">
-        <span style="color:var(--anapec-muted);font-weight:600;">Ministère de l'Enseignement Supérieur, de la Recherche Scientifique et de l'Innovation &amp; ANAPEC</span>
       </div>
       <div style="display:flex;align-items:center;gap:16px;">
         <span style="font-weight:700;color:var(--anapec-purple-dark);">Conseiller ANAPEC · UCA Marrakech</span>
@@ -355,7 +351,7 @@
         </div>
         <div class="anapec-logo-text" style="display:flex;flex-direction:column;justify-content:center;">
           <h1 style="font-size:1.08rem;font-weight:800;color:#0F172A;letter-spacing:0.2px;margin:0;line-height:1.2;">PAL-UCA</h1>
-          <span style="font-size:0.75rem;color:#0369A1;font-weight:700;letter-spacing:0.2px;margin-top:1px;">Pôle d'Accompagnement des Lauréats</span>
+          <span style="font-size:0.75rem;color:#0369A1;font-weight:700;letter-spacing:0.2px;margin-top:1px;">Plateforme d'Accompagnement des Lauréats</span>
         </div>
       </a>
 
@@ -373,46 +369,37 @@
           </button>
           <div class="dropdown-menu">
             <button type="button" class="dropdown-item" onclick="navToSection('cLauréats')">
-              <div><b>Liste des chercheurs</b><br><small style="color:var(--anapec-muted);font-weight:400;">Recherche CIN, nom, statut</small></div>
+              <div><b>Liste des lauréats</b></div>
             </button>
+            <button type="button" class="dropdown-item" onclick="navToSection('cFiabilisation')">Fiabilisation des lauréats</button>
+            <button type="button" class="dropdown-item" onclick="navToSection('cSuiviProfils')">Suivi des profils</button>
             <button type="button" class="dropdown-item" onclick="navToSection('cModifProfil')">
-              <div><b>Modification du profil</b><br><small style="color:var(--anapec-muted);font-weight:400;">Recherche candidat par CIN, nom, prénom</small></div>
+              <div><b>Modification des profils</b></div>
             </button>
             <button type="button" class="dropdown-item" onclick="navToSection('cHistoProfil')">
-              <div><b>Historique du profil</b><br><small style="color:var(--anapec-muted);font-weight:400;">Traçabilité chronologique des modifications</small></div>
+              <div><b>Historique des profils</b></div>
             </button>
             <div class="dropdown-divider"></div>
-            <button type="button" class="dropdown-item" onclick="navToSection('cInsc')">
-              <div><b>Inscriptions aux ateliers</b><br><small style="color:var(--anapec-muted);font-weight:400;">Présences &amp; suivi</small></div>
-            </button>
+
           </div>
         </div>
 
         <!-- MENU 3 — PRESTATIONS -->
         <div class="nav-item-dropdown">
-          <button type="button" class="nav-link-btn" id="navBtnPrestations" onclick="navToSection('cPrestations')">
+          <button type="button" class="nav-link-btn" id="navBtnPrestations" onclick="navToSection('cAteliers')">
             PRESTATIONS &amp; RDV
           </button>
           <div class="dropdown-menu">
-            <button type="button" class="dropdown-item" onclick="navToSection('cPrestations')">
-              <div><b>Catalogue des prestations</b><br><small style="color:var(--anapec-muted);font-weight:400;">Services d'accompagnement</small></div>
+            <button type="button" class="dropdown-item" onclick="navToSection('cAteliers')">
+              <div><b>Créer un atelier</b></div>
             </button>
             <button type="button" class="dropdown-item" onclick="navToSection('cCreneaux')">
-              <div><b>Gestion des créneaux</b><br><small style="color:var(--anapec-muted);font-weight:400;">Disponibilités conseillers</small></div>
+              <div><b>Gestion des créneaux</b></div>
             </button>
             <div class="dropdown-divider"></div>
-            <button type="button" class="dropdown-item" onclick="navToSection('cRdvs', 'pending')">
-              <div><b>Rendez-vous en attente</b></div>
-            </button>
-            <button type="button" class="dropdown-item" onclick="navToSection('cRdvs', 'accepted')">
-              <div><b>Rendez-vous acceptés</b></div>
-            </button>
-            <button type="button" class="dropdown-item" onclick="navToSection('cRdvs')">
-              <div><b>Tous les rendez-vous</b></div>
-            </button>
-            <div class="dropdown-divider"></div>
-            <button type="button" class="dropdown-item" onclick="navToSection('cAteliers')">
-              <div><b>Ateliers</b><br><small style="color:var(--anapec-muted);font-weight:400;">Sessions collectives</small></div>
+            <button type="button" class="dropdown-item" onclick="navToSection('cRdvs')">Gestion des rendez-vous</button>
+            <button type="button" class="dropdown-item" onclick="navToSection('cInsc')">
+              <div><b>Inscriptions aux ateliers</b></div>
             </button>
           </div>
         </div>
@@ -424,14 +411,14 @@
           </button>
           <div class="dropdown-menu">
             <button type="button" class="dropdown-item" onclick="navToSection('cEvenements')">
-              <div><b>Gestion des événements</b><br><small style="color:var(--anapec-muted);font-weight:400;">Salons &amp; rencontres</small></div>
+              <div><b>Gestion des événements</b></div>
             </button>
             <button type="button" class="dropdown-item" onclick="navToSection('cBanners')">
-              <div><b>Gestion des bannières</b><br><small style="color:var(--anapec-muted);font-weight:400;">Affiches portail d'accueil</small></div>
+              <div><b>Gestion des bannières</b></div>
             </button>
             <div class="dropdown-divider"></div>
             <button type="button" class="dropdown-item" onclick="navToSection('cPublications')">
-              <div><b>Publications &amp; Annonces</b><br><small style="color:var(--anapec-muted);font-weight:400;">Actualités officielles</small></div>
+              <div><b>Publications &amp; Annonces</b></div>
             </button>
           </div>
         </div>
@@ -537,10 +524,10 @@
           </div>
 
           <!-- 6. Prestations & Ateliers -->
-          <div class="kpi-card" onclick="navToSection('cPrestations')" style="cursor:pointer;border-left-color:var(--anapec-gold);">
+          <div class="kpi-card" onclick="navToSection('cAteliers')" style="cursor:pointer;border-left-color:var(--anapec-gold);">
             <div>
-              <div class="kpi-val"><span id="kpiPrestations">5</span> / <span id="kpiAteliers">0</span></div>
-              <div class="kpi-label">PRESTATIONS / ATELIERS</div>
+              <div class="kpi-val"><span id="kpiAteliers">0</span></div>
+              <div class="kpi-label">ATELIERS CRÉÉS</div>
               <div style="font-size:0.75rem;color:var(--muted);font-weight:700;margin-top:3px;">Catalogue actif</div>
             </div>
           </div>
@@ -568,25 +555,6 @@
           </div>
         </div>
 
-        <!-- Section Activités Récentes (Derniers RDVs & Prochains Événements) -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px;">
-          <!-- Dernières demandes de rendez-vous -->
-          <div class="card" style="margin-bottom:0;">
-            <h3 style="font-size:0.96rem;">
-              <span>Dernières demandes de rendez-vous</span>
-              <button class="act ok" onclick="navToSection('cRdvs')" style="font-size:0.78rem;">Consulter les rendez-vous</button>
-            </h3>
-            <div id="cDashboardRecentRdvs"></div>
-          </div>
-          <!-- Prochains événements & Salons -->
-          <div class="card" style="margin-bottom:0;">
-            <h3 style="font-size:0.96rem;">
-              <span>Prochains événements &amp; Salons</span>
-              <button class="act ok" onclick="navToSection('cEvenements')" style="font-size:0.78rem;">Consulter les événements</button>
-            </h3>
-            <div id="cDashboardRecentEvs"></div>
-          </div>
-        </div>
       </div>
 
     <!-- Panel Lauréats -->
@@ -874,8 +842,8 @@
           <select id="cRdvFilterStatus" onchange="renderRdvs()" style="padding:8px 12px;font-size:0.86rem;border-radius:8px;border:1.5px solid var(--border);background:#fff;outline:none;">
             <option value="all">Tous les statuts</option>
             <option value="pending">En attente</option>
-            <option value="accepted">Confirmés / Acceptés</option>
-            <option value="realise">Réalisés</option>
+            
+            
             <option value="refused">Refusés</option>
           </select>
           <button type="button" class="act del" onclick="resetRdvFilters()" style="margin:0;padding:8px 12px;font-size:0.82rem;">Réinitialiser</button>
@@ -926,7 +894,7 @@
         <div class="form-grid">
           <div>
             <label>Titre de l'atelier</label>
-            <input type="text" id="atTitre" placeholder="Ex: Réussir son CV et LinkedIn">
+            <select id="atTitre" required><option value="">Choisir un atelier de la grille</option></select>
           </div>
           <div>
             <label>Date et Heure</label>
@@ -976,6 +944,18 @@
     <!-- Panel Inscriptions -->
     <div class="panel" id="cInsc">
       <div class="card">
+        <h3>Inscrire un candidat à un atelier</h3>
+        <form id="palWorkshopRegistration">
+          <div class="form-grid">
+            <div><label for="palWorkshopChoice">Atelier déjà créé</label><select id="palWorkshopChoice" name="atelierId" required></select></div>
+            <div><label for="palWorkshopCin">CIN du candidat</label><input id="palWorkshopCin" name="cin" required placeholder="Choisissez d’abord un atelier" autocomplete="off" disabled></div>
+          </div>
+          <button class="act" id="palWorkshopRefresh" type="button">Actualiser les ateliers</button>
+          <button class="btn-add" type="submit">Inscrire le candidat</button>
+          <p id="palWorkshopMessage" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+      <div class="card">
         <h3>Inscriptions aux ateliers</h3>
         <div id="cInscTable"></div>
       </div>
@@ -1005,25 +985,6 @@
       <div class="card">
         <h3>Actualités publiées</h3>
         <div id="cNewsTable"></div>
-      </div>
-    </div>
-
-    <!-- ═══ Panel PRESTATIONS (MENU 3) ═══ -->
-    <div class="panel" id="cPrestations">
-      <div class="card">
-        <h3>Ajouter une nouvelle prestation d'accompagnement</h3>
-        <div class="form-grid">
-          <div><label>Nom de la prestation</label><input type="text" id="prNom" placeholder="Ex: Orientation professionnelle"></div>
-          <div><label>Conseiller responsable</label><input type="text" id="prConseiller" placeholder="Ex: M. EL MEHDI FADIL" value="M. EL MEHDI FADIL"></div>
-          <div><label>Durée</label><input type="text" id="prDuree" placeholder="Ex: 45 min" value="45 min"></div>
-          <div><label>Modalité</label><select id="prModalite"><option value="Présentiel ou Visioconférence">Présentiel ou Visioconférence</option><option value="Présentiel uniquement">Présentiel uniquement</option><option value="À distance (Visioconférence)">À distance (Visioconférence)</option></select></div>
-          <div class="full"><label>Description de la prestation</label><textarea id="prDesc" rows="2" placeholder="Objectifs d'insertion, déroulement et public cible..."></textarea></div>
-        </div>
-        <button class="btn-add" onclick="ajouterPrestation()">+ Enregistrer la prestation</button>
-      </div>
-      <div class="card">
-        <h3>Catalogue des Prestations ANAPEC / UCA</h3>
-        <div id="cPrestationsTable"></div>
       </div>
     </div>
 
@@ -1373,33 +1334,8 @@ function simpleHash(s) {
 }
 
 function store(key){
-  var k = key.replace('dabanet_', '');
-  var localList = [];
-  try {
-    var raw = localStorage.getItem('dabanet_' + k);
-    if (raw) localList = JSON.parse(raw);
-  } catch(e){}
-
-  var memList = (window.DB && Array.isArray(window.DB[k])) ? window.DB[k] : [];
-
-  if (memList.length === 0 && Array.isArray(localList) && localList.length > 0) {
-    window.DB[k] = localList;
-    return localList;
-  }
-
-  if (memList.length > 0 && Array.isArray(localList) && localList.length > 0) {
-    var map = {};
-    memList.forEach(function(item){ if (item && item.id) map[String(item.id)] = item; });
-    localList.forEach(function(item){
-      if (item && item.id && !map[String(item.id)]) {
-        memList.push(item);
-        map[String(item.id)] = item;
-      }
-    });
-    return memList;
-  }
-
-  return memList.length > 0 ? memList : (Array.isArray(localList) ? localList : []);
+  var k=key.replace('dabanet_','');
+  return window.DB&&Array.isArray(window.DB[k])?window.DB[k]:[];
 }
 
 function save(key, val){
@@ -1416,55 +1352,13 @@ function save(key, val){
 }
 
 function dbSync(cb){
-  Promise.all([
-    fetch('/api/data').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }),
-    fetch('/api/rdvs').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; })
-  ]).then(function(results){
-    var d = results[0];
-    var serverRdvs = results[1];
-
-    if (d && typeof d === 'object') {
-      ['profils','rdvs','creneaux','ateliers','inscriptions','news','banners','prestations','evenements','publications'].forEach(function(k){
-        var list = Array.isArray(d[k]) ? d[k] : [];
-        if (k === 'rdvs' && Array.isArray(serverRdvs) && serverRdvs.length > 0) {
-          var rmap = {};
-          list.forEach(function(r){ if (r && r.id) rmap[String(r.id)] = r; });
-          serverRdvs.forEach(function(r){ if (r && r.id && !rmap[String(r.id)]) { list.push(r); rmap[String(r.id)] = r; } });
-        }
-
-        // Also merge any bookings stored locally so they never disappear
-        var local = [];
-        try {
-          var raw = localStorage.getItem('dabanet_' + k);
-          if (raw) local = JSON.parse(raw);
-        } catch(e){}
-        if (Array.isArray(local) && local.length > 0) {
-          var lmap = {};
-          list.forEach(function(it){ if (it && it.id) lmap[String(it.id)] = it; });
-          local.forEach(function(it){
-            if (it && it.id && !lmap[String(it.id)]) {
-              list.push(it);
-              lmap[String(it.id)] = it;
-            }
-          });
-        }
-
-        window.DB[k] = list;
-        try { localStorage.setItem('dabanet_' + k, JSON.stringify(list)); } catch(e){}
-      });
-    } else if (Array.isArray(serverRdvs) && serverRdvs.length > 0) {
-      var cur = store('dabanet_rdvs') || [];
-      var curMap = {};
-      cur.forEach(function(r){ if (r && r.id) curMap[String(r.id)] = r; });
-      serverRdvs.forEach(function(r){ if (r && r.id && !curMap[String(r.id)]) { cur.push(r); curMap[String(r.id)] = r; } });
-      window.DB['rdvs'] = cur;
-      try { localStorage.setItem('dabanet_rdvs', JSON.stringify(cur)); } catch(e){}
-    }
-
-    if (cb) cb();
-  }).catch(function(){
-    if (cb) cb();
-  });
+  return fetch('/api/data').then(function(response){if(!response.ok)throw new Error('Synchronisation indisponible.');return response.json();}).then(function(data){
+    ['profils','rdvs','creneaux','ateliers','inscriptions','news','banners','bannieres','affiches','prestations','evenements','publications','conseillers'].forEach(function(k){
+      var list=Array.isArray(data[k])?data[k]:[];window.DB[k]=list;
+      try{localStorage.setItem('dabanet_'+k,JSON.stringify(list));}catch(e){}
+    });
+    if(cb)cb(true);return true;
+  }).catch(function(error){console.warn(error.message);if(cb)cb(false);return false;});
 }
 
 function esc(str){
@@ -1473,34 +1367,8 @@ function esc(str){
 }
 
 /* ══════════ Auth ══════════ */
-var ACCOUNTS = {
-  'conseiller': { pass: 'anapec2026', role: 'conseiller' },
-  'universite': { pass: 'univ2026',   role: 'universite' },
-  'admin':      { pass: 'admin2026',  role: 'conseiller' }
-};
 
-function doLogin(){
-  var userEl = document.getElementById('loginUser');
-  var passEl = document.getElementById('loginPass');
-  var errEl = document.getElementById('loginErr');
-  
-  if (!userEl || !passEl) return;
-  var u = userEl.value.trim().toLowerCase();
-  var p = passEl.value;
-
-  if (!u || !p) {
-    if (errEl) errEl.textContent = 'Veuillez saisir votre nom d\'utilisateur et mot de passe.';
-    return;
-  }
-  var acc = ACCOUNTS[u];
-  if (!acc || acc.pass !== p) {
-    if (errEl) errEl.textContent = 'Identifiants incorrects. Vérifiez le mot de passe.';
-    return;
-  }
-  if (errEl) errEl.textContent = '';
-  sessionStorage.setItem('dabanet_admin_role', acc.role);
-  showDash();
-}
+function doLogin(){ return window.palAdminLogin && window.palAdminLogin(); }
 
 function logout(){
   sessionStorage.removeItem('dabanet_admin_role');
@@ -1508,7 +1376,7 @@ function logout(){
 }
 
 function showDash(){
-  var r = sessionStorage.getItem('dabanet_admin_role');
+  var r = window.palVerifiedAdminRole || null;
   var lv = document.getElementById('loginView');
   var dc = document.getElementById('dashConseiller');
   var du = document.getElementById('dashUniv');
@@ -1924,14 +1792,14 @@ window.selectionnerCandidatPourModif = function(email){
   if (document.getElementById('f_tel')) document.getElementById('f_tel').value = p.tel || '';
   if (document.getElementById('f_email')) document.getElementById('f_email').value = p.email || '';
   if (document.getElementById('f_adresse')) document.getElementById('f_adresse').value = p.adresse || '';
-  if (document.getElementById('f_ville')) document.getElementById('f_ville').value = p.ville || 'Marrakech';
+  if (document.getElementById('f_ville')) document.getElementById('f_ville').value = p.ville || '';
   if (document.getElementById('f_milieu')) document.getElementById('f_milieu').value = ((p.milieu || p.zone || '').toLowerCase().indexOf('rur') !== -1) ? 'Rural' : 'Urbain';
 
   // Formation
-  if (document.getElementById('f_niveau')) document.getElementById('f_niveau').value = p.niveau || 'Licence (Bac+3)';
+  if (document.getElementById('f_niveau')) document.getElementById('f_niveau').value = p.niveau || '';
   if (document.getElementById('f_diplome')) document.getElementById('f_diplome').value = p.diplome || p.anneeDiplome || '';
   if (document.getElementById('f_filiere')) document.getElementById('f_filiere').value = p.filiere || '';
-  if (document.getElementById('f_etablissement')) document.getElementById('f_etablissement').value = p.etablissement || 'Université Cadi Ayyad';
+  if (document.getElementById('f_etablissement')) document.getElementById('f_etablissement').value = p.etablissement || '';
   if (document.getElementById('f_anneeDiplome')) document.getElementById('f_anneeDiplome').value = p.anneeDiplome || '';
 
   // Situation professionnelle
@@ -2248,6 +2116,8 @@ function renderRdvs(customFilter){
     var s = (r.status || '').toLowerCase();
     var st = (r.statut || '').toLowerCase();
 
+    if (s === 'accepted' || st === 'confirmé' || ['realise','completed','absent','reporte'].includes(s) || ['réalisé','absent','reporté'].includes(st)) return false;
+
     if (filterStatus === 'pending') {
       if (s !== 'pending' && st !== 'en attente' && s !== '') return false;
     } else if (filterStatus === 'accepted') {
@@ -2318,7 +2188,6 @@ function renderRdvs(customFilter){
           (!isAccepted && !isRealise ? '<button type="button" class="act ok" onclick="setRdvStatus(\'' + r.id + '\', \'accepted\')">Accepter</button>' : '') +
           (!isRealise ? '<button type="button" class="act ok" style="background:#0284C7;border-color:#0284C7;color:#fff;" onclick="ouvrirReprogrammer(\'' + r.id + '\')">Reprogrammer</button>' : '') +
           (!isRealise && !isRefused ? '<button type="button" class="act no" onclick="annulerRdv(\'' + r.id + '\')">Annuler</button>' : '') +
-          (!isRealise ? '<button type="button" class="act ok" style="background:#166534;color:#fff;border-color:#166534;font-weight:700;" onclick="setRdvStatus(\'' + r.id + '\', \'realise\')" title="Valider que l\'entretien a eu lieu et débloquer les prestations">Rendez-vous réalisé</button>' : '') +
           waBtn +
           '<button type="button" class="act trash" onclick="supprimerRdv(\'' + r.id + '\')">Supprimer</button>' +
         '</div>' +
@@ -2406,6 +2275,7 @@ function renderAteliers(){
 }
 
 function renderInscriptions(){
+  if(window.palRenderWorkshopChoices)window.palRenderWorkshopChoices();
   var insc = store('dabanet_inscriptions');
   var el = document.getElementById('cInscTable');
   if (!el) return;
@@ -2418,15 +2288,16 @@ function renderInscriptions(){
   var html = '<table class="resp-table"><thead><tr><th>Lauréat</th><th>Email</th><th>Atelier</th><th>Date</th><th>Action</th></tr></thead><tbody>';
   insc.slice().reverse().forEach(function(i){
     html += '<tr>' +
-      '<td data-label="Lauréat"><b>' + esc(i.nom) + '</b></td>' +
+      '<td data-label="Lauréat"><b>' + esc(i.nom) + '</b><br><small>CIN : ' + esc(i.cin || i.candidat_cin || (DB.profils.find(function(p){return p.email===i.email;})||{}).cin || '—') + '</small></td>' +
       '<td data-label="Email">' + esc(i.email || '—') + '</td>' +
       '<td data-label="Atelier">' + esc(i.atelier) + '</td>' +
       '<td data-label="Date">' + (i.date ? new Date(i.date).toLocaleDateString('fr-MA') : '—') + '</td>' +
-      '<td data-label="Action"><button class="act trash" onclick="delInsc(' + i.id + ', \'' + esc(i.nom) + '\')">Supprimer</button></td>' +
+      '<td data-label="Action"><button class="act trash" data-inscription-id="' + esc(i.id) + '">Supprimer</button></td>' +
     '</tr>';
   });
   html += '</tbody></table>';
   el.innerHTML = html;
+  el.querySelectorAll('[data-inscription-id]').forEach(function(button){button.onclick=function(){delInsc(button.dataset.inscriptionId);};});
 }
 
 function renderNews(){
@@ -2479,7 +2350,7 @@ function ajouterBanner(){
   var reader = new FileReader();
   reader.onload = function(){
     var preview = new Image();
-    preview.onload = function(){
+    preview.onload = async function(){
       var processedDataUrl = reader.result;
 
       // Adaptation et cadrage automatique au format standard 1920 × 700 px
@@ -2525,7 +2396,7 @@ function ajouterBanner(){
       var startVal = document.getElementById('bnStart')?.value || null;
       var endVal = document.getElementById('bnEnd')?.value || null;
 
-      function finalizeBanner(finalUrl) {
+      async function finalizeBanner(finalUrl) {
         var bannerId = Date.now();
         var bannerObj = {
           id: bannerId,
@@ -2545,17 +2416,8 @@ function ajouterBanner(){
           createdAt: new Date().toISOString()
         };
 
-        var banners = store('dabanet_banners');
-        banners.push(bannerObj);
-        save('dabanet_banners', banners);
-
-        // Synchroniser également via l'API dédiée
-        fetch('/api/bannieres', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bannerObj)
-        }).catch(function(){});
-
+        await palApi('bannieres',bannerObj);
+        await new Promise(function(resolve){dbSync(resolve);});
         input.value = '';
         if (document.getElementById('bnTitle')) document.getElementById('bnTitle').value = '';
         if (document.getElementById('bnDescription')) document.getElementById('bnDescription').value = '';
@@ -2564,23 +2426,12 @@ function ajouterBanner(){
         alert('Bannière enregistrée avec succès au format 1920 × 700 px !');
       }
 
-      fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      .then(function(response){
-        if (response.ok) return response.json();
-        return { success: true, url: processedDataUrl };
-      })
-      .then(function(upload){
-        var finalUrl = (upload && upload.url) ? upload.url : processedDataUrl;
-        finalizeBanner(finalUrl);
-      })
-      .catch(function(error){
-        console.warn('Upload error, fallback to dataUrl:', error);
-        finalizeBanner(processedDataUrl);
-      });
+      try {
+        var upload=await palApi('upload',payload);
+        await finalizeBanner(upload.url);
+      } catch(error) {
+        alert('Bannière non enregistrée : '+error.message);
+      }
     };
     preview.onerror = function(){
       alert('Format de fichier image non reconnu ou fichier corrompu.');
@@ -2589,28 +2440,14 @@ function ajouterBanner(){
   };
   reader.readAsDataURL(file);
 }
-function toggleBanner(id){
-  var banners = store('dabanet_banners');
-  var banner = banners.find(function(b){ return String(b.id) === String(id); });
-  if (banner) {
-    var newState = !(banner.active !== false && banner.statut !== 'inactive');
-    banner.active = newState;
-    banner.statut = newState ? 'active' : 'inactive';
-    save('dabanet_banners', banners);
-    fetch('/api/bannieres', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(banner)
-    }).catch(function(){});
-    renderBanners();
-  }
+async function toggleBanner(id){
+  var banner=store('dabanet_banners').find(function(b){return String(b.id)===String(id);});if(!banner)return;
+  var copy=Object.assign({},banner);copy.active=!(banner.active!==false&&banner.statut!=='inactive');copy.statut=copy.active?'active':'inactive';
+  try{await palApi('bannieres',copy);dbSync(renderBanners);}catch(error){alert('Modification non enregistrée : '+error.message);}
 }
-function supprimerBanner(id){
-  if (!confirm('Supprimer cette bannière ?')) return;
-  fetch('/api/bannieres/' + id, { method: 'DELETE' }).catch(function(){});
-  var banners = store('dabanet_banners').filter(function(b){ return String(b.id) !== String(id); });
-  save('dabanet_banners', banners);
-  renderBanners();
+async function supprimerBanner(id){
+  if(!confirm('Supprimer cette bannière ?'))return;
+  try{await palApi('bannieres/'+id,{},'DELETE');dbSync(renderBanners);}catch(error){alert('Suppression non enregistrée : '+error.message);}
 }
 
 function renderUniv(){
@@ -2980,7 +2817,7 @@ function supprimerLaureat(email, nom){
 
 function delInsc(id, nom){
   if (!confirm('Supprimer cette inscription aux ateliers' + (nom ? ' de ' + nom : '') + ' ?')) return;
-  var insc = store('dabanet_inscriptions').filter(function(i){ return i.id !== id; });
+  var insc = store('dabanet_inscriptions').filter(function(i){ return String(i.id) !== String(id); });
   save('dabanet_inscriptions', insc);
   renderConseiller();
 }
@@ -3017,7 +2854,7 @@ function supprimerCreneau(id){
   renderConseiller();
 }
 
-function ajouterAtelier(){
+async function ajouterAtelier(){
   var titre = document.getElementById('atTitre').value.trim();
   var date = document.getElementById('atDate').value;
   var animateur = document.getElementById('atAnimateur').value.trim();
@@ -3029,7 +2866,7 @@ function ajouterAtelier(){
     return;
   }
 
-  var ateliers = store('dabanet_ateliers');
+  var ateliers = store('dabanet_ateliers').slice();
   ateliers.push({
     id: Date.now(),
     titre: titre,
@@ -3038,7 +2875,13 @@ function ajouterAtelier(){
     places: places,
     desc: desc
   });
-  save('dabanet_ateliers', ateliers);
+  try {
+    await palApi('data', {key:'ateliers', value:ateliers});
+    await dbSync();
+  } catch(error) {
+    alert('Atelier non confirmé : ' + error.message);
+    return;
+  }
   renderConseiller();
   document.getElementById('atTitre').value = '';
   document.getElementById('atDesc').value = '';
@@ -3132,7 +2975,7 @@ function voirApercu(email){
         '<div class="modal-field"><small>Téléphone</small><b>' + esc(p.tel || '—') + '</b></div>' +
         '<div class="modal-field"><small>Mot de passe du compte</small><b>' + esc(p.password || p.motDePasse || 'uca2026') + '</b></div>' +
         '<div class="modal-field"><small>Âge & Sexe</small><b>' + (p.age ? p.age + ' ans' : '—') + ' · ' + esc(p.sexe || 'Non précisé') + '</b></div>' +
-        '<div class="modal-field"><small>Ville de résidence</small><b>' + esc(p.ville || 'Marrakech') + '</b></div>' +
+        '<div class="modal-field"><small>Ville de résidence</small><b>' + esc(p.ville || '') + '</b></div>' +
         '<div class="modal-field"><small>Milieu Territorial</small><b>' + esc(p.zone || (p.ville === 'Marrakech' ? 'Urbain' : 'Rural')) + '</b></div>' +
         '<div class="modal-field"><small>Statut du compte</small><b>' + (p.actif !== false ? 'Compte Actif' : 'Compte Désactivé') + '</b></div>' +
         '<div class="modal-field" style="grid-column:span 2;background:#FAF3FB;border:1px solid #DDB8E0;border-radius:8px;padding:8px 10px;">' +
@@ -3153,7 +2996,7 @@ function voirApercu(email){
     <!-- Onglet 2 : Formation -->
     '<div class="profile-tab-panel" id="ptFormation">' +
       '<div class="modal-grid">' +
-        '<div class="modal-field"><small>Établissement UCA</small><b>' + esc(p.etablissement || 'Université Cadi Ayyad') + '</b></div>' +
+        '<div class="modal-field"><small>Établissement UCA</small><b>' + esc(p.etablissement || '') + '</b></div>' +
         '<div class="modal-field"><small>Niveau d\'études</small><b>' + esc(p.niveau || 'Licence') + '</b></div>' +
         '<div class="modal-field"><small>Filière / Spécialité</small><b>' + esc(p.filiere || '—') + '</b></div>' +
         '<div class="modal-field"><small>Année d\'obtention</small><b>' + esc(p.anneeDiplome || '2025') + '</b></div>' +
@@ -3307,5 +3150,10 @@ setInterval(function(){
 }, 10000);
 </script>
 <script src="/backoffice_extensions.js"></script>
+<script src="/admin-workflow.js"></script>
+<script src="/profile-followup.js"></script>
+<script src="/workshop-registration.js"></script>
+<script src="/accompaniment-admin.js"></script>
+<script src="/university-workflow.js"></script>
 </body>
 </html>

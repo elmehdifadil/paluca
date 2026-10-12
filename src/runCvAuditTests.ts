@@ -1,4 +1,4 @@
-import { runFullCvPipeline } from "./cvAuditPipeline.ts";
+import { runFullCvPipeline } from "./cvAuditPipeline.js";
 
 /**
  * Suite de tests automatisés couvrant les 8 profils de CVs obligatoires

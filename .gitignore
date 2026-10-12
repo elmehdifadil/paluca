@@ -11,3 +11,5 @@ coverage/
 .wrangler/
 .dev.vars*
 worker-configuration.d.ts
+.private/
+data/

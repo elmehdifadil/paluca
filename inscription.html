@@ -278,12 +278,14 @@
    }
  }
 </style>
+<link rel="stylesheet" href="/institutional.css">
+<script src="/paluca-client.js"></script>
 </head>
 <body>
 
 <header class="topbar">
   <a href="/" class="brand">
-    <div style="width:36px;height:36px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--purple-900);font-weight:900;font-size:1.05rem;">UCA</div>
+    <img class="pal-logo" src="/assets/logo_pal_uca.png" alt="PAL-UCA">
     <div>
       <div>PAL-UCA</div>
       <small data-ar="منصة مواكبة خريجي جامعة القاضي عياض" data-fr="Plateforme d'Accompagnement des Lauréats">Plateforme d'Accompagnement des Lauréats</small>
@@ -296,7 +298,7 @@
       <button type="button" class="lang-btn active" id="btnFr" onclick="setLang('fr')">FR</button>
     </div>
     <a href="/" class="btn-top">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      
       <span data-ar="الرئيسية" data-fr="Accueil">Accueil</span>
     </a>
   </div>
@@ -305,7 +307,7 @@
 <main class="page-content">
   <div class="reg-card">
     <div class="reg-header">
-      <div class="reg-badge">🎓</div>
+      <div class="reg-badge"></div>
       <h1 class="reg-title" data-ar="إنشاء فضائكم الشخصي (خريج UCA)" data-fr="Créer votre Espace Lauréat UCA">Créer votre Espace Lauréat UCA</h1>
       <p class="reg-subtitle" data-ar="أنشئ حسابك واستفد من خدمات المواكبة، التشخيص الذكي والمقابلات الفردية" data-fr="Renseignez vos informations ou importez votre CV pour un remplissage automatique de votre profil">Renseignez vos informations ou importez votre CV pour un remplissage automatique de votre profil</p>
     </div>
@@ -313,10 +315,10 @@
     <!-- Option claire : Import de CV OU Remplissage Manuel -->
     <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;">
       <button type="button" id="tabModeCv" onclick="switchEntryMode('cv')" style="background:var(--purple-700);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-weight:700;font-size:0.86rem;cursor:pointer;">
-        📄 Importer mon CV
+         Importer mon CV
       </button>
       <button type="button" id="tabModeManuel" onclick="switchEntryMode('manuel')" style="background:#FAF3FB;color:var(--purple-900);border:1.5px solid var(--border);border-radius:10px;padding:9px 18px;font-weight:700;font-size:0.86rem;cursor:pointer;">
-        ✍️ Remplir manuellement
+         Remplir manuellement
       </button>
     </div>
 
@@ -332,7 +334,7 @@
       <!-- Bannière de vérification obligatoire après extraction IA (Exigence Point 11) -->
       <div id="cvReviewNotice" style="display:none;background:#FEF3C7;border:1px solid #F59E0B;border-radius:10px;padding:12px 14px;margin-top:10px;color:#92400E;font-size:0.86rem;line-height:1.45;">
         <div style="display:flex;align-items:flex-start;gap:8px;">
-          <span style="font-size:1.1rem;">ℹ️</span>
+          <span style="font-size:1.1rem;">ℹ</span>
           <div>
             <strong>Attention :</strong> Certaines informations ont été préremplies à partir de votre CV. Veuillez les vérifier, les compléter ou les corriger attentivement avant de valider votre inscription.
           </div>
@@ -669,30 +671,12 @@ function applyParsedFields(parsed, fileName, base64Data, engine) {
         return;
       }
     }
-    // 2. Correspondance partielle
-    for (var i = 0; i < el.options.length; i++) {
-      var opt = el.options[i];
-      var optVal = (opt.value || "").toLowerCase();
-      var optText = (opt.text || "").toLowerCase();
-      if ((optVal && optVal.indexOf(valLower) !== -1) || (optText && optText.indexOf(valLower) !== -1) ||
-          (valLower.indexOf(optVal) !== -1 && optVal.length > 3) || (optText && valLower.indexOf(optText) !== -1 && optText.length > 3)) {
-        el.selectedIndex = i;
-        count++;
-        return;
-      }
-    }
-    // 3. Mots clés (ex: Semlalia -> FSSM, FST -> FST Guéliz, etc.)
-    var words = valLower.split(/[\s,()\/&-]+/).filter(function(w){ return w.length > 2; });
-    for (var i = 0; i < el.options.length; i++) {
-      var optText = el.options[i].text.toLowerCase();
-      for (var k = 0; k < words.length; k++) {
-        if (optText.indexOf(words[k]) !== -1) {
-          el.selectedIndex = i;
-          count++;
-          return;
-        }
-      }
-    }
+    // Only a unique complete label or a recognised degree alias is reliable.
+    var norm = function(x){return String(x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();};
+    var n=norm(v), aliases={'reg-niveau':[['licence','Licence'],['master','Master'],['doctorat','Doctorat']]};
+    var target=(aliases[id]||[]).find(function(a){return new RegExp('\\b'+a[0]+'\\b').test(n);});
+    var matches=Array.from(el.options).filter(function(o){return o.value && (norm(o.value)===n || norm(o.text)===n || target && norm(o.value)===norm(target[1]));});
+    if(matches.length===1){el.value=matches[0].value;count++;return;}
     // RÈGLE ABSOLUE : Si aucune correspondance fiable n'existe, on laisse le champ vide pour sélection manuelle !
   }
 
@@ -733,6 +717,7 @@ function applyParsedFields(parsed, fileName, base64Data, engine) {
   setVal('reg-exp-fin', parsed.expFin || '');
   setVal('reg-expdetail', parsed.experienceDetail || parsed.expPoste || '');
 
+  window._cvEnrichment = {diplomes:parsed.diplomes||[],experiences:parsed.experiences||[],stages:parsed.stages||[],formations:parsed.formations||[],certifications:parsed.certifications||[]};
   window._cvUrl = base64Data;
   window._cvName = fileName;
   window._cvOcrText = parsed.experienceDetail || parsed.competences || '';
@@ -757,12 +742,12 @@ async function analyserCV() {
 
   // Étape 1 : Importation du CV...
   status.style.color = '#7E1F78';
-  status.innerHTML = '📥 <strong>' + L('جاري استيراد السيرة الذاتية...', 'Importation du CV...') + '</strong>';
+  status.innerHTML = ' <strong>' + L('جاري استيراد السيرة الذاتية...', 'Importation du CV...') + '</strong>';
 
   var reader = new FileReader();
   reader.onerror = function() {
     status.style.color = '#DC2626';
-    status.innerHTML = '⚠️ <strong>' + L('تعذر قراءة محتوى السيرة الذاتية. يرجى التحقق من الملف أو استيراد سيرة أخرى.', 'Impossible de lire le contenu du CV. Veuillez vérifier le fichier ou importer un autre CV.') + '</strong>';
+    status.innerHTML = ' <strong>' + L('تعذر قراءة محتوى السيرة الذاتية. يرجى التحقق من الملف أو استيراد سيرة أخرى.', 'Impossible de lire le contenu du CV. Veuillez vérifier le fichier ou importer un autre CV.') + '</strong>';
     if (btn) btn.disabled = false;
   };
 
@@ -771,14 +756,14 @@ async function analyserCV() {
 
     // Étape 2 : Lecture du CV...
     status.style.color = '#7E1F78';
-    status.innerHTML = '📖 <strong>' + L('جاري قراءة السيرة الذاتية...', 'Lecture du CV...') + '</strong>';
+    status.innerHTML = ' <strong>' + L('جاري قراءة السيرة الذاتية...', 'Lecture du CV...') + '</strong>';
 
     try {
       // Petite pause visuelle pour afficher l'étape de lecture
       await new Promise(function(resolve) { setTimeout(resolve, 350); });
 
       // Étape 3 : Analyse du CV...
-      status.innerHTML = '🤖 <strong>' + L('جاري تحليل السيرة الذاتية بالذكاء الاصطناعي...', 'Analyse du CV...') + '</strong>';
+      status.innerHTML = ' <strong>' + L('جاري تحليل السيرة الذاتية بالذكاء الاصطناعي...', 'Analyse du CV...') + '</strong>';
 
       var res = await fetch('/api/cv', {
         method: 'POST',
@@ -790,24 +775,33 @@ async function analyserCV() {
         })
       });
 
-      var data = await res.json().catch(function(){ return {}; });
+      var data;
+      try { data = await res.json(); }
+      catch (_) {
+        throw new Error(res.status >= 500
+          ? 'Le service d’analyse est indisponible (HTTP ' + res.status + '). L’administrateur doit vérifier les journaux Vercel.'
+          : res.status === 413
+            ? 'Le CV dépasse la taille acceptée par le serveur. Veuillez réduire la taille du fichier.'
+            : 'Réponse du serveur invalide (HTTP ' + res.status + ').');
+      }
 
       if (res.ok && data && data.success && data.fields) {
         var parsed = data.fields || data.parsed || {};
+        window._cvAnalysis={engine:data.engine,diagnostic:data.diagnostic||'',analysedAt:new Date().toISOString(),extractedFields:parsed};
         var filled = applyParsedFields(parsed, file.name, base64Data, data.engine || 'Mistral / Gemini');
         // Étape 4 : Informations extraites. Veuillez vérifier votre profil.
         status.style.color = '#166534';
-        status.innerHTML = '✅ <strong>' + L('تم استخراج المعلومات. يرجى مراجعة وتأكيد ملفكم الشخصي.', 'Informations extraites. Veuillez vérifier votre profil.') + '</strong> (' + filled + ' champs renseignés)';
+        status.innerHTML = ' <strong>' + L('تم استخراج المعلومات. يرجى مراجعة وتأكيد ملفكم الشخصي.', 'Informations extraites. Veuillez vérifier votre profil.') + '</strong> (' + filled + ' champs renseignés)';
       } else {
         // En cas d'erreur ou d'échec d'extraction de contenu réel
         status.style.color = '#DC2626';
         var errMsg = (data && data.error) ? data.error : L('تعذر قراءة محتوى السيرة الذاتية. يرجى التحقق من الملف أو استيراد سيرة أخرى.', 'Impossible de lire le contenu du CV. Veuillez vérifier le fichier ou importer un autre CV.');
-        status.innerHTML = '⚠️ <strong>' + errMsg + '</strong>';
+        status.textContent = ' ' + errMsg;
       }
     } catch(err) {
       console.warn('Erreur analyse CV:', err);
       status.style.color = '#DC2626';
-      status.innerHTML = '⚠️ <strong>' + L('تعذر قراءة محتوى السيرة الذاتية. يرجى التحقق من الملف أو استيراد سيرة أخرى.', 'Impossible de lire le contenu du CV. Veuillez vérifier le fichier ou importer un autre CV.') + '</strong>';
+      status.textContent = ' ' + ((err && err.message) || 'Impossible de joindre le service d’analyse. Veuillez réessayer.');
     } finally {
       if (btn) btn.disabled = false;
     }
@@ -836,6 +830,7 @@ async function handleRegistrationSubmit(e) {
     cvUrl: window._cvUrl || '',
     cvName: window._cvName || '',
     cvOcrText: window._cvOcrText || '',
+    cvAnalysis:window._cvAnalysis||null,
     email: document.getElementById('reg-email').value.trim().toLowerCase(),
     tel: document.getElementById('reg-tel').value.trim(),
     niveau: document.getElementById('reg-niveau').value,
@@ -880,22 +875,9 @@ async function handleRegistrationSubmit(e) {
   if (btn) btn.disabled = true;
 
   try {
-    // Save to local profils
-    var profils = dbGet('profils');
-    var existingIdx = profils.findIndex(function(x){ return (x.email || '').toLowerCase() === p.email; });
-    var record = Object.assign({}, p, { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
-    if (existingIdx >= 0) { profils[existingIdx] = record; } else { profils.push(record); }
-    dbSet('profils', profils);
-
-    // Sync to backend API
-    try {
-      await fetch('/api/profils', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(record)
-      });
-    } catch(apiErr){}
-
+    var response = await palApi('profils', Object.assign({},window._cvEnrichment||{}, p, { password: password }));
+    var record = response.profile;
+    dbSet('profils', [record]);
     // WhatsApp welcome notification
     if (p.tel) {
       try {
@@ -917,7 +899,7 @@ async function handleRegistrationSubmit(e) {
 
   } catch(error) {
     err.style.color = '#dc2626';
-    err.textContent = L('حدث خطأ أثناء التسجيل، يرجى المحاولة ثانية', 'Une erreur est survenue lors de l\'inscription.');
+    err.textContent = error.message || 'Inscription impossible.';
     if (btn) btn.disabled = false;
   }
 }

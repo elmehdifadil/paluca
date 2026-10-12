@@ -24,10 +24,10 @@
       var bDash = document.getElementById('navBtnDashboard');
       if (bDash) bDash.classList.add('active');
       window.updateBiDashboard();
-    } else if (sectionId === 'cLauréats' || sectionId === 'cInsc' || sectionId === 'cModifProfil' || sectionId === 'cHistoProfil') {
+    } else if (sectionId === 'cLauréats' || sectionId === 'cModifProfil' || sectionId === 'cHistoProfil') {
       var bCherch = document.getElementById('navBtnChercheurs');
       if (bCherch) bCherch.classList.add('active');
-    } else if (sectionId === 'cPrestations' || sectionId === 'cCreneaux' || sectionId === 'cRdvs' || sectionId === 'cAteliers') {
+    } else if (sectionId === 'cInsc' || sectionId === 'cPrestations' || sectionId === 'cCreneaux' || sectionId === 'cRdvs' || sectionId === 'cAteliers') {
       var bPres = document.getElementById('navBtnPrestations');
       if (bPres) bPres.classList.add('active');
     } else if (sectionId === 'cEvenements' || sectionId === 'cBanners' || sectionId === 'cPublications') {

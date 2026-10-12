@@ -598,11 +598,13 @@
 }
 
 </style>
+<link rel="stylesheet" href="/institutional.css">
+<script src="/paluca-client.js"></script>
 </head>
 <body>
 
 <div class="topbar">
- <div class="brand">PAL-UCA<small data-ar="منصة مواكبة خريجي جامعة القاضي عياض" data-fr="Plateforme d'Accompagnement des Lauréats Universitaires Cadi Ayyad">منصة مواكبة خريجي جامعة القاضي عياض</small></div>
+ <div class="brand" style="display:flex;align-items:center;gap:12px;"><img class="pal-logo" src="/assets/logo_pal_uca.png" alt="PAL-UCA"><div>PAL-UCA<small data-ar="منصة مواكبة خريجي جامعة القاضي عياض" data-fr="Plateforme d'Accompagnement des Lauréats Universitaires Cadi Ayyad">منصة مواكبة خريجي جامعة القاضي عياض</small></div></div>
  <div class="actions">
    <button id="langAr" onclick="setLangEspace('ar')">عربي</button>
    <button id="langFr" onclick="setLangEspace('fr')">FR</button>
@@ -618,7 +620,7 @@
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
       <div>
         <h3 style="color:var(--purple-900);font-size:1.1rem;margin:0 0 3px;" data-ar="مسار الخريج PAL-UCA (5 مراحل)" data-fr="Mon Parcours PAL-UCA (5 étapes)">Mon Parcours PAL-UCA</h3>
-        <p style="color:var(--muted);font-size:0.82rem;margin:0;" data-ar="المسار الإلزامي: 01 سيرة ذاتية ← 02 معلومات ← 03 استبيان ← 04 موعد المقابلة ← 05 الخدمات" data-fr="Parcours officiel : 01 CV → 02 Informations → 03 Questionnaire → 04 Rendez-vous → 05 Prestations">Parcours officiel : 01 CV → 02 Informations → 03 Questionnaire → 04 Rendez-vous → 05 Prestations</p>
+        <p style="color:var(--muted);font-size:0.82rem;margin:0;" data-ar="المسار الإلزامي: 01 سيرة ذاتية ← 02 معلومات ← 03 استبيان ← 04 موعد المقابلة ← 05 الخدمات" data-fr="Parcours officiel : 01 CV → 02 Informations → 03 Questionnaire d’employabilité → 04 Rendez-vous → 05 Prestations">Parcours officiel : 01 CV → 02 Informations → 03 Questionnaire d’employabilité → 04 Rendez-vous → 05 Prestations</p>
       </div>
       <div id="parcoursGlobalBadge" style="background:#FAF3FB;color:#7E1F78;font-weight:700;font-size:0.78rem;padding:5px 14px;border-radius:20px;border:1px solid #DDB8E0;">
         Profil en cours de constitution
@@ -734,7 +736,7 @@
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;border-bottom:1px solid #F1E9F4;padding-bottom:10px;">
       <div>
         <span style="background:#FAF3FB;color:#7E1F78;font-size:0.75rem;font-weight:800;padding:2px 8px;border-radius:6px;border:1px solid #DDB8E0;">03 — QUESTIONNAIRE</span>
-        <h3 style="color:var(--purple-900);margin:4px 0 0;font-size:1.05rem;" data-ar="03 — استبيان الإدماج المهني" data-fr="03 — Questionnaire d'insertion professionnelle">03 — Questionnaire d'insertion professionnelle</h3>
+        <h3 style="color:var(--purple-900);margin:4px 0 0;font-size:1.05rem;" data-ar="03 — استبيان قابلية التشغيل" data-fr="03 — Questionnaire d’employabilité">03 — Questionnaire d’employabilité</h3>
       </div>
       <span id="badgeQuestionnaireStatus" class="step-badge pending">À compléter</span>
     </div>
@@ -743,7 +745,7 @@
     <div id="questionnairePromptBox" style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:14px 18px;margin-bottom:14px;">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
         <div>
-          <b style="color:#92400E;font-size:0.9rem;display:block;">Questionnaire officiel ANAPEC (Trèfle de positionnement)</b>
+          <b style="color:#92400E;font-size:0.9rem;display:block;">Questionnaire d’employabilité (ANAPEC)</b>
           <div style="color:#78350F;font-size:0.8rem;margin-top:2px;">Ce questionnaire est obligatoire pour analyser votre profil avant votre entretien individuel.</div>
         </div>
         <button type="button" class="btn-p" style="background:#92400E;color:#fff;border:none;padding:10px 18px;font-size:0.85rem;border-radius:8px;cursor:pointer;" onclick="openTrefle()">Répondre au questionnaire</button>
@@ -780,9 +782,9 @@
   <!-- Modal du Questionnaire Trèfle -->
   <div id="trefleModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9998;align-items:center;justify-content:center;padding:14px;">
     <div style="background:#fff;border-radius:18px;width:min(640px,95vw);max-height:92vh;overflow-y:auto;padding:26px 28px;position:relative;">
-      <button id="trefleClose" onclick="document.getElementById('trefleModal').style.display='none'" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);">✕</button>
+      <button id="trefleClose" onclick="document.getElementById('trefleModal').style.display='none'" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);"></button>
       <div style="text-align:center;margin-bottom:16px;">
-        <h3 style="color:var(--purple-900);margin:4px 0;font-size:1.05rem;" data-ar="ورقة التحضير للمقابلة التشخيصية" data-fr="Questionnaire officiel de positionnement ANAPEC">Questionnaire officiel de positionnement ANAPEC</h3>
+        <h3 style="color:var(--purple-900);margin:4px 0;font-size:1.05rem;" data-ar="ورقة التحضير للمقابلة التشخيصية" data-fr="Questionnaire d’employabilité">Questionnaire d’employabilité</h3>
         <p style="color:var(--muted);font-size:0.78rem;margin:0;">Évaluation des 4 axes : Connaissance de soi, Projet, Marché de l'emploi et Méthode de recherche</p>
         <div id="trefleMand" style="display:none;background:#FEF3C7;border-radius:8px;padding:8px 12px;font-size:0.75rem;color:#92400E;margin-top:10px;">
           Ce questionnaire est obligatoire pour analyser votre profil et permettre la prise de rendez-vous.
@@ -995,7 +997,7 @@
         </div>
       </div>
     </div>
-    <button onclick="toggleChat(false)" aria-label="Fermer" title="Fermer">✕</button>
+    <button onclick="toggleChat(false)" aria-label="Fermer" title="Fermer"></button>
   </div>
 
   <div class="chat-msgs" id="chatMsgs">
@@ -1075,7 +1077,7 @@ function dbSet(key, value){
 }
 function dbSync(cb){
  fetch('/api/data').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
-   if (d) ['rdvs','profils','news','ateliers','inscriptions','creneaux'].forEach(function(k){
+   if (d) ['rdvs','profils','news','ateliers','inscriptions','creneaux','prestations'].forEach(function(k){
      if (Array.isArray(d[k])) { window.DB[k] = d[k]; try{ localStorage.setItem('dabanet_'+k, JSON.stringify(d[k])); }catch(e){} }
    });
    if (cb) cb();
@@ -2225,7 +2227,7 @@ window.handleCvUpload = function(file) {
   if (statusEl) {
     statusEl.style.display = 'block';
     statusEl.style.color = '#7E1F78';
-    statusEl.innerHTML = 'Analyse et extraction du CV en cours via <strong>Mistral OCR</strong> (moteur souverain & gratuit)...';
+    statusEl.innerHTML = 'Lecture et analyse du CV en cours...';
   }
 
   var reader = new FileReader();
@@ -2237,11 +2239,13 @@ window.handleCvUpload = function(file) {
         body: JSON.stringify({
           filename: file.name,
           data: reader.result,
-          fileBase64: reader.result
+          mimeType: file.type
         })
       });
-      var result = await res.json();
-      if (!result || !result.success) throw new Error(result ? result.error : 'Erreur extraction');
+      var result;
+      try { result = await res.json(); }
+      catch (_) { throw new Error('Le serveur a renvoyé une réponse invalide (HTTP ' + res.status + ').'); }
+      if (!res.ok || !result || !result.success) throw new Error((result && result.error) || 'Échec de l’analyse du CV (HTTP ' + res.status + ').');
 
       var f = result.fields || result.parsed || {};
       var engine = result.engine || 'Mistral OCR / Gemini';
@@ -2275,29 +2279,20 @@ window.handleCvUpload = function(file) {
       if (document.getElementById('infoNiveau') && ME.niveau) document.getElementById('infoNiveau').value = ME.niveau;
       if (document.getElementById('infoVille') && ME.ville) document.getElementById('infoVille').value = ME.ville;
 
-      // Pré-remplissage automatique des réponses du Trèfle
-      ME.positionnement = ME.positionnement || {};
-      var answers = ME.positionnement.answers || {};
-
-      answers['m1'] = 'oui'; // CV prêt et à jour
-      if (f.competences) {
-        answers['s1'] = 'oui';
-        answers['s2'] = f.competences.slice(0, 120);
-      }
-      if (f.objectif || f.filiere) {
-        answers['p1'] = 'oui';
-        answers['p1x'] = f.objectif || f.filiere;
-        answers['p2'] = 'oui';
-      }
-      ME.positionnement.answers = answers;
+      // Le CV enrichit le dossier mais ne remplace pas les réponses du lauréat.
+      ME.cvAnalysis={engine:engine,diagnostic:result.diagnostic||'',analysedAt:new Date().toISOString(),extractedFields:f};
+      ME.cvOcrText=JSON.stringify(f);
+      ['diplomes','experiences','stages','formations','certifications'].forEach(function(k){if(Array.isArray(f[k]))ME[k]=f[k];});
 
       ME.cvFilename = file.name;
+      ME.cvUrl = reader.result;
+      ME.cvName = file.name;
       ME.cvUploadedAt = new Date().toISOString();
 
       // Sauvegarde dans la base
       var profils = dbGet('profils');
       var idx = profils.findIndex(function(p){ return (p.email||'').toLowerCase() === (ME.email||'').toLowerCase(); });
-      if (idx >= 0) { profils[idx] = ME; dbSet('profils', profils); }
+      if (idx >= 0) { profils[idx] = ME; await dbSet('profils', profils); }
 
       // Rafraîchir l'affichage du profil et du parcours
       renderParcoursStepper();
@@ -2305,7 +2300,9 @@ window.handleCvUpload = function(file) {
 
       if (statusEl) {
         statusEl.style.color = '#166534';
-        statusEl.innerHTML = 'CV analysé avec succès par <strong>' + engine + '</strong> ! Tous vos champs ont été remplis automatiquement.';
+        statusEl.textContent = engine === 'heuristic'
+          ? 'Texte du CV extrait. Extraction simplifiée sans IA : vérifiez les champs renseignés.'
+          : 'CV analysé : les informations trouvées ont été renseignées. Vérifiez votre profil.';
       }
 
       // Passer automatiquement au questionnaire après 1.2s
@@ -2314,31 +2311,17 @@ window.handleCvUpload = function(file) {
       }, 1200);
 
     } catch (err) {
-      console.warn("Erreur ou repli extraction CV:", err);
-      try {
-        var base = (file.name || 'cv').replace(/\.[^/.]+$/, '').replace(/[-_.]+/g, ' ');
-        if (base && (!ME.nom || ME.nom === '—')) ME.nom = base;
-        if (!ME.etablissement) ME.etablissement = "Faculté des Sciences Semlalia (FSSM)";
-        if (!ME.filiere) ME.filiere = "Génie Informatique & Systèmes";
-        if (!ME.niveau) ME.niveau = "Master Spécialisé (Bac+5)";
-        if (!ME.ville) ME.ville = "Marrakech";
-        ME.cvFilename = file.name;
-        ME.cvUploadedAt = new Date().toISOString();
-        ME.positionnement = ME.positionnement || {};
-        var answers = ME.positionnement.answers || {};
-        answers['m1'] = 'oui';
-        ME.positionnement.answers = answers;
-        var profils = dbGet('profils');
-        var idx = profils.findIndex(function(p){ return (p.email||'').toLowerCase() === (ME.email||'').toLowerCase(); });
-        if (idx >= 0) { profils[idx] = ME; dbSet('profils', profils); }
-        renderParcoursStepper();
-        renderEspace();
-      } catch(e){}
+      console.warn('Échec de l’analyse du CV:', err);
       if (statusEl) {
-        statusEl.style.color = '#166534';
-        statusEl.innerHTML = 'CV enregistré avec succès. Tous vos champs ont été pré-remplis.';
+        statusEl.style.color = '#B91C1C';
+        statusEl.textContent = (err && err.message) || 'Impossible d’analyser le CV. Veuillez réessayer.';
       }
-      setTimeout(function() { openTrefle(); }, 1000);
+    }
+  };
+  reader.onerror = function() {
+    if (statusEl) {
+      statusEl.style.color = '#B91C1C';
+      statusEl.textContent = 'Impossible de lire le fichier sélectionné. Veuillez réessayer.';
     }
   };
   reader.readAsDataURL(file);
@@ -2416,7 +2399,7 @@ function computeTrefle(answers){
        if (answers[it.id] === 'oui') pts++;
        else if (answers[it.id] === 'partiel') pts += 0.5;
      }
-     else { if ((answers[it.id]||'').trim().length >= 5) pts++; }
+     else { if (answers.s1 !== 'non' && (answers[it.id]||'').trim().length >= 5) pts++; }
    });
    scores[g.dim] = Math.round(100 * pts / tot);
  });
@@ -2559,37 +2542,8 @@ function renderAteliersReco(scores){
 }
 
 /* ══════════ Init ══════════ */
-(function init(){
- applyLang();
- var email = localStorage.getItem('dabanet_session');
- if (!email) { location.href = '/'; return; }
- function findMe(){
-   return dbGet('profils').find(function(p){ return (p.email||'').toLowerCase() === email.toLowerCase(); });
- }
- ME = findMe();
- var localMe = ME;
- if (ME) { renderEspace(); applyLang(); }
- dbSync(function(){
-   var serverMe = findMe();
-   if (!serverMe && localMe) {
-     // Le profil vient d'être créé et n'est pas encore propagé côté serveur :
-     // on le réinjecte au lieu de déconnecter l'utilisateur.
-     var profils = dbGet('profils');
-     profils.push(localMe);
-     dbSet('profils', profils);
-     ME = localMe;
-   } else if (serverMe) {
-     ME = serverMe;
-   }
-   if (!ME) {
-     localStorage.removeItem('dabanet_session');
-     location.href = '/';
-     return;
-   }
-   renderEspace();
-   applyLang();
- });
-})();
+applyLang();
+
 
 function mScrollTo(id, btn){
   var el = document.getElementById(id);
@@ -2623,5 +2577,7 @@ function mToggleChat(btn){
     <span class="m-label" style="font-weight:700;font-size:0.75rem;" data-ar="05 خدمات" data-fr="05 Prestations">05 Prestations</span>
   </button>
 </nav>
+<script src="/laureat-workflow.js"></script>
+<script src="/accompaniment-laureat.js"></script>
 </body>
 </html>

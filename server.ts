@@ -1,9 +1,9 @@
-import "dotenv/config";
+import "./src/loadEnv.js";
 import express from "express";
 import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
-import { apiRouter } from "./src/apiRouter.ts";
+import { apiRouter } from "./src/apiRouter.js";
 
 const PORT = 3000;
 

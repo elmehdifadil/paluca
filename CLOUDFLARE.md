@@ -13,6 +13,9 @@ npm ci
 npx wrangler login
 npx wrangler secret put GEMINI_API_KEY
 npx wrangler secret put MISTRAL_API_KEY
+npx wrangler secret put ADMIN_PASSWORD
+npx wrangler secret put CONSEILLER_PASSWORD
+npx wrangler secret put UNIVERSITE_PASSWORD
 npm run deploy:cloudflare
 ```
 
@@ -48,10 +51,13 @@ L'émulation locale conserve SQLite et les fichiers dans `.wrangler/state`.
 
 ## Données existantes
 
-La première publication démarre avec les valeurs par défaut définies dans l'application.
+La première publication démarre avec les catalogues publics de la version récente du dossier `Documents/ChatGPT/paluca`, intégrés dans `cloudflare/public-seed.json`.
+Les comptes candidats, rendez-vous, inscriptions et sessions ne sont jamais inclus dans ce fichier publié.
+La remise à zéro des lauréats effectuée dans la version récente est conservée ; les comptes supprimés ne sont pas réintroduits depuis l'ancienne archive.
 L'ancien fichier `data/store.json` et les anciens uploads ne sont pas transférés automatiquement.
 Ne pas publier un export contenant des données personnelles dans GitHub. Effectuer un import privé et contrôlé après configuration des accès.
 Les routes `/api/data` conservent leur comportement existant ; l'adaptation ne crée pas un système d'authentification.
+Le système de connexion et les droits conseiller/université/lauréat de la version récente sont conservés. Configurer les trois mots de passe de personnel dans les secrets Cloudflare avant l'utilisation publique.
 
 Le stockage JSON dans une seule ligne SQLite conserve le format existant et ordonne les requêtes pour éviter les pertes lors des mises à jour simultanées.
 Cette architecture convient à une première migration ; une forte charge nécessitera de répartir les tables et les traitements IA.

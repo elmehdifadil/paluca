@@ -1,26 +1,27 @@
+import { runFullCvPipeline } from "./cvAuditPipeline.js";
+import {persistBannerImage} from './bannerStorage.js';
+import { randomUUID } from 'node:crypto';
 import { Router } from "express";
 import path from "path";
 import fs from "fs";
 import { GoogleGenAI } from "@google/genai";
 import { put } from "@vercel/blob";
-import { runFullCvPipeline } from "./cvAuditPipeline.ts";
 import {
   isMistralConfigured,
   performMistralOCR,
   structureTextWithMistral,
   extractTextFromBuffer,
   getMimeType,
-} from "./mistralService.ts";
+} from "./mistralService.js";
 
-export interface PlatformStorage {
-  read(): Record<string, any> | null;
-  write(data: Record<string, any>): void;
-  upload(key: string, data: Buffer, contentType: string): Promise<string>;
-  download(key: string): Promise<{ data: ArrayBuffer; contentType: string } | null>;
-}
-
+import type { PlatformStorage } from './platformStorage.js';
+import { platformMiddleware, currentPlatformStorage, storeMiddleware, currentStore, markStoreDirty } from './persistentStore.js';
+import { workflow, authorize, publicProfile, updateProfile, canBook, requireAdvisor } from './workflow.js';
 export function createApiRouter(storage?: PlatformStorage) {
 const apiRouter = Router();
+apiRouter.use(storage ? platformMiddleware(storage) : storeMiddleware);
+apiRouter.use(authorize);
+apiRouter.use(workflow);
 
 // Store location: support /tmp on Vercel serverless environment
 const DATA_DIR = process.env.VERCEL ? "/tmp/data" : path.join(process.cwd(), "data");
@@ -63,29 +64,7 @@ const DEFAULT_CONSEILLERS = [
 ];
 
 function loadStore() {
-  let data: any = null;
-  try {
-    if (storage) {
-      data = storage.read();
-    } else if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, "utf-8");
-      data = JSON.parse(raw);
-    } else {
-      const seedFile = path.join(process.cwd(), "data", "store.json");
-      if (fs.existsSync(seedFile)) {
-        const raw = fs.readFileSync(seedFile, "utf-8");
-        data = JSON.parse(raw);
-      }
-    }
-  } catch (err) {
-    console.error("Error reading store:", err);
-    if (storage) throw err;
-  }
-
-  if (!data || typeof data !== "object") {
-    data = {};
-  }
-
+  const data: any = currentStore();
   data.rdvs = Array.isArray(data.rdvs) ? data.rdvs : [];
   data.profils = Array.isArray(data.profils) ? data.profils : [];
   data.news = Array.isArray(data.news) ? data.news : [];
@@ -335,13 +314,7 @@ function appendCandidateNotification(store: any, identifier: string, message: st
 }
 
 function saveStore(data: Record<string, any>) {
-  if (storage) { storage.write(data); return; }
-  try {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
-  } catch (err) {
-    console.error("Error writing store:", err);
-  }
+  markStoreDirty();
 }
 
 function getGeminiClient(): GoogleGenAI | null {
@@ -386,106 +359,55 @@ apiRouter.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// GET /data
-apiRouter.get("/data", (_req, res) => {
+// Shared data view: only the authenticated user's personal records are returned.
+apiRouter.get('/data', (req: any, res) => {
   const store = loadStore();
-  // Garantir la compatibilité des clés banners / bannieres / affiches
-  const bannersList = Array.isArray(store.banners) && store.banners.length
-    ? store.banners
-    : (Array.isArray(store.bannieres) && store.bannieres.length ? store.bannieres : (store.affiches || []));
-  store.banners = bannersList;
-  store.bannieres = bannersList;
-  store.affiches = bannersList;
-  res.json(store);
+  const safe = { ...store }; delete safe.sessions; delete safe.resetHistory; delete safe.storageChecks;
+  const actor = req.actor;
+  safe.profils = store.profils.filter((p: any) => !p.deleted && actor && (actor.role !== 'laureat' || String(p.id) === actor.profileId)).map((p:any)=>publicProfile(p,(req as any).actor?.role));
+  for (const key of ['rdvs','inscriptions']) safe[key] = (store[key] || []).filter((r: any) => actor && (actor.role !== 'laureat' || (r.email || r.candidat_email || '').toLowerCase() === actor.actor));
+  res.json(safe);
 });
-
-// POST /data
-apiRouter.post("/data", (req, res) => {
-  const { key, value } = req.body;
-  const store = loadStore();
-  if (key) {
-    store[key] = value;
-    // Si la clé concerne les affiches ou bannières, maintenir les trois synchronisés
-    if (key === "affiches" || key === "bannieres" || key === "banners") {
-      store.affiches = value;
-      store.bannieres = value;
-      store.banners = value;
+apiRouter.post('/data', async (req: any,res) => {
+  const store = loadStore(); const { key, value } = req.body;
+  const permitted = ['profils','rdvs','inscriptions','creneaux','ateliers','news','banners','bannieres','affiches','prestations','evenements','publications','conseillers'];
+  if (!permitted.includes(key) || !Array.isArray(value)) return res.status(400).json({error:'Collection invalide.'});
+  if (key === 'profils') {
+    for(const input of value) {
+      const p = store.profils.find((p: any) => String(p.id) === String(input.id) || p.email === input.email);
+      if (!p || req.actor.role === 'laureat' && String(p.id) !== req.actor.profileId) continue;
+      const clean = { ...input }; delete clean.historique; delete clean.notifications;
+      if (input._version !== undefined && input._version !== (p._version || 0)) return res.status(409).json({error:'Profil modifié depuis son ouverture. Rechargez.'});
+      updateProfile(p,clean,req.actor);
     }
-    saveStore(store);
-    return res.json({ success: true, key });
+  } else if (req.actor.role !== 'conseiller') {
+    return res.status(403).json({error:'Utilisez les opérations autorisées de votre espace personnel.'});
+  } else {
+    if(store.laureatResetAt&&key==='inscriptions'&&value.some((i:any)=>!store.profils.some((p:any)=>p.email===(i.email||i.candidat_email))))return res.status(400).json({error:'Dossier lauréat introuvable pour cette inscription.'});
+    if(key==='rdvs')return res.status(403).json({error:'Utilisez la réservation, la confirmation, la reprogrammation ou le formulaire d’entretien.'});
+    if(['banners','bannieres','affiches'].includes(key)){if(value.some((row:any)=>(store.deletedBannerIds||[]).includes(String(row.id))))return res.status(409).json({error:'Une bannière de cette copie a été supprimée. Rechargez la liste.'});try{for(const row of value){const image=await persistBannerImage(row.imageUrl||row.image||row.img||row.url||row.src||'');row.image=image;row.imageUrl=image;}}catch{return res.status(503).json({error:'Image non enregistrée dans le stockage permanent. La bannière n’a pas été sauvegardée.'});}}
+    // Changes are merged by record ID; missing records never erase existing data.
+    store[key] ||= [];
+    for(const row of value) {const i=store[key].findIndex((x:any)=>String(x.id)===String(row.id));if(i<0)store[key].push(row);else store[key][i]={...store[key][i],...row};}
+    if(['banners','bannieres','affiches'].includes(key)){store.banners=store[key];store.bannieres=store[key];store.affiches=store[key];}
+    markStoreDirty();
   }
-  if (typeof req.body === "object") {
-    Object.assign(store, req.body);
-    const b = req.body.banners || req.body.bannieres || req.body.affiches;
-    if (b) {
-      store.banners = b;
-      store.bannieres = b;
-      store.affiches = b;
-    }
-    saveStore(store);
-    return res.json({ success: true });
-  }
-  res.status(400).json({ error: "Invalid data format" });
+  const safe={...store,sessions:undefined,profils:store.profils.filter((p:any)=>!p.deleted&&(req.actor.role!=='laureat'||String(p.id)===req.actor.profileId)).map((p:any)=>publicProfile(p,(req as any).actor?.role))};
+  delete safe.resetHistory; delete safe.storageChecks;
+  if(req.actor.role==='laureat')for(const k of ['rdvs','inscriptions'])safe[k]=(store[k]||[]).filter((r:any)=>(r.email||r.candidat_email||'').toLowerCase()===req.actor.actor);
+  res.json({success:true,data:safe});
 });
 
 // Helper pour sauvegarder une image Base64 sur le disque et retourner une URL accessible
-async function saveBase64Image(dataUrl: string, prefix = "banner"): Promise<string> {
-  if (!dataUrl || typeof dataUrl !== "string") return "";
-  if (!dataUrl.startsWith("data:image/")) {
-    return dataUrl; // Déjà une URL HTTP(S) ou chemin local
-  }
-
-  try {
-    const matches = dataUrl.match(/^data:image\/([a-zA-Z0-9-+.]+);base64,(.+)$/);
-    if (!matches || matches.length < 3) return dataUrl;
-
-    let ext = matches[1].toLowerCase();
-    if (ext === "jpeg") ext = "jpg";
-    if (ext === "svg+xml") ext = "svg";
-    const base64Data = matches[2];
-    const buffer = Buffer.from(base64Data, "base64");
-
-    if (storage) {
-      const filename = prefix + '_' + crypto.randomUUID() + '.' + ext;
-      return await storage.upload(filename, buffer, 'image/' + matches[1].toLowerCase());
-    }
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    if (!fs.existsSync(uploadsDir)) {
-      try { fs.mkdirSync(uploadsDir, { recursive: true }); } catch(e){}
-    }
-
-    const filename = `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
-    const filePath = path.join(uploadsDir, filename);
-    fs.writeFileSync(filePath, buffer);
-
-    // Si le dossier dist existe (build de production), y synchroniser immédiatement l'image
-    const distUploads = path.join(process.cwd(), "dist", "uploads");
-    if (fs.existsSync(path.join(process.cwd(), "dist"))) {
-      if (!fs.existsSync(distUploads)) {
-        try { fs.mkdirSync(distUploads, { recursive: true }); } catch(e){}
-      }
-      try { fs.writeFileSync(path.join(distUploads, filename), buffer); } catch(e){}
-    }
-
-    return `/uploads/${filename}`;
-  } catch (err) {
-    console.error("Erreur sauvegarde image base64:", err);
-    if (storage) throw err;
-    return dataUrl;
-  }
-}
-
 // Route explicite pour servir les images d'uploads via l'API router si nécessaire
 apiRouter.get("/uploads/:filename", async (req, res) => {
   const filename = path.basename(req.params.filename);
   if (storage) {
-    try {
-      const object = await storage.download(filename);
-      if (!object) return res.status(404).json({ error: 'Image introuvable' });
-      res.setHeader('Content-Type', object.contentType);
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-      return res.send(Buffer.from(object.data));
-    } catch { return res.status(500).json({ error: 'Lecture du fichier impossible' }); }
+    const object = await storage.download(filename);
+    if (!object) return res.status(404).json({error:'Fichier introuvable'});
+    res.setHeader('Content-Type', object.contentType);
+    res.setHeader('X-Content-Type-Options','nosniff');
+    return res.send(Buffer.from(object.data));
   }
   const filePath = path.join(process.cwd(), "public", "uploads", filename);
   if (fs.existsSync(filePath)) {
@@ -499,7 +421,7 @@ apiRouter.get("/uploads/:filename", async (req, res) => {
 });
 
 // ── ENDPOINT UPLOAD D'IMAGE DE BANNIÈRE ──
-apiRouter.post("/upload", async (req, res) => {
+apiRouter.post("/upload", requireAdvisor, async (req, res) => {
   try {
     const { image, dataUrl, filename, data, fileBase64 } = req.body;
     const raw = image || dataUrl || data || fileBase64;
@@ -508,7 +430,7 @@ apiRouter.post("/upload", async (req, res) => {
     }
 
     const cleanPrefix = filename ? filename.replace(/[^a-zA-Z0-9_-]/g, "_").substring(0, 20) : "banner";
-    const finalUrl = await saveBase64Image(raw, cleanPrefix);
+    const finalUrl = await persistBannerImage(raw, cleanPrefix);
 
     return res.json({
       success: true,
@@ -575,20 +497,21 @@ apiRouter.get("/banners", handleGetBanners);
 const handleSaveBanner = async (req: any, res: any) => {
   try {
     const store = loadStore();
-    const { id, titre, title, image, imageUrl, lien, link, statut, active, ordre, order, dateDebut, dateFin } = req.body;
+    const { id, titre, title, image, imageUrl, lien, link, statut, active, ordre, order, dateDebut, dateFin, startDate, endDate, description } = req.body;
     const rawImage = image || imageUrl;
 
     if (!rawImage) {
       return res.status(400).json({ success: false, error: "L'image de la bannière est obligatoire" });
     }
 
-    // Sauvegarder l'image sur disque si base64
-    const finalImageUrl = await saveBase64Image(rawImage, "banner");
+    // Enregistrer les images Vercel dans Blob avant de valider la bannière.
+    const finalImageUrl = await persistBannerImage(rawImage, "banner");
 
     let currentList = Array.isArray(store.banners) && store.banners.length > 0
       ? store.banners
       : (Array.isArray(store.affiches) ? store.affiches : (Array.isArray(store.bannieres) ? store.bannieres : []));
     const bannerId = id ? parseInt(String(id), 10) : Date.now();
+    if((store.deletedBannerIds||[]).includes(String(bannerId)))return res.status(409).json({error:'Cette bannière a été supprimée. Rechargez la liste.'});
     const existingIndex = currentList.findIndex((b: any) => b.id === bannerId);
 
     const bannerObj: any = {
@@ -603,8 +526,11 @@ const handleSaveBanner = async (req: any, res: any) => {
       active: active !== undefined ? active : (statut !== "inactive"),
       ordre: parseInt(String(ordre || order || 1), 10) || (existingIndex >= 0 ? currentList[existingIndex].ordre : currentList.length + 1),
       order: parseInt(String(order || ordre || 1), 10) || (existingIndex >= 0 ? currentList[existingIndex].ordre : currentList.length + 1),
-      dateDebut: dateDebut || "",
-      dateFin: dateFin || "",
+      description: description || "",
+      dateDebut: dateDebut || startDate || "",
+      dateFin: dateFin || endDate || "",
+      startDate: startDate || dateDebut || "",
+      endDate: endDate || dateFin || "",
       updatedAt: new Date().toISOString()
     };
 
@@ -634,9 +560,9 @@ const handleSaveBanner = async (req: any, res: any) => {
   }
 };
 
-apiRouter.post("/bannieres", handleSaveBanner);
-apiRouter.post("/affiches", handleSaveBanner);
-apiRouter.post("/banners", handleSaveBanner);
+apiRouter.post("/bannieres", requireAdvisor, handleSaveBanner);
+apiRouter.post("/affiches", requireAdvisor, handleSaveBanner);
+apiRouter.post("/banners", requireAdvisor, handleSaveBanner);
 
 // DELETE /api/bannieres/:id & DELETE /api/affiches/:id
 const handleDeleteBanner = (req: any, res: any) => {
@@ -646,6 +572,7 @@ const handleDeleteBanner = (req: any, res: any) => {
     
     let list = Array.isArray(store.banners) ? store.banners : (Array.isArray(store.affiches) ? store.affiches : []);
     const filtered = list.filter((b: any) => b.id !== idNum);
+    store.deletedBannerIds ||= [];if(!store.deletedBannerIds.includes(String(idNum)))store.deletedBannerIds.push(String(idNum));
     store.affiches = filtered;
     store.bannieres = filtered;
     store.banners = filtered;
@@ -747,7 +674,7 @@ apiRouter.get("/slots", (req, res) => {
       heure,
       statut: booked ? "Réservé" : "Disponible",
       rdv_id: booked ? booked.id : null,
-      candidat_nom: booked ? booked.candidat_nom : null
+      candidat_nom: (req as any).actor?.role==='conseiller' && booked ? booked.candidat_nom : null
     };
   });
 
@@ -765,14 +692,22 @@ apiRouter.get("/slots", (req, res) => {
 });
 
 // ── LISTE DE TOUS LES RENDEZ-VOUS (BACK OFFICE & ESPACE) ──
-apiRouter.get("/rdvs", (_req, res) => {
+apiRouter.get("/rdvs", (req: any, res) => {
   const store = loadStore();
-  res.json(store.rdvs || []);
+  res.json((store.rdvs || []).filter((r:any)=>req.actor.role!=='laureat'||(r.email||r.candidat_email||'').toLowerCase()===req.actor.actor));
 });
 
 // ── PRISE / ENREGISTREMENT DE RENDEZ-VOUS (Supporte /rdvs et /rdvs/book) ──
-apiRouter.post(["/rdvs", "/rdvs/book"], (req, res) => {
+apiRouter.post(["/rdvs", "/rdvs/book"], (req: any, res) => {
   const store = loadStore();
+  const candidate = store.profils.find((p:any)=>req.actor.role==='laureat' ? String(p.id)===req.actor.profileId : (p.email||'').toLowerCase()===String(req.body.candidat_email||req.body.email||req.body.candidate_id||'').toLowerCase());
+  if(!candidate || !canBook(candidate))return res.status(403).json({success:false,error:'La fiabilisation du dossier par le conseiller est requise avant la réservation.'});
+  if(req.actor.role==='laureat')Object.assign(req.body,{candidate_id:candidate.email,candidat_email:candidate.email,email:candidate.email,candidat_nom:candidate.nom,nom:candidate.nom,candidat_cin:candidate.cin,cin:candidate.cin,status:'pending',statut:'En attente'});
+  const pendingRequest=store.rdvs.some((r:any)=>(String(r.email||r.candidat_email||r.candidate_id||'').trim().toLowerCase()===candidate.email.toLowerCase()||String(r.profileId||'')===String(candidate.id))&&['pending','en attente'].includes(String(r.status||r.statut||'pending').toLowerCase()));
+  if(pendingRequest)return res.status(409).json({success:false,error:'Vous avez déjà une demande de rendez-vous en attente. Attendez la décision du conseiller avant de réserver un autre créneau.'});
+  const slot = store.creneaux.find((c:any)=>String(c.id)===String(req.body.creneauId));
+  if(!slot || slot.reserve || slot.status==='reserve' || slot.date!==req.body.date || (slot.heure||slot.time||slot.debut)!==req.body.heure)return res.status(409).json({success:false,error:'Ce créneau n’est plus disponible.'});
+  if(store.rdvs.some((r:any)=>String(r.creneauId)===String(slot.id)&&!['cancelled','refused'].includes(r.status)))return res.status(409).json({error:'Créneau déjà réservé.'});
   const {
     id,
     candidate_id,
@@ -824,7 +759,7 @@ apiRouter.post(["/rdvs", "/rdvs/book"], (req, res) => {
     lieuRdv = "Entretien téléphonique direct";
   }
 
-  const rdvId = id ? Number(id) : Date.now();
+  const rdvId = randomUUID();
 
   const newRdv: any = {
     id: rdvId,
@@ -919,7 +854,7 @@ apiRouter.post(["/rdvs", "/rdvs/book"], (req, res) => {
 });
 
 // ── SUPPRESSION DE RENDEZ-VOUS ──
-apiRouter.delete("/rdvs/:id", (req, res) => {
+apiRouter.delete("/rdvs/:id", requireAdvisor, (req, res) => {
   const store = loadStore();
   const idStr = String(req.params.id);
   store.rdvs = store.rdvs.filter((r: any) => String(r.id) !== idStr);
@@ -928,7 +863,7 @@ apiRouter.delete("/rdvs/:id", (req, res) => {
 });
 
 // ── GESTION DES STATUTS PAR LE CONSEILLER (ACCEPTER, REFUSER, ANNULER, TERMINER) ──
-apiRouter.post("/rdvs/status", (req, res) => {
+apiRouter.post("/rdvs/status", requireAdvisor, (req, res) => {
   const store = loadStore();
   const { id, action, notes } = req.body;
 
@@ -941,6 +876,7 @@ apiRouter.post("/rdvs/status", (req, res) => {
     return res.status(404).json({ success: false, error: "Rendez-vous introuvable." });
   }
 
+  if(['terminate','terminer','realise','completed','valider_realise'].includes(String(action).toLowerCase()))return res.status(400).json({error:'Utilisez le formulaire Enregistrer l’entretien avec un compte rendu complet.'});
   const now = new Date().toISOString();
   rdv.date_modification = now;
   if (notes) rdv.notes = notes;
@@ -988,36 +924,11 @@ apiRouter.post("/rdvs/status", (req, res) => {
       `Rendez-vous du ${rdv.date} à ${rdv.heure} annulé. Le créneau est redevenu disponible.`
     );
     appendCandidateNotification(store, candIdentifier, "Votre rendez-vous a été annulé.");
-  } else if (act === "terminate" || act === "terminer" || act === "realise" || act === "completed" || act === "valider_realise") {
-    rdv.statut = "Réalisé";
-    rdv.status = "realise";
-    // Débloquer automatiquement les prestations du candidat en mettant à jour son profil
-    if (candIdentifier && Array.isArray(store.profils)) {
-      const p = store.profils.find((x: any) =>
-        (x.email || "").toLowerCase() === String(candIdentifier).toLowerCase() ||
-        (x.cin || "").toLowerCase() === String(candIdentifier).toLowerCase()
-      );
-      if (p) {
-        p.statut = "rendez_vous_realise";
-        p.rdvRealise = true;
-        p.rdvValideLe = now;
-      }
-    }
-    appendCandidateHistory(
-      store,
-      candIdentifier,
-      "Entretien réalisé",
-      `Entretien individuel réalisé avec succès par ${rdv.conseiller_nom}. Prestations débloquées.`
-    );
-    appendCandidateNotification(
-      store,
-      candIdentifier,
-      "Félicitations ! Votre entretien a été validé. Vos prestations sont désormais accessibles."
-    );
   } else {
     return res.status(400).json({ success: false, error: "Action non reconnue." });
   }
 
+  if(['cancelled','refused'].includes(rdv.status)){const slot=store.creneaux.find((c:any)=>String(c.id)===String(rdv.creneauId));if(slot){slot.reserve=false;slot.status='disponible';}}
   saveStore(store);
 
   res.json({
@@ -1046,78 +957,11 @@ apiRouter.get("/candidates", (req, res) => {
 });
 
 // ── MISE À JOUR D'UN CANDIDAT PAR LE CONSEILLER ──
-apiRouter.post("/candidates/update", (req, res) => {
-  const store = loadStore();
-  const updatedData = req.body;
-
-  const keyTarget = (updatedData.key || "").toLowerCase().trim();
-  const emailTarget = (updatedData.email || "").toLowerCase().trim();
-  const cinTarget = (updatedData.cin || "").toUpperCase().trim();
-
-  let index = store.profils.findIndex((p: any) =>
-    (keyTarget && (
-      (p.email && p.email.toLowerCase() === keyTarget) ||
-      (p.cin && p.cin.toUpperCase() === keyTarget.toUpperCase()) ||
-      (p.nom && p.nom.toLowerCase() === keyTarget)
-    )) ||
-    (emailTarget && p.email && p.email.toLowerCase() === emailTarget) ||
-    (cinTarget && p.cin && p.cin.toUpperCase() === cinTarget) ||
-    (updatedData.id && p.id && String(p.id) === String(updatedData.id))
-  );
-
-  if (index === -1) {
-    const newProfile = {
-      id: Date.now(),
-      nom: updatedData.nom || keyTarget || emailTarget || "Candidat UCA",
-      email: emailTarget || (keyTarget.includes("@") ? keyTarget : ""),
-      cin: cinTarget || (!keyTarget.includes("@") ? keyTarget.toUpperCase() : ""),
-      tel: updatedData.tel || "",
-      situation: updatedData.situation || "En recherche active d'emploi",
-      filiere: updatedData.filiere || "Filière universitaire",
-      etablissement: updatedData.etablissement || "Université Cadi Ayyad",
-      ville: updatedData.ville || "Marrakech",
-      notes: updatedData.notes || "",
-      historique: [
-        {
-          id: Date.now(),
-          date: new Date().toISOString().split("T")[0],
-          timestamp: new Date().toISOString(),
-          action: "Création / Mise à jour de fiche",
-          details: "Fiche candidat enregistrée par le conseiller."
-        }
-      ],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    store.profils.push(newProfile);
-    index = store.profils.length - 1;
-  }
-
-  const existing = store.profils[index];
-  const history = Array.isArray(existing.historique) ? existing.historique : [];
-  history.push({
-    id: Date.now(),
-    date: new Date().toISOString().split("T")[0],
-    timestamp: new Date().toISOString(),
-    action: "Mise à jour du profil",
-    details: "Les informations du candidat ont été mises à jour par le conseiller."
-  });
-
-  store.profils[index] = {
-    ...existing,
-    ...updatedData,
-    nom: updatedData.nom || (updatedData.prenom && updatedData.nomfamille ? `${updatedData.prenom} ${updatedData.nomfamille}` : existing.nom),
-    historique: history,
-    updatedAt: new Date().toISOString()
-  };
-
-  saveStore(store);
-
-  res.json({
-    success: true,
-    message: "Les informations du candidat ont été mises à jour.",
-    candidate: store.profils[index]
-  });
+apiRouter.post("/candidates/update", requireAdvisor, (req, res) => {
+  const store=loadStore();const body=req.body;
+  const p=store.profils.find((p:any)=>String(p.id)===String(body.id)||p.email===(body.key||body.email));
+  if(!p)return res.status(404).json({error:'Profil introuvable.'});
+  updateProfile(p,body,(req as any).actor);res.json({success:true,candidate:publicProfile(p)});
 });
 
 apiRouter.post("/notify", (req, res) => {
@@ -1302,6 +1146,8 @@ apiRouter.post("/ocr", async (req, res) => {
   }
 });
 
+
+
 // POST /cv, /cv/parse, /parse-cv (Analyse de CV sécurisée, avec normalisation stricte et référentiels UCA)
 const handleCvAnalysis = async (req: any, res: any) => {
   try {
@@ -1311,7 +1157,7 @@ const handleCvAnalysis = async (req: any, res: any) => {
     const rawText = (typeof text === "string" ? text : "").trim();
     const effectiveFilename = filename || fileName || "cv.pdf";
 
-    if (!cleanBase64 && !rawText && !effectiveFilename) {
+    if (!cleanBase64 && !rawText) {
       return res.status(400).json({ success: false, error: "Contenu de CV manquant" });
     }
 
@@ -1399,10 +1245,10 @@ apiRouter.post(["/upload-blob", "/api/upload-blob"], async (req, res) => {
     const targetPath = pathname || `uploads/${Date.now()}-${filename.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
 
     if (storage) {
-      const key = crypto.randomUUID() + '-' + String(filename).replace(/[^a-zA-Z0-9.-]/g, '_');
+      const key = randomUUID() + '-' + String(filename).replace(/[^a-zA-Z0-9.-]/g,'_');
       const contentType = /^data:([^;,]+)/.exec(fileBase64)?.[1] || 'application/octet-stream';
       const url = await storage.upload(key, buffer, contentType);
-      return res.json({ success: true, url, pathname: key, contentType });
+      return res.json({success:true,url,pathname:key,contentType});
     }
     const token = process.env.BLOB_READ_WRITE_TOKEN;
     if (!token) {
@@ -1438,5 +1284,4 @@ apiRouter.post(["/upload-blob", "/api/upload-blob"], async (req, res) => {
 
 return apiRouter;
 }
-
 export const apiRouter = createApiRouter();

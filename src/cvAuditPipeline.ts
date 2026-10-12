@@ -11,7 +11,7 @@ import {
   getMistralApiKey,
   getMimeType,
   extractHeuristicFields,
-} from "./mistralService.ts";
+} from "./mistralService.js";
 import {
   normalizePhone,
   normalizeEmail,
@@ -23,8 +23,8 @@ import {
   matchFiliere,
   matchLangueNiveau,
   calculatePALDiagnostics,
-} from "./normalizationService.ts";
-import { type StructuredCvOutput } from "./referentielUCA.ts";
+} from "./normalizationService.js";
+import { type StructuredCvOutput } from "./referentielUCA.js";
 
 export interface LogAuditStep {
   step: string;
@@ -274,7 +274,9 @@ export async function runFullCvPipeline(options: {
       auditLogs,
       diagnostics: { scores: { global: 0 }, diagnostic: "Document illisible ou non exploitable" },
       cannotRead: true,
-      error: "Impossible de lire le contenu du CV. Veuillez vérifier le fichier ou importer un autre CV.",
+      error: isScannedOrImage && !geminiKey && !mistralKey
+        ? "La lecture des CV scannés et des images nécessite une clé GEMINI_API_KEY ou MISTRAL_API_KEY côté serveur. Contactez l’administrateur ou importez un PDF contenant du texte."
+        : "Impossible de lire le contenu du CV. Veuillez vérifier le fichier ou importer un autre CV.",
     };
   }
   log("verification_contenu", "success", `Contenu exploitable vérifié (${extractedText.length} caractères extraits). Analyse IA autorisée.`);
@@ -323,7 +325,8 @@ Retourne STRICTEMENT l'objet JSON ci-dessous (aucun texte, pas de bloc de code) 
   "skills": [],
   "languages": [],
   "certifications": [],
-  "internships": []
+  "internships": [],
+  "additional_training": []
 }`;
 
   let structuredRawJson: any = null;
@@ -639,6 +642,11 @@ Retourne STRICTEMENT l'objet JSON ci-dessous (aucun texte, pas de bloc de code) 
     niveau: matchNiv.value || "", // Ne pas inventer !
     filiere: matchFil.value || firstFieldValue(rawEdu.field_of_study) || "",
     anneeDiplome: gradYear || "",
+    diplomes: structuredRawJson.education || [],
+    experiences: structuredRawJson.experiences || [],
+    stages: structuredRawJson.internships || [],
+    formations: structuredRawJson.additional_training || [],
+    certifications: certList,
     autresDiplomes: certList.join(", ") || "",
     experience: "",
     expPoste: rawExp.job_title?.value || "",

@@ -4,6 +4,7 @@
   "main": "cloudflare/worker.ts",
   "compatibility_date": "2026-10-12",
   "compatibility_flags": ["nodejs_compat", "enable_nodejs_http_server_modules"],
+  "vars": { "CLOUDFLARE_WORKER": "true" },
   "assets": { "directory": "./dist", "binding": "ASSETS", "run_worker_first": true, "html_handling": "none" },
   "durable_objects": {
     "bindings": [{ "name": "PALUCA_STORE", "class_name": "PalucaStore" }]

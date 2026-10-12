@@ -933,6 +933,8 @@
     }
   }
 </style>
+<link rel="stylesheet" href="/institutional.css">
+<script src="/paluca-client.js"></script>
 </head>
 <body>
 
@@ -1232,7 +1234,7 @@
       </div>
       <div class="foot-bottom">
         <span>© 2026 PAL-UCA — Plateforme d’Accompagnement des Lauréats Universitaires Cadi Ayyad · Tous droits réservés</span>
-        <a href="/admin" style="color:#A985AD;text-decoration:none;font-size:0.78rem;">Accès conseillers &amp; universités</a>
+        <div style="display:flex;gap:18px;flex-wrap:wrap;"><a href="/admin?role=conseiller" style="color:#A985AD;text-decoration:none;font-size:0.78rem;" data-fr="Espace Conseiller" data-ar="فضاء المستشار">Espace Conseiller</a><a href="/admin?role=universite" style="color:#A985AD;text-decoration:none;font-size:0.78rem;" data-fr="Espace Université" data-ar="فضاء الجامعة">Espace Université</a></div>
       </div>
     </div>
   </footer>
@@ -2384,7 +2386,7 @@
 <!-- ===== MODAL RENDEZ-VOUS (Présentiel / À distance) ===== -->
 <div id="bookingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:18px;width:min(580px,95vw);max-height:92vh;overflow-y:auto;padding:26px 30px;position:relative;box-shadow:0 24px 60px rgba(58,15,69,0.25);">
-    <button type="button" onclick="closeBookingModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#7C6B82;">✕</button>
+    <button type="button" onclick="closeBookingModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#7C6B82;"></button>
 
     <div style="text-align:center;margin-bottom:20px;">
       <span class="m-badge pres" id="bkBadge">Rendez-vous individuel</span>
@@ -2428,9 +2430,9 @@
 <!-- ===== MODAL TOUS LES ATELIERS ===== -->
 <div id="ateliersModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:18px;width:min(760px,95vw);max-height:92vh;overflow-y:auto;padding:26px 30px;position:relative;box-shadow:0 24px 60px rgba(58,15,69,0.25);">
-    <button type="button" onclick="closeAllAteliersModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#7C6B82;">✕</button>
+    <button type="button" onclick="closeAllAteliersModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#7C6B82;"></button>
     <div style="text-align:center;margin-bottom:20px;">
-      <span class="m-badge pres">🎓 Pôle Compétences & Insertion</span>
+      <span class="m-badge pres"> Pôle Compétences & Insertion</span>
       <h3 style="font-family:'Cairo',sans-serif;color:#3A0F45;font-size:1.3rem;margin:6px 0 4px;">Catalogue des ateliers PAL-UCA</h3>
       <p style="color:#7C6B82;font-size:0.88rem;margin:0;">Inscrivez-vous aux sessions d'accompagnement collectif en présentiel et à distance</p>
     </div>
@@ -2443,10 +2445,10 @@
 <!-- ===== FENÊTRE DE CONNEXION (MODAL SÉPARÉ) ===== -->
 <div id="loginModal" class="auth-modal-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:rgba(18,5,25,0.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:10000;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;">
   <div class="auth-modal-card" style="background:#fff;border-radius:22px;width:min(460px,95vw);max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:32px 30px;position:relative;box-shadow:0 24px 60px rgba(58,15,69,0.32);border:1.5px solid #E8DEEC;box-sizing:border-box;">
-    <button type="button" onclick="closeAuthModals()" aria-label="Fermer" style="position:absolute;top:16px;right:18px;background:#FAF3FB;border:none;font-size:1.25rem;cursor:pointer;color:#7C6B82;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .15s;">✕</button>
+    <button type="button" onclick="closeAuthModals()" aria-label="Fermer" style="position:absolute;top:16px;right:18px;background:#FAF3FB;border:none;font-size:1.25rem;cursor:pointer;color:#7C6B82;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .15s;"></button>
 
     <div style="text-align:center;margin-bottom:22px;">
-      <div style="width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,#FAF3FB,#F4EAF5);color:#7E1F78;display:inline-flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:12px;border:1.5px solid #DDB8E0;box-shadow:0 4px 14px rgba(126,31,120,0.12);">🔐</div>
+      <div style="width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,#FAF3FB,#F4EAF5);color:#7E1F78;display:inline-flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:12px;border:1.5px solid #DDB8E0;box-shadow:0 4px 14px rgba(126,31,120,0.12);"></div>
       <h3 style="font-family:'Cairo',sans-serif;font-size:1.3rem;color:#3A0F45;margin:0 0 6px;font-weight:800;" data-ar="تسجيل الدخول إلى فضائكم" data-fr="Connexion à votre Espace">Connexion à votre Espace</h3>
       <p style="color:#7C6B82;font-size:0.85rem;margin:0;line-height:1.45;" data-ar="الولوج إلى فضائكم الشخصي لمتابعة مساركم والاستفادة من خدمات المواكبة" data-fr="Connectez-vous pour accéder à votre espace lauréat et suivre vos démarches">Connectez-vous pour accéder à votre espace lauréat et suivre vos démarches</p>
     </div>
@@ -2473,11 +2475,11 @@
 <!-- ===== FENÊTRE D'INSCRIPTION (MODAL SÉPARÉ) ===== -->
 <div id="registerModal" class="auth-modal-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:rgba(18,5,25,0.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:10000;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;">
  <div class="reg-modal-content" style="background:#fff;border-radius:22px;width:min(620px,95vw);max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:30px 32px;position:relative;box-shadow:0 24px 60px rgba(58,15,69,0.32);border:1.5px solid #E8DEEC;box-sizing:border-box;">
-   <button type="button" onclick="closeAuthModals()" aria-label="Fermer" style="position:absolute;top:16px;right:18px;background:#FAF3FB;border:none;font-size:1.25rem;cursor:pointer;color:#7C6B82;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .15s;">✕</button>
+   <button type="button" onclick="closeAuthModals()" aria-label="Fermer" style="position:absolute;top:16px;right:18px;background:#FAF3FB;border:none;font-size:1.25rem;cursor:pointer;color:#7C6B82;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .15s;"></button>
 
    <!-- En-tête inscription -->
    <div style="text-align:center;margin-bottom:20px;">
-     <div style="width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,#FAF3FB,#F4EAF5);color:#7E1F78;display:inline-flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:12px;border:1.5px solid #DDB8E0;box-shadow:0 4px 14px rgba(126,31,120,0.12);">🎓</div>
+     <div style="width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,#FAF3FB,#F4EAF5);color:#7E1F78;display:inline-flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:12px;border:1.5px solid #DDB8E0;box-shadow:0 4px 14px rgba(126,31,120,0.12);"></div>
      <h3 style="font-family:'Cairo',sans-serif;font-size:1.3rem;color:#3A0F45;margin:0 0 6px;font-weight:800;" data-ar="إنشاء فضائكم الشخصي (خريج UCA)" data-fr="Créer votre Espace Lauréat UCA">Créer votre Espace Lauréat UCA</h3>
      <p style="color:#7C6B82;font-size:0.85rem;margin:0;line-height:1.45;" data-ar="أنشئ حسابك واستفد من خدمات المواكبة، التشخيص الذكي والمقابلات الفردية" data-fr="Renseignez vos informations ou importez votre CV pour un remplissage automatique">Renseignez vos informations ou importez votre CV pour un remplissage automatique</p>
    </div>
@@ -2695,7 +2697,7 @@
       <!-- Cadre légal, Conditions d'Utilisation & Consentement ANAPEC / Université Cadi Ayyad -->
       <div style="margin-top:16px;background:linear-gradient(180deg,#FAF3FB,#F4EAF5);border:1.5px solid #DDB8E0;border-radius:14px;padding:14px 16px;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <span style="font-size:1.15rem;">🛡️</span>
+          <span style="font-size:1.15rem;"></span>
           <b style="color:#4F1359;font-size:0.85rem;font-family:'Cairo',sans-serif;" data-ar="شروط الاستخدام، معالجة البيانات والموافقة على الإشعارات" data-fr="Conditions d'utilisation, traitement des données & accord aux notifications">Conditions d'utilisation, traitement des données & accord aux notifications</b>
         </div>
         <p style="font-size:0.77rem;color:#5D4B63;line-height:1.55;margin:0 0 10px;" data-ar="وفقاً لمقتضيات القانون 09-08 المتعلق بحماية المعطيات ذات الطابع الشخصي (CNDP)، تُعالج بياناتكم بشكل آمن وسري في إطار الشراكة بين جامعة القاضي عياض (UCA) والوكالة الوطنية لإنعاش التشغيل والكفاءات (ANAPEC) لتشخيص ملفكم المهني، فيابلته وتدقيقه، وبرمجتكم في المقابلات والورشات لتحسين خدمات الإدماج والمواكبة." data-fr="Conformément à la loi 09-08 relative à la protection des données à caractère personnel (CNDP), vos informations sont traitées de manière confidentielle et sécurisée dans le cadre du partenariat entre l'Université Cadi Ayyad (UCA) et l'ANAPEC pour l'établissement de votre diagnostic d'employabilité, la fiabilisation de votre profil et votre programmation aux entretiens et ateliers.">Conformément à la loi 09-08 relative à la protection des données à caractère personnel (CNDP), vos informations sont traitées de manière confidentielle et sécurisée dans le cadre du partenariat entre l'Université Cadi Ayyad (UCA) et l'ANAPEC pour l'établissement de votre diagnostic d'employabilité, la fiabilisation de votre profil et votre programmation aux entretiens et ateliers.</p>
@@ -2744,7 +2746,7 @@
           <span>Agent IA · En ligne</span>
         </div>
       </div>
-      <button class="wa-hclose" id="waChatClose" aria-label="Fermer" title="Fermer">✕</button>
+      <button class="wa-hclose" id="waChatClose" aria-label="Fermer" title="Fermer"></button>
     </div>
 
     <div class="wa-messages" id="waMessages">
@@ -3060,7 +3062,7 @@
           alertMsg.textContent = (window.currentLang === 'ar') ? 'تم التسجيل بنجاح في خدمة الإشعارات!' : 'Inscrit avec succès aux alertes PAL-UCA !';
           alertMsg.style.color = '#15803d';
           phoneInput.value = '';
-          subscribeBtn.textContent = '✓ Inscrit';
+          subscribeBtn.textContent = ' Inscrit';
         } else {
           alertMsg.textContent = (d.error || 'Erreur. Réessayez.');
           alertMsg.style.color = '#dc2626';
@@ -3653,12 +3655,12 @@ function updateNextRdvCard(rdv) {
   var actionWrap = document.getElementById('nextRdvActionWrap');
 
   if (isDist) {
-    if (badge) { badge.className = 'm-badge dist'; badge.textContent = '💻 À distance'; }
+    if (badge) { badge.className = 'm-badge dist'; badge.textContent = ' À distance'; }
     if (actionWrap) {
       actionWrap.innerHTML = '<a href="https://meet.google.com/pal-uca-conseil" target="_blank" rel="noopener" class="btn-visio" id="btnVisioLink">Rejoindre la visioconférence</a>';
     }
   } else {
-    if (badge) { badge.className = 'm-badge pres'; badge.textContent = '📍 En présentiel'; }
+    if (badge) { badge.className = 'm-badge pres'; badge.textContent = ' En présentiel'; }
     if (actionWrap) {
       actionWrap.innerHTML = '<div style="font-size:0.82rem;color:#475569;margin-top:6px;"><strong>Lieu :</strong> Agence Universitaire Cadi Ayyad · Marrakech</div>';
     }
@@ -3746,7 +3748,7 @@ function renderFrontAteliers() {
   grid.innerHTML = list.map(function(a){
     var isDist = a.modalite === 'À distance';
     var badgeClass = isDist ? 'm-badge dist' : 'm-badge pres';
-    var badgeIcon = isDist ? '💻' : '📍';
+    var badgeIcon = isDist ? '' : '';
 
     return '<div class="atelier-card">' +
       '<div class="atelier-head">' +
@@ -3757,8 +3759,8 @@ function renderFrontAteliers() {
         '<h4>' + a.titre + '</h4>' +
         '<p>' + a.description + '</p>' +
         '<div class="atelier-meta">' +
-          '<div>📅 <strong>' + a.date + '</strong> · ' + a.heure + '</div>' +
-          '<div>👤 ' + a.animateur + '</div>' +
+          '<div> <strong>' + a.date + '</strong> · ' + a.heure + '</div>' +
+          '<div> ' + a.animateur + '</div>' +
         '</div>' +
         '<div class="atelier-actions">' +
           '<button type="button" class="btn-outline" style="border:1.5px solid #E8DEEC;color:#3A0F45;" onclick="alert(\'' + a.titre.replace(/'/g, "\\'") + '\n\n' + a.description.replace(/'/g, "\\'") + '\n\nModalité : ' + a.modalite + '\nIntervenant : ' + a.animateur + '\nDate : ' + a.date + ' à ' + a.heure + '\')">Découvrir</button>' +
@@ -3780,10 +3782,10 @@ function openAllAteliersModal() {
     var isDist = a.modalite === 'À distance';
     return '<div style="background:#FAF6FC;border:1px solid #E8DEEC;border-radius:14px;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">' +
       '<div style="flex:1;min-width:240px;">' +
-        '<span class="m-badge ' + (isDist ? 'dist' : 'pres') + '" style="margin-bottom:6px;">' + (isDist ? '💻 À distance' : '📍 Présentiel') + '</span>' +
+        '<span class="m-badge ' + (isDist ? 'dist' : 'pres') + '" style="margin-bottom:6px;">' + (isDist ? ' À distance' : ' Présentiel') + '</span>' +
         '<h4 style="font-family:\'Cairo\';color:#3A0F45;font-size:1.08rem;margin:4px 0 6px;">' + a.titre + '</h4>' +
         '<p style="color:#6B5870;font-size:0.84rem;margin:0 0 6px;">' + a.description + '</p>' +
-        '<small style="color:#7C6B82;">📅 ' + a.date + ' à ' + a.heure + ' · Animateur : ' + a.animateur + '</small>' +
+        '<small style="color:#7C6B82;"> ' + a.date + ' à ' + a.heure + ' · Animateur : ' + a.animateur + '</small>' +
       '</div>' +
       '<button type="button" class="btn btn-primary" onclick="inscrireAtelier(\'' + a.id + '\', \'' + a.titre.replace(/'/g, "\\'") + '\')" style="padding:10px 20px;font-size:0.88rem;">S\'inscrire</button>' +
     '</div>';
@@ -4032,7 +4034,7 @@ function populateEspace(p) {
 }
 
 window.registerAtelier = function(i, btn) {
- btn.textContent = L('✓ تم التسجيل','✓ Inscrit');
+ btn.textContent = L(' تم التسجيل',' Inscrit');
  btn.style.background = '#9CA3AF';
  btn.disabled = true;
  var w = getAllAteliers()[i];

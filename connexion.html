@@ -243,12 +243,14 @@
    }
  }
 </style>
+<link rel="stylesheet" href="/institutional.css">
+<script src="/paluca-client.js"></script>
 </head>
 <body>
 
 <header class="topbar">
   <a href="/" class="brand">
-    <div style="width:36px;height:36px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--purple-900);font-weight:900;font-size:1.05rem;">UCA</div>
+    <img class="pal-logo" src="/assets/logo_pal_uca.png" alt="PAL-UCA">
     <div>
       <div>PAL-UCA</div>
       <small data-ar="منصة مواكبة خريجي جامعة القاضي عياض" data-fr="Plateforme d'Accompagnement des Lauréats">Plateforme d'Accompagnement des Lauréats</small>
@@ -269,7 +271,7 @@
 <main class="page-content">
   <div class="auth-card">
     <div class="auth-header">
-      <div class="auth-badge" style="font-size:0.85rem;font-weight:800;letter-spacing:0.5px;">UCA</div>
+      <img class="pal-logo" src="/assets/logo_pal_uca.png" alt="PAL-UCA">
       <h1 class="auth-title" data-ar="تسجيل الدخول إلى فضائكم" data-fr="Connexion à votre Espace">Connexion à votre Espace</h1>
       <p class="auth-subtitle" data-ar="الولوج إلى فضائكم الشخصي لمتابعة مساركم والاستفادة من خدمات المواكبة" data-fr="Connectez-vous pour accéder à votre espace lauréat et suivre vos démarches">Connectez-vous pour accéder à votre espace lauréat et suivre vos démarches</p>
     </div>
@@ -380,40 +382,9 @@ async function handleLoginSubmit(e) {
   if (btn) btn.disabled = true;
 
   try {
-    // 1. Fetch server state first to support cross-device authentication
-    var serverProfils = [];
-    try {
-      var res = await fetch('/api/profils');
-      if (res.ok) {
-        var data = await res.json();
-        if (Array.isArray(data)) {
-          serverProfils = data;
-          dbSet('profils', data);
-        }
-      }
-    } catch(fetchErr) {}
-
-    var allProfils = serverProfils.length > 0 ? serverProfils : dbGet('profils');
-    var found = allProfils.find(function(x) {
-      var isEmail = (x.email || '').toLowerCase() === email;
-      var isPass = (x.passhash === simpleHash(pass)) || (x.passhash === pass) || (x.password === pass) || (x.motDePasse === pass);
-      return isEmail && isPass;
-    });
-
-    if (!found) {
-      err.style.color = '#dc2626';
-      err.textContent = L('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'Adresse email ou mot de passe incorrect.');
-      if (btn) btn.disabled = false;
-      return;
-    }
-
-    if (found.actif === false) {
-      err.style.color = '#dc2626';
-      err.textContent = L('تم تجميد حسابك مؤقتا من طرف إدارة الجامعة', 'Votre compte est suspendu par l\'administration.');
-      if (btn) btn.disabled = false;
-      return;
-    }
-
+    var response = await palApi('auth/login', { email: email, password: pass });
+    var found = response.profile;
+    dbSet('profils', [found]);
     // Success
     localStorage.setItem('dabanet_session', found.email);
     err.style.color = '#166534';
@@ -425,7 +396,7 @@ async function handleLoginSubmit(e) {
 
   } catch(error) {
     err.style.color = '#dc2626';
-    err.textContent = L('حدث خطأ أثناء الاتصال، يرجى المحاولة ثانية', 'Une erreur est survenue lors de la connexion.');
+    err.textContent = error.message || 'Connexion impossible.';
     if (btn) btn.disabled = false;
   }
 }
