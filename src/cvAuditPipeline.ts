@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 // @ts-ignore
-import * as pdfParseModule from "pdf-parse";
+import * as pdfParseModule from "pdf-parse/lib/pdf-parse.js";
 const pdfParse: any = (pdfParseModule as any).default || pdfParseModule;
 // @ts-ignore
 import * as mammothModule from "mammoth";

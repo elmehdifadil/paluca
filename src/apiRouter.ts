@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import { GoogleGenAI } from "@google/genai";
 import { put } from "@vercel/blob";
+import { runFullCvPipeline } from "./cvAuditPipeline.ts";
 import {
   isMistralConfigured,
   performMistralOCR,
@@ -11,20 +12,19 @@ import {
   getMimeType,
 } from "./mistralService.ts";
 
-export const apiRouter = Router();
+export interface PlatformStorage {
+  read(): Record<string, any> | null;
+  write(data: Record<string, any>): void;
+  upload(key: string, data: Buffer, contentType: string): Promise<string>;
+  download(key: string): Promise<{ data: ArrayBuffer; contentType: string } | null>;
+}
+
+export function createApiRouter(storage?: PlatformStorage) {
+const apiRouter = Router();
 
 // Store location: support /tmp on Vercel serverless environment
 const DATA_DIR = process.env.VERCEL ? "/tmp/data" : path.join(process.cwd(), "data");
 const DATA_FILE = path.join(DATA_DIR, "store.json");
-
-// Ensure directory exists
-try {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-} catch (e) {
-  console.warn("Could not create data dir:", e);
-}
 
 const DEFAULT_CONSEILLERS = [
   {
@@ -65,7 +65,9 @@ const DEFAULT_CONSEILLERS = [
 function loadStore() {
   let data: any = null;
   try {
-    if (fs.existsSync(DATA_FILE)) {
+    if (storage) {
+      data = storage.read();
+    } else if (fs.existsSync(DATA_FILE)) {
       const raw = fs.readFileSync(DATA_FILE, "utf-8");
       data = JSON.parse(raw);
     } else {
@@ -77,6 +79,7 @@ function loadStore() {
     }
   } catch (err) {
     console.error("Error reading store:", err);
+    if (storage) throw err;
   }
 
   if (!data || typeof data !== "object") {
@@ -332,7 +335,9 @@ function appendCandidateNotification(store: any, identifier: string, message: st
 }
 
 function saveStore(data: Record<string, any>) {
+  if (storage) { storage.write(data); return; }
   try {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
   } catch (err) {
     console.error("Error writing store:", err);
@@ -424,7 +429,7 @@ apiRouter.post("/data", (req, res) => {
 });
 
 // Helper pour sauvegarder une image Base64 sur le disque et retourner une URL accessible
-function saveBase64Image(dataUrl: string, prefix = "banner"): string {
+async function saveBase64Image(dataUrl: string, prefix = "banner"): Promise<string> {
   if (!dataUrl || typeof dataUrl !== "string") return "";
   if (!dataUrl.startsWith("data:image/")) {
     return dataUrl; // Déjà une URL HTTP(S) ou chemin local
@@ -440,6 +445,10 @@ function saveBase64Image(dataUrl: string, prefix = "banner"): string {
     const base64Data = matches[2];
     const buffer = Buffer.from(base64Data, "base64");
 
+    if (storage) {
+      const filename = prefix + '_' + crypto.randomUUID() + '.' + ext;
+      return await storage.upload(filename, buffer, 'image/' + matches[1].toLowerCase());
+    }
     const uploadsDir = path.join(process.cwd(), "public", "uploads");
     if (!fs.existsSync(uploadsDir)) {
       try { fs.mkdirSync(uploadsDir, { recursive: true }); } catch(e){}
@@ -461,13 +470,23 @@ function saveBase64Image(dataUrl: string, prefix = "banner"): string {
     return `/uploads/${filename}`;
   } catch (err) {
     console.error("Erreur sauvegarde image base64:", err);
+    if (storage) throw err;
     return dataUrl;
   }
 }
 
 // Route explicite pour servir les images d'uploads via l'API router si nécessaire
-apiRouter.get("/uploads/:filename", (req, res) => {
+apiRouter.get("/uploads/:filename", async (req, res) => {
   const filename = path.basename(req.params.filename);
+  if (storage) {
+    try {
+      const object = await storage.download(filename);
+      if (!object) return res.status(404).json({ error: 'Image introuvable' });
+      res.setHeader('Content-Type', object.contentType);
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      return res.send(Buffer.from(object.data));
+    } catch { return res.status(500).json({ error: 'Lecture du fichier impossible' }); }
+  }
   const filePath = path.join(process.cwd(), "public", "uploads", filename);
   if (fs.existsSync(filePath)) {
     return res.sendFile(filePath);
@@ -480,7 +499,7 @@ apiRouter.get("/uploads/:filename", (req, res) => {
 });
 
 // ── ENDPOINT UPLOAD D'IMAGE DE BANNIÈRE ──
-apiRouter.post("/upload", (req, res) => {
+apiRouter.post("/upload", async (req, res) => {
   try {
     const { image, dataUrl, filename, data, fileBase64 } = req.body;
     const raw = image || dataUrl || data || fileBase64;
@@ -489,7 +508,7 @@ apiRouter.post("/upload", (req, res) => {
     }
 
     const cleanPrefix = filename ? filename.replace(/[^a-zA-Z0-9_-]/g, "_").substring(0, 20) : "banner";
-    const finalUrl = saveBase64Image(raw, cleanPrefix);
+    const finalUrl = await saveBase64Image(raw, cleanPrefix);
 
     return res.json({
       success: true,
@@ -553,7 +572,7 @@ apiRouter.get("/affiches", handleGetBanners);
 apiRouter.get("/banners", handleGetBanners);
 
 // POST /api/bannieres & POST /api/affiches
-const handleSaveBanner = (req: any, res: any) => {
+const handleSaveBanner = async (req: any, res: any) => {
   try {
     const store = loadStore();
     const { id, titre, title, image, imageUrl, lien, link, statut, active, ordre, order, dateDebut, dateFin } = req.body;
@@ -564,7 +583,7 @@ const handleSaveBanner = (req: any, res: any) => {
     }
 
     // Sauvegarder l'image sur disque si base64
-    const finalImageUrl = saveBase64Image(rawImage, "banner");
+    const finalImageUrl = await saveBase64Image(rawImage, "banner");
 
     let currentList = Array.isArray(store.banners) && store.banners.length > 0
       ? store.banners
@@ -1283,8 +1302,6 @@ apiRouter.post("/ocr", async (req, res) => {
   }
 });
 
-import { runFullCvPipeline } from "./cvAuditPipeline.ts";
-
 // POST /cv, /cv/parse, /parse-cv (Analyse de CV sécurisée, avec normalisation stricte et référentiels UCA)
 const handleCvAnalysis = async (req: any, res: any) => {
   try {
@@ -1381,6 +1398,12 @@ apiRouter.post(["/upload-blob", "/api/upload-blob"], async (req, res) => {
     const buffer = Buffer.from(base64Data, "base64");
     const targetPath = pathname || `uploads/${Date.now()}-${filename.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
 
+    if (storage) {
+      const key = crypto.randomUUID() + '-' + String(filename).replace(/[^a-zA-Z0-9.-]/g, '_');
+      const contentType = /^data:([^;,]+)/.exec(fileBase64)?.[1] || 'application/octet-stream';
+      const url = await storage.upload(key, buffer, contentType);
+      return res.json({ success: true, url, pathname: key, contentType });
+    }
     const token = process.env.BLOB_READ_WRITE_TOKEN;
     if (!token) {
       // Si le token n'est pas encore configuré, on retourne un objet standard avec URL locale de fallback
@@ -1412,3 +1435,8 @@ apiRouter.post(["/upload-blob", "/api/upload-blob"], async (req, res) => {
     });
   }
 });
+
+return apiRouter;
+}
+
+export const apiRouter = createApiRouter();

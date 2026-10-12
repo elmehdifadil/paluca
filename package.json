@@ -9,7 +9,11 @@
     "start": "node dist/server.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "build:cloudflare": "vite build",
+    "dev:cloudflare": "npm run build:cloudflare && wrangler dev",
+    "deploy:cloudflare": "npm run build:cloudflare && wrangler deploy",
+    "check:cloudflare": "npm run build:cloudflare && wrangler deploy --dry-run"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
@@ -17,7 +21,7 @@
     "@vercel/blob": "^2.0.0",
     "@vitejs/plugin-react": "^5.0.4",
     "dotenv": "^17.2.3",
-    "express": "^4.21.2",
+    "express": "^5.3.0",
     "lucide-react": "^0.546.0",
     "mammoth": "^1.13.0",
     "motion": "^12.23.24",
@@ -27,7 +31,8 @@
     "vite": "^6.2.3"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
+    "@cloudflare/workers-types": "^5.20261012.1",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.14.0",
     "@types/pdf-parse": "^1.1.5",
     "autoprefixer": "^10.4.21",
@@ -35,6 +40,7 @@
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
-    "vite": "^6.2.3"
+    "vite": "^6.2.3",
+    "wrangler": "^4.149.0"
   }
 }

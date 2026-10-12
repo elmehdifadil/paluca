@@ -8,3 +8,6 @@ coverage/
 .env*
 !.env.example
 .vercel/
+.wrangler/
+.dev.vars*
+worker-configuration.d.ts
