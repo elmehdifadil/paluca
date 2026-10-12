@@ -12,6 +12,7 @@ interface Env {
 // One named object owns the platform store. SQLite replaces data/store.json.
 export class PalucaStore extends DurableObject<Env> {
   private pending: Promise<unknown> = Promise.resolve();
+  private readonly httpPort: number;
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
@@ -72,7 +73,12 @@ export class PalucaStore extends DurableObject<Env> {
       console.error(error);
       res.status(500).json({ error: 'Erreur serveur' });
     });
-    app.listen(3000);
+    // Objects can share an isolate or be recreated while an old server remains.
+    // Port 0 lets the runtime allocate an unused routing port for this instance.
+    const server = app.listen(0);
+    const address = server.address();
+    if (!address || typeof address === 'string') throw new Error('Serveur HTTP non initialisé');
+    this.httpPort = address.port;
   }
 
   fetch(request: Request): Promise<Response> {
@@ -87,7 +93,7 @@ export class PalucaStore extends DurableObject<Env> {
         const body = new Blob(chunks.map(chunk => chunk.data));
         return new Response(request.method === 'HEAD' ? null : body,{headers:{'Content-Type':metadata[0].content_type,'X-Content-Type-Options':'nosniff'}});
       }
-      const response = await handleAsNodeRequest(3000, request);
+      const response = await handleAsNodeRequest(this.httpPort, request);
       const body = await response.arrayBuffer();
       return new Response(body, { status: response.status, headers: response.headers });
     });
